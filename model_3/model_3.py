@@ -30,8 +30,10 @@ from keras import regularizers, constraints, initializers, activations
 from keras.layers.recurrent import Recurrent
 from keras.engine import InputSpec
 from keras.engine.topology import Layer
-
-
+print("##device name:")
+print(tf.test.gpu_device_name())
+print("##gpu available:")
+print(tf.test.is_gpu_available(cuda_only=False,min_cuda_compute_capability=None))
 device_name = tf.test.gpu_device_name()
 if device_name != '/device:GPU:0':
   raise SystemError('GPU device not found')
@@ -137,7 +139,7 @@ def build_model():
   COMBO_MOVE = concatenate([x1, x2])
   w = Dense(500, activation = "relu")(COMBO_MOVE) # try 500
   w = Dropout(0.4)(w)
-  w = tcn.TCN()(w)
+  w = tcn.TCN(return_sequences = True)(w)
   y = TimeDistributed(Dense(n_tags, activation = "softmax"))(w)
 
   # Defining the model as a whole and printing the summary
@@ -145,7 +147,7 @@ def build_model():
   #model.summary()
 
   # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
-  adamOptimizer = Adam(lr=0.0025, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False) 
+  adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False) 
   model.compile(optimizer = adamOptimizer, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
   return model
 
@@ -179,7 +181,7 @@ def save_model(model):
 VERBOSE = 1
 SAVE_MODEL = True
 model = build_model()
-model.fit([train_input_data, profile_padded_train], train_target_data, batch_size = 30, epochs = 6, verbose = VERBOSE, shuffle=True)
+model.fit([train_input_data, profile_padded_train], train_target_data, batch_size = 16, epochs = 5, verbose = VERBOSE, shuffle=True)
 
 
 if SAVE_MODEL:
@@ -206,3 +208,4 @@ test_target_data = to_categorical(test_target_data)
 acc = accuracy(test_target_data, y_test_pred)
 print ('accuracy on cb513:', tf.Session().run(acc).mean())
 
+np.save('cb513_test_prob_3.npy', y_test_pred)
