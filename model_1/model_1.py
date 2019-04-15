@@ -16,13 +16,14 @@ from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
 from keras.models import Model, Input
 from keras.layers import Embedding, Dense, TimeDistributed, Concatenate, BatchNormalization
-from keras.layers import Bidirectional, Activation, Dropout, CuDNNGRU, Conv1D
+from keras.layers import Bidirectional, Activation, Dropout, CuDNNGRU, Conv1D, GRU
 
 from sklearn.model_selection import train_test_split, KFold
 from keras.metrics import categorical_accuracy
 from keras import backend as K
 from keras.regularizers import l1, l2
 import tensorflow as tf
+import keras
 
 ### Data Retrieval
 # cb6133         = np.load("../data/cb6133.npy")
@@ -164,7 +165,7 @@ for i, profile in enumerate(test_profiles):
             test_profiles_np[i, j, k] = profile[j, k]
 
 def decode_results(y_, reverse_decoder_index):
-    print("prediction: " + str(onehot_to_seq(y_, reverse_decoder_index).upper()))
+    #print("prediction: " + str(onehot_to_seq(y_, reverse_decoder_index).upper()))
     return str(onehot_to_seq(y_, reverse_decoder_index).upper())
 
 def run_test(_model, data1, data2, data3, csv_name, npy_name):
@@ -208,11 +209,11 @@ def train(X_train, y_train, X_val=None, y_val=None):
     
     if X_val is not None and y_val is not None:
         history = model.fit( X_train, y_train,
-            batch_size = 128, epochs = 100,
+            batch_size = 128, epochs = 75,
             validation_data = (X_val, y_val))
     else:
         history = model.fit( X_train, y_train,
-            batch_size = 128, epochs = 100)
+            batch_size = 128, epochs = 75)
 
     return history, model
 
