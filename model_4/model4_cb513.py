@@ -11,10 +11,19 @@ from keras.metrics import categorical_accuracy
 from keras import backend as K
 from sklearn.model_selection import KFold
 import tensorflow as tf
+from keras.callbacks import TensorBoard, LearningRateScheduler, ModelCheckpoint, ReduceLROnPlateau
+from datetime import datetime
+import os, pickle
 
 '''
 various helper functions
 '''
+#file for tensorboard
+script_name = 'model_4'
+model_name = datetime.now().strftime("%Y%m%d-%H%M%S") + "_" + script_name
+log_dir = '../logs/{}'.format(model_name)
+os.mkdir(log_dir)
+
 
 # Fixed-size Ordinally Forgetting Encoding
 def encode_FOFE(onehot, alpha, maxlen):
@@ -43,15 +52,18 @@ def to_seq(y):
         seqs.append(seq_i)
     return seqs
 
+def print_results(id, y_, revsere_decoder_index):
+    print('%s,%s' % (id, onehot_to_seq(y_, revsere_decoder_index).upper()))
+
 '''
 Getting Data
 '''
 cb513filename = '../data/cb513.npy'
-cb6133filename = '../data/cb6133.npy'
+#cb6133filename = '../data/cb6133.npy'
 cb6133filteredfilename = '../data/cb6133filtered.npy'
 
 cb513 = np.load(cb513filename)
-cb6133 = np.load(cb6133filename)
+#cb6133 = np.load(cb6133filename)
 cb6133filtered = np.load(cb6133filteredfilename)
 
 residue_list = ['A', 'C', 'E', 'D', 'G', 'F', 'I', 'H', 'K', 'M', 'L', \
@@ -64,6 +76,20 @@ f = 57 # number of features for each residue
 '''
 Setting up training, validation, test data
 '''
+print (cb513.shape, cb6133filtered.shape) #((514, 39900), (5534, 39900))
+print('first two rows of 513')
+print(cb513[0,:])
+print(cb513[1,:])
+print('first two columns of 513')
+print(cb513[:,0])
+print(cb513[:,1])
+print('first two rows of 6133')
+print(cb6133filtered[0,:])
+print(cb6133filtered[1,:])
+print('first two columns of 6133')
+print(cb6133filtered[:,0])
+print(cb6133filtered[:,1])
+
 
 maxlen_seq = 700 # maximum sequence length
 alpha = 0.5 # parameter for long range encoding
@@ -233,9 +259,13 @@ test_index = np.array(list(range(514)))
 X_train = train_input_data[train_index]
 y_train = train_target_data[train_index]
 X_test = test_input_data[test_index]
+y_test = test_target_data[test_index]
 
 model.compile(optimizer = "nadam", loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
-model.fit(X_train, y_train, batch_size = 64, epochs = 12, verbose = 1)
+
+tensorboard = TensorBoard(log_dir=log_dir)
+
+model.fit(X_train, y_train, batch_size = 64, epochs = 1, verbose = 1, callbacks =[tensorboard])
 
 y_pre = model.predict(X_test[:])
 seq_pre = to_seq(y_pre)
@@ -243,3 +273,9 @@ seq_pre = to_seq(y_pre)
 path = 'cb513_test_5.csv'
 file_output = pd.DataFrame({'id' : test_index+1, 'prediction' : seq_pre}, columns=['id', 'prediction'])
 file_output.to_csv(path, index=False)
+
+acc = accuracy(y_test, y_pre)
+print ('accuracy on cb513:', tf.Session().run(acc).mean())
+
+np.save('cb513_test_prob_4.npy', y_pre)
+
