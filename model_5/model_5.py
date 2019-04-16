@@ -40,14 +40,17 @@ def load_augmented_data(npy_path, max_len):
     return train_df, profile_padded_wrapped
 
 cb513filename = '../data/cb513.npy'
-cb6133filename = '../data/cb6133.npy'
+#cb6133filename = '../data/cb6133.npy'
 cb6133filteredfilename = '../data/cb6133filtered.npy'
 
 max_len =700
-train_df, profile_padded_wrapped = load_augmented_data(cb6133filename, max_len)
-train_df[['id', 'len','input','expected']].to_csv('cb6133.csv', sep=',', encoding='utf-8', index=False)
-profile_df = pd.DataFrame(profile_padded_wrapped)
-profile_df.to_csv('cb6133_profile.csv',index=False)
+
+#unnoetig, da Datensatz nicht verwendet wird
+
+#train_df, profile_padded_wrapped = load_augmented_data(cb6133filename, max_len)
+#train_df[['id', 'len','input','expected']].to_csv('cb6133.csv', sep=',', encoding='utf-8', index=False)
+#profile_df = pd.DataFrame(profile_padded_wrapped)
+#profile_df.to_csv('cb6133_profile.csv',index=False)
 
 train_df, profile_padded_wrapped = load_augmented_data(cb513filename, max_len)
 train_df[['id', 'len','input','expected']].to_csv('cb513.csv', sep=',', encoding='utf-8', index=False)
