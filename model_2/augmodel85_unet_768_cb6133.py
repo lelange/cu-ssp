@@ -80,9 +80,11 @@ log_dir = '../logs/{}'.format(model_name)
 os.mkdir(log_dir)
 
 val_df.to_csv(os.path.join(log_dir, 'val_data.csv'))
+
 #np.save(os.path.join(log_dir, 'val_augment_data.npy'), X_val_augment)
 test_df.to_csv(os.path.join(log_dir, 'test_data.csv'))
 #np.save(os.path.join(log_dir, 'test_augment_data.npy'), test_augment_data)
+
 
 with open(os.path.join(log_dir, 'tokenizer_encoder.pickle'), 'wb') as handle:
     pickle.dump(tokenizer_encoder, handle)

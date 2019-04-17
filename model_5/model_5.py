@@ -40,17 +40,15 @@ def load_augmented_data(npy_path, max_len):
     return train_df, profile_padded_wrapped
 
 cb513filename = '../data/cb513.npy'
-#cb6133filename = '../data/cb6133.npy'
+
+cb6133filename = '../data/cb6133.npy'
 cb6133filteredfilename = '../data/cb6133filtered.npy'
 
 max_len =700
-
-#unnoetig, da Datensatz nicht verwendet wird
-
-#train_df, profile_padded_wrapped = load_augmented_data(cb6133filename, max_len)
-#train_df[['id', 'len','input','expected']].to_csv('cb6133.csv', sep=',', encoding='utf-8', index=False)
-#profile_df = pd.DataFrame(profile_padded_wrapped)
-#profile_df.to_csv('cb6133_profile.csv',index=False)
+train_df, profile_padded_wrapped = load_augmented_data(cb6133filename, max_len)
+train_df[['id', 'len','input','expected']].to_csv('cb6133.csv', sep=',', encoding='utf-8', index=False)
+profile_df = pd.DataFrame(profile_padded_wrapped)
+profile_df.to_csv('cb6133_profile.csv',index=False)
 
 train_df, profile_padded_wrapped = load_augmented_data(cb513filename, max_len)
 train_df[['id', 'len','input','expected']].to_csv('cb513.csv', sep=',', encoding='utf-8', index=False)
@@ -67,8 +65,13 @@ profile_df.to_csv('cb6133filtered_profile.csv',index=False)
 # all data files are in the same dir with this file.
 ################################################################################
 
+<<<<<<< HEAD
 #cb6133_df = pd.read_csv('cb6133.csv', sep=',')
 #cb6133_profile_df = pd.read_csv('cb6133_profile.csv', sep=',')
+=======
+cb6133_df = pd.read_csv('cb6133.csv', sep=',')
+cb6133_profile_df = pd.read_csv('cb6133_profile.csv', sep=',')
+>>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
 cb6133filtered_df = pd.read_csv('cb6133filtered.csv', sep=',')
 cb6133filtered_profile_df = pd.read_csv('cb6133filtered_profile.csv', sep=',')
 cb513_df = pd.read_csv('cb513.csv', sep=',')
@@ -133,8 +136,11 @@ train_profile_df, val_profile_df, test_profile_df = cb6133filtered_profile_df, c
 # cb513_profile_df = pd.read_csv(cb513_profile_data_str, sep=',')
 
 # # cb6133test and cb6133 10fold cv
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
 # # train_df, val_df, test_df = cb6133_df[0:5600], cb6133_df[5877:6133], cb6133_df[5605:5877]
 # # train_profile_df, val_profile_df, test_profile_df = cb6133_profile_df[0:5600], cb6133_profile_df[5877:6133], cb6133_profile_df[5605:5877]
 

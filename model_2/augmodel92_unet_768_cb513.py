@@ -26,6 +26,7 @@ cb6133filteredfilename = '../data/cb6133filtered.npy'
 train_df, train_augment_data = load_augmented_data(cb6133filteredfilename, maxlen_seq)
 test_df, test_augment_data = load_augmented_data(cb513filename, maxlen_seq)
 
+
 ###create test set
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
 test_input_grams = seq2ngrams(test_input_seqs)
@@ -197,20 +198,30 @@ checkpoint = ModelCheckpoint(os.path.join(log_dir, "best_val_acc.h5"),
 model.fit([X_train, X_train_augment], y_train, batch_size = 128, 
             validation_data = ([X_val, X_val_augment], y_val), verbose = 1,
             callbacks=[tensorboard, reduce_lr, checkpoint], 
+<<<<<<< HEAD
             epochs = 80)
 
 #prediction for cb513
 y_pred = model.predict([X_test, test_augment_data])
+=======
+            epochs = 90)
+>>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
 
 K.clear_session()
 
 model = load_model(os.path.join(log_dir, "best_val_acc.h5"))
 
+<<<<<<< HEAD
 #validation on cb6133
 val_pred_df = predict_all(model, val_df, tokenizer_encoder, tokenizer_decoder, n_gram=1,  max_len=maxlen_seq, 
                             augmented_input=X_val_augment,
                             filepath = os.path.join(log_dir, "val_pred_{}.csv".format(model_name)))
 np.save('cb513_test_prob_2.npy', y_pred)
+=======
+val_pred_df = predict_all(model, val_df, tokenizer_encoder, tokenizer_decoder, n_gram=1,  max_len=maxlen_seq, 
+                            augmented_input=X_val_augment,
+                            filepath = os.path.join(log_dir, "val_pred_{}.csv".format(model_name)))
+>>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
 val_score, val_score_df = edit_score(val_df, val_pred_df,
                                     filepath = os.path.join(log_dir, "val_score_{}.csv".format(model_name)), plot=False)
 plt.close()

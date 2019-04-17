@@ -61,7 +61,7 @@ counter = 0
 # prints the results
 def print_results(x, y_, revsere_decoder_index, counter,test_df):
     Ans['id'][counter] = test_df['id'][counter]
-    print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
+    # print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
     Ans['expected'][counter] = str(onehot_to_seq(y_, revsere_decoder_index).upper())
 
 #
@@ -82,7 +82,9 @@ test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <
 
 train_input_grams = seq2ngrams(train_input_seqs)
 tokenizer_encoder = Tokenizer()
+
 #auch auf test grams fitten ?
+
 tokenizer_encoder.fit_on_texts(train_input_grams)
 tokenizer_decoder = Tokenizer(char_level = True)
 tokenizer_decoder.fit_on_texts(train_target_seqs)
