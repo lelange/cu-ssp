@@ -78,8 +78,8 @@ Setting up training, validation, test data
 '''
 print (cb513.shape, cb6133filtered.shape) #((514, 39900), (5534, 39900))
 print('first two rows of 513')
-print(cb513[0,:])
-print(cb513[1,:])
+print(np.unique(cb513[0,:]))
+print(np.unique(cb513[1,:]))
 print('first two columns of 513')
 print(cb513[:,0])
 print(cb513[:,1])
