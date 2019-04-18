@@ -67,7 +67,7 @@ profile_df.to_csv('cb6133filtered_profile.csv',index=False)
 
 
 #cb6133_df = pd.read_csv('cb6133.csv', sep=',')
-#cb6133_profile_df = pd.read_csv('cb6133_profile.csv', sep=',')
+cb6133_profile_df = pd.read_csv('cb6133_profile.csv', sep=',')
 cb6133filtered_df = pd.read_csv('cb6133filtered.csv', sep=',')
 cb6133filtered_profile_df = pd.read_csv('cb6133filtered_profile.csv', sep=',')
 cb513_df = pd.read_csv('cb513.csv', sep=',')
