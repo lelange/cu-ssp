@@ -141,11 +141,8 @@ def build_model():
   COMBO_MOVE = concatenate([x1, x2])
   w = Dense(500, activation = "relu")(COMBO_MOVE) # try 500
   w = Dropout(0.4)(w)
-<<<<<<< HEAD
   w = tcn.TCN(return_sequences = True)(w)
-=======
-  w = tcn.TCN()(w)
->>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
+
   y = TimeDistributed(Dense(n_tags, activation = "softmax"))(w)
 
   # Defining the model as a whole and printing the summary
