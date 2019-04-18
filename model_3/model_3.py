@@ -150,11 +150,7 @@ def build_model():
   #model.summary()
 
   # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
-<<<<<<< HEAD
-  adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False) 
-=======
-  adamOptimizer = Adam(lr=0.0025, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False) 
->>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
+  adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
   model.compile(optimizer = adamOptimizer, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
   return model
 
@@ -188,11 +184,8 @@ def save_model(model):
 VERBOSE = 1
 SAVE_MODEL = True
 model = build_model()
-<<<<<<< HEAD
 model.fit([train_input_data, profile_padded_train], train_target_data, batch_size = 16, epochs = 5, verbose = VERBOSE, shuffle=True)
-=======
-model.fit([train_input_data, profile_padded_train], train_target_data, batch_size = 30, epochs = 6, verbose = VERBOSE, shuffle=True)
->>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
+
 
 
 if SAVE_MODEL:
@@ -219,7 +212,5 @@ test_target_data = to_categorical(test_target_data)
 acc = accuracy(test_target_data, y_test_pred)
 print ('accuracy on cb513:', tf.Session().run(acc).mean())
 
-<<<<<<< HEAD
 np.save('cb513_test_prob_3.npy', y_test_pred)
-=======
->>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
+
