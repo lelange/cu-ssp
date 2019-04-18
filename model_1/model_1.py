@@ -166,11 +166,7 @@ for i, profile in enumerate(test_profiles):
             test_profiles_np[i, j, k] = profile[j, k]
 
 def decode_results(y_, reverse_decoder_index):
-<<<<<<< HEAD
     #print("prediction: " + str(onehot_to_seq(y_, reverse_decoder_index).upper()))
-=======
-    print("prediction: " + str(onehot_to_seq(y_, reverse_decoder_index).upper()))
->>>>>>> 46c64f846708333a50666ab9cd6f9a6eac09fa00
     return str(onehot_to_seq(y_, reverse_decoder_index).upper())
 
 def run_test(_model, data1, data2, data3, csv_name, npy_name):
