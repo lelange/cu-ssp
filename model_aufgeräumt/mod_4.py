@@ -56,10 +56,12 @@ def onehot_to_seq(oh_seq, index):
 
 counter = 0
 # prints the results
-def print_results(x, y_, revsere_decoder_index, counter,test_df):
-    Ans['id'][counter] = test_df['id'][counter]
-    # print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
-    Ans['expected'][counter] = str(onehot_to_seq(y_, revsere_decoder_index).upper())
+def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False, print_pred=False):
+    if write_df:
+        Ans['id'][counter] = test_df['id'][counter]
+        Ans['expected'][counter] = str(onehot_to_seq(y_, revsere_decoder_index).upper())
+    if print_pred:
+        print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
 
 #
 def seq2ngrams(seqs, n = 1):
@@ -275,9 +277,12 @@ Fitting and Predicting
 model.compile(optimizer = "nadam", loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
 model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 12, verbose = 1)
 
-y_pre = model.predict(X_test[:])
-seq_pre = to_seq(y_pre)
+y_pre = model.predict([X_test,X_aug_test])
+np.save('cb513_test_prob_4.npy', y_pre)
+counter = 0
 
-path = 'cb513_test_5.csv'
-file_output = pd.DataFrame({'id' : test_index+1, 'prediction' : seq_pre}, columns=['id', 'prediction'])
-file_output.to_csv(path, index=False)
+Ans = pd.DataFrame(0,index = np.arange(len(X_test)), columns = ['id','expected'])
+for i in range(len(X_test)):
+    print_results(X_test[i], y_test_pred[i], revsere_decoder_index,counter,test_df, write_df=False, print_pred=True)
+    counter+=1
+#Ans.to_csv('cb513_test_4.csv',index = False)
