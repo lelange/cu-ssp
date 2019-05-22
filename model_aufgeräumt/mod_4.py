@@ -141,8 +141,7 @@ y_test = to_categorical(test_target_data)
 # Computing the number of words and number of tags
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
-print(n_words,n_tags)
-print(train_target_data.shape, train_input_data.shape, test_input_data.shape)
+
 
 '''
 Model
