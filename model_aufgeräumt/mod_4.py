@@ -308,16 +308,15 @@ def get_acc(gt,pred):
     return (1.0*correct)/len(gt)
 
 def evaluate_acc(y_predicted):
-
     counter = 0
     print('Analyse accuracy of: cb513_test_prob_4.npy')
-
+    
     order_list = [8,5,2,0,7,6,3,1,4]
     labels = ['L', 'B', 'E', 'G','I', 'H', 'S', 'T', 'NoSeq']
-
+    
     m1p = np.zeros_like(y_predicted)
     for count, i in enumerate(order_list):
-    m1p[:,:,i] = y_predicted[:,:y_predicted.shape[1],count]
+        m1p[:,:,i] = y_predicted[:,:y_predicted.shape[1],count]
 
     summed_probs = m1p
 
