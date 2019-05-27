@@ -293,7 +293,7 @@ tensorboard = TensorBoard(log_dir=log_dir)
 #save_best_only=True,
 #mode='max')
 
-model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 6, verbose = 1, callbacks=[tensorboard])
+model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 12, verbose = 1, callbacks=[tensorboard])
 
 y_pre = model.predict([X_test,X_aug_test])
 
