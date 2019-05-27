@@ -102,6 +102,8 @@ def load_augmented_data(npy_path, max_len):
 '''
 Getting Data
 '''
+#cb513filename= '../../../../py_charm_code/data/cb513.npy'
+#cb6133filteredfilename = '../../../../py_charm_code/data/cb6133filtered.npy'
 cb513filename = '../data/cb513.npy'
 cb6133filteredfilename = '../data/cb6133filtered.npy'
 
