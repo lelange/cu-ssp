@@ -291,7 +291,7 @@ tensorboard = TensorBoard(log_dir=log_dir)
 #save_best_only=True,
 #mode='max')
 
-model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 6, verbose = 1)
+model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 6, verbose = 1, callbacks=[tensorboard])
 
 y_pre = model.predict([X_test,X_aug_test])
 
@@ -344,7 +344,7 @@ def evaluate_acc(y_predicted):
         else :
             acc = get_acc(gt,pred)
             acc_list.append(acc)
-            total += 1
+        total += 1
     print ('the accuracy is', np.mean(acc_list))
     print (str(equal_counter)+' from '+str(total)+' proteins are of equal length')
     return acc_list
