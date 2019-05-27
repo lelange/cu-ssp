@@ -144,6 +144,11 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
+#### tensorboard
+script_name = "mod_4"
+model_name = datetime.now().strftime("%Y%m%d-%H%M%S") + "_" + script_name
+log_dir = '../logs/{}'.format(model_name)
+os.mkdir(log_dir)
 
 '''
 Model
@@ -275,6 +280,14 @@ Fitting and Predicting
 
 '''
 model.compile(optimizer = "nadam", loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
+tensorboard = TensorBoard(log_dir=log_dir)
+
+#checkpoint = ModelCheckpoint(os.path.join(log_dir, "best_val_acc.h5"),
+#monitor='val_accuracy',
+#verbose=1,
+#save_best_only=True,
+#mode='max')
+
 model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 1, verbose = 1)
 
 y_pre = model.predict([X_test,X_aug_test])
