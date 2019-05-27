@@ -31,9 +31,9 @@ def encode_FOFE(onehot, alpha, maxlen):
     return enc
 
 # The custom accuracy metric used for this task
-def accuracy(y_true, y_pred):
+def accuracy(y_true, y_predicted):
     y = tf.argmax(y_true, axis =- 1)
-    y_ = tf.argmax(y_pred, axis =- 1)
+    y_ = tf.argmax(y_predicted, axis =- 1)
     mask = tf.greater(y, 0)
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
@@ -291,35 +291,15 @@ tensorboard = TensorBoard(log_dir=log_dir)
 #save_best_only=True,
 #mode='max')
 
-model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 1, verbose = 1)
+model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 6, verbose = 1)
 
 y_pre = model.predict([X_test,X_aug_test])
-np.save('cb513_test_prob_4.npy', y_pre)
 
-#evaluate accuracy
-counter = 0
-print('Analyse accuracy of: cb513_test_prob_4.npy')
+##uncomment later!!!!
 
-order_list = [8,5,2,0,7,6,3,1,4]
-labels = ['L', 'B', 'E', 'G','I', 'H', 'S', 'T', 'NoSeq']
+#np.save('cb513_test_prob_4.npy', y_pre)
 
-m1p = np.zeros_like(y_pre)
-for count, i in enumerate(order_list):
-    m1p[:,:,i] = y_pre[:,:y_pre.shape[1],count]
-
-summed_probs = m1p
-
-length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
-print ('max protein seq length is', np.max(length_list))
-
-ensemble_predictions = []
-for protein_idx, i in enumerate(length_list):
-    new_pred = ''
-    for j in range(i):
-        new_pred += labels[np.argmax(summed_probs[protein_idx, j ,:])]
-    ensemble_predictions.append(new_pred)
-
-# calculating accuracy
+########evaluate accuracy#######
 def get_acc(gt,pred):
     correct = 0
     for i in range(len(gt)):
@@ -327,21 +307,47 @@ def get_acc(gt,pred):
             correct+=1
     return (1.0*correct)/len(gt)
 
+def evaluate_acc(y_predicted):
 
-gt_all = [line.strip().split(',')[3] for line in open('cb513test_solution.csv').readlines()]
-acc_list = []
-equal_counter = 0
-total = 0
+    counter = 0
+    print('Analyse accuracy of: cb513_test_prob_4.npy')
 
-for gt,pred in zip(gt_all,ensemble_predictions):
-    if len(gt) == len(pred):
-        acc = get_acc(gt,pred)
-        acc_list.append(acc)
-        equal_counter +=1
-    else :
-        acc = get_acc(gt,pred)
-        acc_list.append(acc)
-    total += 1
+    order_list = [8,5,2,0,7,6,3,1,4]
+    labels = ['L', 'B', 'E', 'G','I', 'H', 'S', 'T', 'NoSeq']
 
-print ('mean accuracy is', np.mean(acc_list))
-print (str(equal_counter)+' from '+str(total)+' proteins are of equal length')
+    m1p = np.zeros_like(y_predicted)
+    for count, i in enumerate(order_list):
+    m1p[:,:,i] = y_predicted[:,:y_predicted.shape[1],count]
+
+    summed_probs = m1p
+
+    length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
+    print ('max protein seq length is', np.max(length_list))
+
+    ensemble_predictions = []
+    for protein_idx, i in enumerate(length_list):
+        new_pred = ''
+        for j in range(i):
+            new_pred += labels[np.argmax(summed_probs[protein_idx, j ,:])]
+        ensemble_predictions.append(new_pred)
+
+    # calculating accuracy: compare to cb513test_solution
+    gt_all = [line.strip().split(',')[3] for line in open('cb513test_solution.csv').readlines()]
+    acc_list = []
+    equal_counter = 0
+    total = 0
+
+    for gt,pred in zip(gt_all,ensemble_predictions):
+        if len(gt) == len(pred):
+            acc = get_acc(gt,pred)
+            acc_list.append(acc)
+            equal_counter +=1
+        else :
+            acc = get_acc(gt,pred)
+            acc_list.append(acc)
+            total += 1
+    print ('the accuracy is', np.mean(acc_list))
+    print (str(equal_counter)+' from '+str(total)+' proteins are of equal length')
+    return acc_list
+
+evaluate_acc(y_pre)
