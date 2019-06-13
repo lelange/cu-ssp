@@ -174,8 +174,8 @@ def CNN_BIGRU():
     input = Input(shape=(maxlen_seq,))
     embed_out = Embedding(input_dim=n_words, output_dim=128, input_length=maxlen_seq)(input)
     profile_input = Input(shape=(maxlen_seq, 22))
-    x = Concatenate([embed_out, profile_input])  # 5600, 700, 150
-    
+    x = concatenate([embed_out, profile_input])  # 5600, 700, 150
+
     x = super_conv_block(x)
     x = conv_block(x)
     x = super_conv_block(x)
