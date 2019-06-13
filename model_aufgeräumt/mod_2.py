@@ -17,7 +17,7 @@ import os, pickle
 
 from utils import *
 
-maxlen_seq = 700
+maxlen_seq = 768
 
 cb513filename = '../data/cb513.npy'
 cb6133filteredfilename = '../data/cb6133filtered.npy'
