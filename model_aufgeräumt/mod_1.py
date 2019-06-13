@@ -71,46 +71,6 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
-
-#used name for profiles
-train_profiles_np = X_aug_train
-test_profiles_np = X_aug_test
-"""
-def decode_results(y_, reverse_decoder_index):
-    # print("prediction: " + str(onehot_to_seq(y_, reverse_decoder_index).upper()))
-    return str(onehot_to_seq(y_, reverse_decoder_index).upper())
-"""
-
-def run_test(_model, data1, data2, npy_name, csv_name = None):
-    # Get predictions using our model
-    y_test_pred = _model.predict([data1, data2])
-
-    if csv_name is not None:
-        """
-        reverse_decoder_index = {value: key for key, value in tokenizer_decoder.word_index.items()}
-        reverse_encoder_index = {value: key for key, value in tokenizer_encoder.word_index.items()}
-
-        decoded_y_pred = []
-        for i in range(len(test_input_data)):
-            res = decode_results(y_test_pred[i], reverse_decoder_index)
-            decoded_y_pred.append(res)
-
-        # Set Columns
-        out_df = pd.DataFrame()
-        out_df["id"] = test_df.id.values
-        out_df["expected"] = decoded_y_pred
-
-        # Save results
-        with open(csv_name, "w") as f:
-            out_df.to_csv(f, index=False)
-        """
-    #save prediction
-    np.save(npy_name, y_test_pred)
-
-
-""" Run below for a single run """
-
-
 def train(X_train, y_train, X_val=None, y_val=None):
     """
     Main Training function with the following properties:
@@ -189,14 +149,11 @@ def CNN_BIGRU():
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(x)
 
     model = Model([input, profile_input], y)
+    model.summary()
 
     return model
 
-
-X_train = [train_input_data, train_profiles_np]
-y_train = train_target_data
-
-history, model = train(X_train, y_train)
+history, model = train([X_train, X_aug_train], y_train)
 
 # Save the model as a JSON format
 """
@@ -210,9 +167,5 @@ with open("history_1.pkl", "wb") as hist_file:
     
 """
 
-# Predict on test dataset and save the output
-run_test(model,
-         test_input_data[:],
-         test_profiles_np[:],
-         "cb513_test_prob_1.npy")
-""" End single run """
+y_pre = model.predict([X_test,X_aug_test])
+#np.save("cb513_test_prob_1.npy", y_pre)
