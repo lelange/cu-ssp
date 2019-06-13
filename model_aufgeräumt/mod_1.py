@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-from keras.models import Model, Input
+from keras.models import *
 from keras.layers import Embedding, Dense, TimeDistributed, Concatenate, BatchNormalization
 from keras.layers import Bidirectional, Activation, Dropout, CuDNNGRU, Conv1D, GRU
 
