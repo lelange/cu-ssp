@@ -90,11 +90,13 @@ n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
 train_input_data_alt = train_input_data
-train_input_data = seq2onehot(train_input_data, n_words)
+#train_input_data = seq2onehot(train_input_data, n_words)
+train_input_data = train_df['input_onehot'][(train_df.len <= maxlen_seq)].values.T
 train_profiles = train_df.profiles.values
 
 test_input_data_alt = test_input_data
-test_input_data = seq2onehot(test_input_data, n_words)
+#test_input_data = seq2onehot(test_input_data, n_words)
+test_input_data = train_df['expected_onehot'][(train_df.len <= maxlen_seq)].values.T
 test_profiles = test_df.profiles.values
 #used name for profiles
 train_profiles_np = X_aug_train

@@ -58,7 +58,6 @@ def load_augmented_data(npy_path, max_len):
 
     data_reshape = data.reshape(data.shape[0], 700, -1)
     residue_onehot = data_reshape[:,:,0:22]
-    print(residue_onehot)
     residue_q8_onehot = data_reshape[:,:,22:31]
     profile = data_reshape[:,:,35:57]
     zero_arr = np.zeros((profile.shape[0], max_len - profile.shape[1], profile.shape[2]))
@@ -77,5 +76,5 @@ def load_augmented_data(npy_path, max_len):
 
     id_list = np.arange(1, len(residue_array) + 1)
     len_list = np.array([len(x) for x in residue_str_list])
-    train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'expected': q8_str_list})
+    train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'input_onehot': residue_onehot, 'expected': q8_str_list, 'expected_onehot': residue_q8_onehot})
     return train_df, profile_padded
