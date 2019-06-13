@@ -83,9 +83,6 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
-
-#extrawurst für model 1
-
 train_input_data_alt = train_input_data
 train_input_data = seq2onehot(train_input_data, n_words)
 train_profiles = train_df.profiles.values
