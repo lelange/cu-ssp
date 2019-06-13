@@ -32,6 +32,8 @@ from keras.engine import InputSpec
 from keras.engine.topology import Layer
 import os
 
+from utils import *
+
 print("##device name:")
 print(tf.test.gpu_device_name())
 print("##gpu available:")
