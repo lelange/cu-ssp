@@ -170,12 +170,12 @@ def super_conv_block(x):
 
 
 def CNN_BIGRU():
-    # Inp is one-hot encoded version of inp_alt
-    inp = Input(shape=(maxlen_seq,))
-    inp_profiles = Input(shape=(maxlen_seq, 22))
 
-    x = Concatenate(axis=-1)([inp, inp_profiles])
-
+    input = Input(shape=(maxlen_seq,))
+    embed_out = Embedding(input_dim=n_words, output_dim=128, input_length=maxlen_seq)(input)
+    profile_input = Input(shape=(maxlen_seq, 22))
+    x = Concatenate([embed_out, profile_input])  # 5600, 700, 150
+    
     x = super_conv_block(x)
     x = conv_block(x)
     x = super_conv_block(x)
