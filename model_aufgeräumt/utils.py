@@ -32,6 +32,7 @@ def to_seq(y):
 # Decode: map to a sequence from a one-hot
 # encoding, takes a one-hot encoded y matrix
 # with an lookup table "index"
+# Maps the sequence to a one-hot encoding
 def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
