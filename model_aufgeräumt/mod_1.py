@@ -34,12 +34,14 @@ cb6133filteredfilename = '../data/cb6133filtered.npy'
 maxlen_seq = r = 700  # protein residues padded to 700
 f = 57  # number of features for each residue
 
+"""
 def seq2onehot(seq, n):
     out = np.zeros((len(seq), maxlen_seq, n))
     for i in range(len(seq)):
         for j in range(maxlen_seq):
             out[i, j, seq[i, j]] = 1
     return out
+"""
 
 #load train
 train_df, X_aug_train = load_augmented_data(cb6133filteredfilename  ,maxlen_seq)
