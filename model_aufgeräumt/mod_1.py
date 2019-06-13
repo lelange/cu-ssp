@@ -188,7 +188,7 @@ def CNN_BIGRU():
 
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(x)
 
-    model = Model([inp, inp_profiles], y)
+    model = Model([input, profile_input], y)
 
     return model
 
