@@ -58,6 +58,7 @@ def load_augmented_data(npy_path, max_len):
 
     data_reshape = data.reshape(data.shape[0], 700, -1)
     residue_onehot = data_reshape[:,:,0:22]
+    print(residue_onehot)
     residue_q8_onehot = data_reshape[:,:,22:31]
     profile = data_reshape[:,:,35:57]
     zero_arr = np.zeros((profile.shape[0], max_len - profile.shape[1], profile.shape[2]))
