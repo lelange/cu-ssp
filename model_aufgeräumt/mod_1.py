@@ -28,11 +28,8 @@ import keras
 from utils import *
 
 ### Data Retrieval
-cb6133filtered = np.load("../data/cb6133filtered.npy")
-cb513 = np.load("../data/cb513.npy")
-
-print(cb6133filtered.shape)
-print(cb513.shape)
+cb513filename = '../data/cb513.npy'
+cb6133filteredfilename = '../data/cb6133filtered.npy'
 
 maxlen_seq = r = 700  # protein residues padded to 700
 f = 57  # number of features for each residue
