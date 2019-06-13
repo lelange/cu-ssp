@@ -12,11 +12,6 @@ import os, pickle
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
 
-#braucht man das?
-r = 700 # protein residues padded to 700
-maxlen_seq = 700 # maximum sequence length
-f = 57 # number of features for each residue
-
 # The custom accuracy metric used for this task
 def accuracy(y_true, y_predicted):
     y = tf.argmax(y_true, axis =- 1)
