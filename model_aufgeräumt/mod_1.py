@@ -15,9 +15,7 @@ from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
 from keras.models import *
-from keras.layers import Embedding, Dense, TimeDistributed, Concatenate, BatchNormalization
-from keras.layers import Bidirectional, Activation, Dropout, CuDNNGRU, Conv1D, GRU
-
+from keras.layers import *
 from sklearn.model_selection import train_test_split, KFold
 from keras.metrics import categorical_accuracy
 from keras import backend as K
