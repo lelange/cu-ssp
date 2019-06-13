@@ -127,6 +127,7 @@ model.fit([X_train, X_aug_train], y_train, batch_size=16, epochs=5, verbose=VERB
           shuffle=True)
 
 ########evaluate accuracy#######
+print(model.metrics_names)
 acc = model.evaluate([X_test, X_aug_test], y_test)
 print("evaluate via model.evaluate:")
 print (acc)

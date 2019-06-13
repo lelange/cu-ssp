@@ -226,15 +226,16 @@ tensorboard = TensorBoard(log_dir=log_dir)
 
 model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 12, verbose = 1, callbacks=[tensorboard])
 
-y_pre = model.predict([X_test,X_aug_test])
-
 ##uncomment later!!!!
 
 #np.save('cb513_test_prob_4.npy', y_pre)
 
 ########evaluate accuracy#######
+print(model.metrics_names)
 acc = model.evaluate([X_test,X_aug_test], y_test)
 print("evaluate via model.evaluate:")
 print (acc)
 
+y_pre = model.predict([X_test,X_aug_test])
 evaluate_acc(y_pre)
+
