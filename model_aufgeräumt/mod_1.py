@@ -39,6 +39,11 @@ def seq2onehot(seq, n):
     out = np.zeros((len(seq), maxlen_seq, n))
     for i in range(len(seq)):
         for j in range(maxlen_seq):
+            print(type(i))
+            i = int(i)
+            print(type(i))
+            print(type(j))
+            j = int(j)
             print(seq[i, j])
             out[i, j, seq[i, j]] = 1
     return out
