@@ -29,6 +29,9 @@ def to_seq(y):
         seqs.append(seq_i)
     return seqs
 
+# Decode: map to a sequence from a one-hot
+# encoding, takes a one-hot encoded y matrix
+# with an lookup table "index"
 def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
@@ -48,7 +51,7 @@ def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False,
     if print_pred:
         print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
 
-# Computes and returns the n-grams of a particualr sequence, defaults to trigrams
+# Computes and returns the n-grams of a particular sequence, defaults to trigrams
 def seq2ngrams(seqs, n = 1):
     return np.array([[seq[i : i + n] for i in range(len(seq))] for seq in seqs])
 

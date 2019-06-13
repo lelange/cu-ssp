@@ -152,7 +152,7 @@ acc = model.evaluate([X_test,X_aug_test], y_test)
 print("evaluate via model.evaluate:")
 print (acc)
 
-y_pred = model.predict([X_test, X_aug_test])
+y_pre = model.predict([X_test, X_aug_test])
 evaluate_acc(y_pre)
 
 print(model.metrics_names)
