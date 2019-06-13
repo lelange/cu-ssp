@@ -34,25 +34,9 @@ cb6133filteredfilename = '../data/cb6133filtered.npy'
 maxlen_seq = r = 700  # protein residues padded to 700
 f = 57  # number of features for each residue
 
-
-def seq2onehot(seq, n):
-    out = np.zeros((len(seq), maxlen_seq, n))
-    for i in range(len(seq)):
-        for j in range(maxlen_seq):
-            print(type(i))
-            i = int(i)
-            print(type(i))
-            print(type(j))
-            j = int(j)
-            print(seq[i, j])
-            out[i, j, seq[i, j]] = 1
-    return out
-
-
 #load train
 train_df, X_aug_train = load_augmented_data(cb6133filteredfilename  ,maxlen_seq)
 train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.len <= maxlen_seq)].values.T
-
 #load test
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
@@ -89,29 +73,22 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
-train_input_data_alt = train_input_data
-#train_input_data = seq2onehot(train_input_data, n_words)
-train_input_data = train_df['input_onehot'][(train_df.len <= maxlen_seq)].values.T
-train_profiles = train_df.profiles.values
 
-test_input_data_alt = test_input_data
-#test_input_data = seq2onehot(test_input_data, n_words)
-test_input_data = train_df['expected_onehot'][(train_df.len <= maxlen_seq)].values.T
-test_profiles = test_df.profiles.values
 #used name for profiles
 train_profiles_np = X_aug_train
 test_profiles_np = X_aug_test
-
+"""
 def decode_results(y_, reverse_decoder_index):
     # print("prediction: " + str(onehot_to_seq(y_, reverse_decoder_index).upper()))
     return str(onehot_to_seq(y_, reverse_decoder_index).upper())
-
+"""
 
 def run_test(_model, data1, data2, data3, npy_name, csv_name = None):
     # Get predictions using our model
     y_test_pred = _model.predict([data1, data2, data3])
 
     if csv_name is not None:
+        """
         reverse_decoder_index = {value: key for key, value in tokenizer_decoder.word_index.items()}
         reverse_encoder_index = {value: key for key, value in tokenizer_encoder.word_index.items()}
 
@@ -128,7 +105,7 @@ def run_test(_model, data1, data2, data3, npy_name, csv_name = None):
         # Save results
         with open(csv_name, "w") as f:
             out_df.to_csv(f, index=False)
-
+        """
     #save prediction
     np.save(npy_name, y_test_pred)
 
@@ -195,13 +172,9 @@ def super_conv_block(x):
 def CNN_BIGRU():
     # Inp is one-hot encoded version of inp_alt
     inp = Input(shape=(maxlen_seq, n_words))
-    inp_alt = Input(shape=(maxlen_seq,))
     inp_profiles = Input(shape=(maxlen_seq, 22))
 
-    # Concatenate embedded and unembedded input
-    x_emb = Embedding(input_dim=n_words, output_dim=64,
-                      input_length=maxlen_seq)(inp_alt)
-    x = Concatenate(axis=-1)([inp, x_emb, inp_profiles])
+    x = Concatenate(axis=-1)([inp, inp_profiles])
 
     x = super_conv_block(x)
     x = conv_block(x)
@@ -217,12 +190,12 @@ def CNN_BIGRU():
 
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(x)
 
-    model = Model([inp, inp_alt, inp_profiles], y)
+    model = Model([inp, inp_profiles], y)
 
     return model
 
 
-X_train = [train_input_data, train_input_data_alt, train_profiles_np]
+X_train = [train_input_data, train_profiles_np]
 y_train = train_target_data
 
 history, model = train(X_train, y_train)
@@ -242,7 +215,6 @@ with open("history_1.pkl", "wb") as hist_file:
 # Predict on test dataset and save the output
 run_test(model,
          test_input_data[:],
-         test_input_data_alt[:],
          test_profiles_np[:],
          "cb513_test_prob_1.npy")
 """ End single run """
