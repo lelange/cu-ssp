@@ -83,8 +83,6 @@ test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <
 train_input_grams = seq2ngrams(train_input_seqs)
 tokenizer_encoder = Tokenizer()
 
-#auch auf test grams fitten ?
-
 tokenizer_encoder.fit_on_texts(train_input_grams)
 tokenizer_decoder = Tokenizer(char_level = True)
 tokenizer_decoder.fit_on_texts(train_target_seqs)
