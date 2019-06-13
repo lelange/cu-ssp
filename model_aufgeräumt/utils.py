@@ -9,8 +9,8 @@ import tensorflow as tf
 from datetime import datetime
 import os, pickle
 
-residue_list = ['A', 'C', 'E', 'D', 'G', 'F', 'I', 'H', 'K', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y', 'X','NoSeq']
-q8_list = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T','NoSeq']
+residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
+q8_list      = list('LBEGIHST') + ['NoSeq']
 
 # The custom accuracy metric used for this task
 def accuracy(y_true, y_predicted):
