@@ -9,6 +9,9 @@ import tensorflow as tf
 from datetime import datetime
 import os, pickle
 
+residue_list = ['A', 'C', 'E', 'D', 'G', 'F', 'I', 'H', 'K', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y', 'X','NoSeq']
+q8_list = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T','NoSeq']
+
 # The custom accuracy metric used for this task
 def accuracy(y_true, y_predicted):
     y = tf.argmax(y_true, axis =- 1)
@@ -45,15 +48,13 @@ def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False,
     if print_pred:
         print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
 
-#
+# Computes and returns the n-grams of a particualr sequence, defaults to trigrams
 def seq2ngrams(seqs, n = 1):
     return np.array([[seq[i : i + n] for i in range(len(seq))] for seq in seqs])
 
 
 def load_augmented_data(npy_path, max_len):
     data = np.load(npy_path)
-    residue_list = ['A', 'C', 'E', 'D', 'G', 'F', 'I', 'H', 'K', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y', 'X','NoSeq']
-    q8_list = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T','NoSeq']
 
     data_reshape = data.reshape(data.shape[0], 700, -1)
     residue_onehot = data_reshape[:,:,0:22]
