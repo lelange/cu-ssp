@@ -83,9 +83,9 @@ def decode_results(y_, reverse_decoder_index):
     return str(onehot_to_seq(y_, reverse_decoder_index).upper())
 """
 
-def run_test(_model, data1, data2, data3, npy_name, csv_name = None):
+def run_test(_model, data1, data2, npy_name, csv_name = None):
     # Get predictions using our model
-    y_test_pred = _model.predict([data1, data2, data3])
+    y_test_pred = _model.predict([data1, data2])
 
     if csv_name is not None:
         """
@@ -171,7 +171,7 @@ def super_conv_block(x):
 
 def CNN_BIGRU():
     # Inp is one-hot encoded version of inp_alt
-    inp = Input(shape=(maxlen_seq, n_words))
+    inp = Input(shape=(maxlen_seq,))
     inp_profiles = Input(shape=(maxlen_seq, 22))
 
     x = Concatenate(axis=-1)([inp, inp_profiles])
