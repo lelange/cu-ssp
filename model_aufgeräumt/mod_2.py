@@ -143,7 +143,7 @@ model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["
 
 
 # Training the model on the training data and validating using the validation set
-model.fit([X_train, X_train_augment], y_train, batch_size = 128, verbose = 1,
+model.fit([X_train, X_aug_train], y_train, batch_size = 128, verbose = 1,
             epochs = 80)
 
 #prediction for cb513
@@ -152,7 +152,7 @@ acc = model.evaluate([X_test,X_aug_test], y_test)
 print("evaluate via model.evaluate:")
 print (acc)
 
-y_pred = model.predict([X_test, test_augment_data])
+y_pred = model.predict([X_test, X_aug_test])
 evaluate_acc(y_pre)
 
 print(model.metrics_names)
