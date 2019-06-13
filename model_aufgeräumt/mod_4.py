@@ -41,15 +41,11 @@ Getting Data
 cb513filename = '../data/cb513.npy'
 cb6133filteredfilename = '../data/cb6133filtered.npy'
 
-r = 700 # protein residues padded to 700
-f = 57 # number of features for each residue
-
 '''
 Setting up training, validation, test data
 '''
 
 maxlen_seq = 700 # maximum sequence length
-alpha = 0.5 # parameter for long range encoding
 
 #load train and test
 train_df, X_aug_train = load_augmented_data(cb6133filteredfilename  ,maxlen_seq)
@@ -57,6 +53,7 @@ train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
 
+# Using the tokenizer to encode and decode the sequences for use in training
 #tokenizer
 train_input_grams = seq2ngrams(train_input_seqs)
 tokenizer_encoder = Tokenizer()
@@ -79,7 +76,7 @@ test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
 test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq, padding = 'post')
 y_test = to_categorical(test_target_data)
 
-# Computing the number of words and number of tags
+# Computing the number of words and number of tags to be passed as parameters to the keras model
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
@@ -236,52 +233,8 @@ y_pre = model.predict([X_test,X_aug_test])
 #np.save('cb513_test_prob_4.npy', y_pre)
 
 ########evaluate accuracy#######
-def get_acc(gt,pred):
-    correct = 0
-    for i in range(len(gt)):
-        if gt[i]==pred[i]:
-            correct+=1
-    return (1.0*correct)/len(gt)
-
-def evaluate_acc(y_predicted):
-    print('Analyse accuracy of: cb513_test_prob_4.npy')
-    
-    order_list = [8,5,2,0,7,6,3,1,4]
-    labels = ['L', 'B', 'E', 'G','I', 'H', 'S', 'T', 'NoSeq']
-    
-    m1p = np.zeros_like(y_predicted)
-    for count, i in enumerate(order_list):
-        m1p[:,:,i] = y_predicted[:,:y_predicted.shape[1],count]
-
-    summed_probs = m1p
-
-    length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
-    print ('max protein seq length is', np.max(length_list))
-
-    ensemble_predictions = []
-    for protein_idx, i in enumerate(length_list):
-        new_pred = ''
-        for j in range(i):
-            new_pred += labels[np.argmax(summed_probs[protein_idx, j ,:])]
-        ensemble_predictions.append(new_pred)
-
-    # calculating accuracy: compare to cb513test_solution
-    gt_all = [line.strip().split(',')[3] for line in open('cb513test_solution.csv').readlines()]
-    acc_list = []
-    equal_counter = 0
-    total = 0
-
-    for gt,pred in zip(gt_all,ensemble_predictions):
-        if len(gt) == len(pred):
-            acc = get_acc(gt,pred)
-            acc_list.append(acc)
-            equal_counter +=1
-        else :
-            acc = get_acc(gt,pred)
-            acc_list.append(acc)
-        total += 1
-    print ('the accuracy is', np.mean(acc_list))
-    print (str(equal_counter)+' from '+str(total)+' proteins are of equal length')
-    return acc_list
+acc = model.evaluate([X_test,X_aug_test], y_test)
+print("evaluate via model.evaluate:")
+print (acc)
 
 evaluate_acc(y_pre)

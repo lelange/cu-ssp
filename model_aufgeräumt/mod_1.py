@@ -167,58 +167,11 @@ with open("history_1.pkl", "wb") as hist_file:
     
 """
 
-y_pre = model.predict([X_test,X_aug_test])
-
-
 ########evaluate accuracy#######
-def get_acc(gt, pred):
-    correct = 0
-    for i in range(len(gt)):
-        if gt[i] == pred[i]:
-            correct += 1
-    return (1.0 * correct) / len(gt)
 
+acc = model.evaluate([X_test,X_aug_test], y_test)
+print("evaluate via model.evaluate:")
+print (acc)
 
-def evaluate_acc(y_predicted):
-    print('Analyse accuracy of: cb513_test_prob_1.npy')
-
-    order_list = [8, 5, 2, 0, 7, 6, 3, 1, 4]
-    labels = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T', 'NoSeq']
-
-    m1p = np.zeros_like(y_predicted)
-    for count, i in enumerate(order_list):
-        m1p[:, :, i] = y_predicted[:, :y_predicted.shape[1], count]
-
-    summed_probs = m1p
-
-    length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
-    print('max protein seq length is', np.max(length_list))
-
-    ensemble_predictions = []
-    for protein_idx, i in enumerate(length_list):
-        new_pred = ''
-        for j in range(i):
-            new_pred += labels[np.argmax(summed_probs[protein_idx, j, :])]
-        ensemble_predictions.append(new_pred)
-
-    # calculating accuracy: compare to cb513test_solution
-    gt_all = [line.strip().split(',')[3] for line in open('cb513test_solution.csv').readlines()]
-    acc_list = []
-    equal_counter = 0
-    total = 0
-
-    for gt, pred in zip(gt_all, ensemble_predictions):
-        if len(gt) == len(pred):
-            acc = get_acc(gt, pred)
-            acc_list.append(acc)
-            equal_counter += 1
-        else:
-            acc = get_acc(gt, pred)
-            acc_list.append(acc)
-        total += 1
-    print('the accuracy is', np.mean(acc_list))
-    print(str(equal_counter) + ' from ' + str(total) + ' proteins are of equal length')
-    return acc_list
-
-
+y_pre = model.predict([X_test,X_aug_test])
 evaluate_acc(y_pre)

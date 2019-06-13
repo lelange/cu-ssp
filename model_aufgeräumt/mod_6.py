@@ -22,7 +22,6 @@ cb6133filteredfilename = '../data/cb6133filtered.npy'
 
 maxlen_seq = 700 # protein residues padded to 700
 
-
 #load train and test
 train_df, X_aug_train = load_augmented_data(cb6133filteredfilename  ,maxlen_seq)
 train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.len <= maxlen_seq)].values.T

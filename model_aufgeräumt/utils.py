@@ -89,7 +89,7 @@ def get_acc(gt, pred):
 
 
 def evaluate_acc(y_predicted):
-    print('Analyse accuracy of: cb513_test_prob_4.npy')
+    print('Analyse accuracy')
 
     order_list = [8, 5, 2, 0, 7, 6, 3, 1, 4]
     labels = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T', 'NoSeq']
