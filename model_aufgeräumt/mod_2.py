@@ -159,7 +159,7 @@ reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
 model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
 
 ### monitor = 'val_weighted_accuracy'
-earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='auto')
+earlyStopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
 
 load_file = "./model/mod_2-CB513.h5"
 
