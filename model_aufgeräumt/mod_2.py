@@ -56,7 +56,7 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
-###validation data##
+#### validation data
 
 n_samples = len(train_df)
 np.random.seed(0)
@@ -69,10 +69,12 @@ y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
 X_aug_val = X_aug_train[validation_idx]
 X_aug_train = X_aug_train[training_idx]
-###end validation###
+#### end validation
 
 # Dropout to prevent overfitting.
 droprate = 0.3
+
+#### model
 
 def conv_block(x, n_channels, droprate):
     x = BatchNormalization()(x)
@@ -141,10 +143,12 @@ y = TimeDistributed(Dense(n_tags, activation = "softmax"))(up1)
 
 # Defining the model as a whole and printing the summary
 model = Model([input, augment_input], y)
+# Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
+model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
 model.summary()
 
+####callbacks for fitting
 optim = RMSprop(lr=0.002)
-
 def scheduler(i, lr):
     if i in [60]:
         return lr * 0.5
@@ -154,33 +158,24 @@ reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
 # reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
 #                             patience=8, min_lr=0.0005, verbose=1)
 
-#######
-# Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
-model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
-
-### monitor = 'val_weighted_accuracy'
-#earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='auto')
-
 load_file = "./model/mod_2-CB513.h5"
 
-checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode=max)
+#earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='auto')
+checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
 # Training the model on the training data and validating using the validation set
 history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
         epochs=80, batch_size=128, callbacks=[reduce_lr, checkpointer], verbose=2, shuffle=True)
-
-
 model.load_weights(load_file)
 
-print("#########evaluate:##############")
+print("####evaluate:")
 score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
 print(score)
 print ('test loss:', score[0])
 print ('test accuracy:', score[2])
 
-######
+####save predictions
+#y_pre = model.predict([X_test, X_aug_test])
 
-y_pre = model.predict([X_test, X_aug_test])
-evaluate_acc(y_pre)
 
 
 

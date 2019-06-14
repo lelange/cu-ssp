@@ -81,13 +81,29 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
+#### validation data
+
+n_samples = len(train_df)
+np.random.seed(0)
+validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
+
+X_val = X_train[validation_idx]
+X_train = X_train[training_idx]
+y_val = y_train[validation_idx]
+y_train = y_train[training_idx]
+X_aug_val = X_aug_train[validation_idx]
+X_aug_train = X_aug_train[training_idx]
+#### end validation
+
+'''
 #### tensorboard
 script_name = "mod_4"
 model_name = datetime.now().strftime("%Y%m%d-%H%M%S") + "_" + script_name
 log_dir = '../logs/{}'.format(model_name)
 os.mkdir(log_dir)
 
-'''
+
 Model
 
 '''
@@ -217,26 +233,37 @@ Fitting and Predicting
 
 '''
 model.compile(optimizer = "nadam", loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
-tensorboard = TensorBoard(log_dir=log_dir)
+#tensorboard = TensorBoard(log_dir=log_dir)
+# dann auch in callbacks
 
-#checkpoint = ModelCheckpoint(os.path.join(log_dir, "best_val_acc.h5"),
-#monitor='val_accuracy',
-#verbose=1,
-#save_best_only=True,
-#mode='max')
+#### callbacks
+optim = RMSprop(lr=0.002)
+def scheduler(i, lr):
+    if i in [60]:
+        return lr * 0.5
+    return lr
 
-model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 12, verbose = 1, callbacks=[tensorboard])
+reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
+# reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
+#                             patience=8, min_lr=0.0005, verbose=1)
 
-##uncomment later!!!!
+load_file = "./model/mod_4-CB513.h5"
 
+earlyStopping = EarlyStopping(monitor='val_accuracy', patience=8, verbose=1, mode='auto')
+checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
+
+
+history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
+        epochs=15, batch_size=64, callbacks=[checkpointer, earlyStopping], verbose=2, shuffle=True)
+
+
+model.load_weights(load_file)
+print("####evaluate:")
+score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
+print(score)
+print ('test loss:', score[0])
+print ('test accuracy:', score[2])
+#y_pre = model.predict([X_test,X_aug_test])
 #np.save('cb513_test_prob_4.npy', y_pre)
 
-########evaluate accuracy#######
-print(model.metrics_names)
-acc = model.evaluate([X_test,X_aug_test], y_test)
-print("evaluate via model.evaluate:")
-print (acc)
-
-y_pre = model.predict([X_test,X_aug_test])
-evaluate_acc(y_pre)
 
