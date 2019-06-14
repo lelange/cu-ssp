@@ -14,6 +14,7 @@ import tensorflow as tf
 from keras.callbacks import TensorBoard, LearningRateScheduler, ModelCheckpoint, ReduceLROnPlateau
 from datetime import datetime
 import os, pickle
+from keras.callbacks import EarlyStopping
 
 from utils import *
 
