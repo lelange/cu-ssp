@@ -237,15 +237,7 @@ model.compile(optimizer = "nadam", loss = "categorical_crossentropy", metrics = 
 # dann auch in callbacks
 
 #### callbacks
-optim = RMSprop(lr=0.002)
-def scheduler(i, lr):
-    if i in [60]:
-        return lr * 0.5
-    return lr
-
-reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
-# reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
-#                             patience=8, min_lr=0.0005, verbose=1)
+#reduce lr
 
 load_file = "./model/mod_4-CB513.h5"
 
