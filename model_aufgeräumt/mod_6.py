@@ -99,7 +99,7 @@ load_file = "./model/2c(3(21)42-200-0.003-400-600)-de-2LSTM-CB513.h5"
 checkpointer = ModelCheckpoint(filepath=load_file, verbose=1, save_best_only=True)
 
 history=model.fit([X_train,X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
-        epochs=30, batch_size=128, callbacks=[checkpointer, earlyStopping], verbose=2, shuffle=True)
+        epochs=70, batch_size=128, callbacks=[checkpointer, earlyStopping], verbose=2, shuffle=True)
 
 
 model.load_weights(load_file)
