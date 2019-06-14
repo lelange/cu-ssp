@@ -53,19 +53,21 @@ y_test = to_categorical(test_target_data)
 ###validation data##
 
 n_samples = len(train_df)
+print(n_samples)
+print(train_df.shape)
 np.random.seed(0)
 validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
 training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
 
-val_df = train_df.iloc[validation_idx]
-
 X_val = X_train[validation_idx]
+print('shape X_train: ', X_train.shape)
 X_train = X_train[training_idx]
 y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
 
 X_aug_train = X_aug_train[training_idx]
 X_aug_val = X_aug_train[validation_idx]
+print("shape X_aug_train: ", X_aug_train.shape)
 
 ###end validation###
 
