@@ -143,10 +143,10 @@ y = TimeDistributed(Dense(n_tags, activation = "softmax"))(up1)
 model = Model([input, augment_input], y)
 model.summary()
 
-optim = RMSprop(lr=0.02)
+optim = RMSprop(lr=0.002)
 
 def scheduler(i, lr):
-    if i in [30]:
+    if i in [60]:
         return lr * 0.5
     return lr
 
@@ -159,14 +159,14 @@ reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
 model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
 
 ### monitor = 'val_weighted_accuracy'
-earlyStopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
+#earlyStopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto')
 
 load_file = "./model/mod_2-CB513.h5"
 
 checkpointer = ModelCheckpoint(filepath=load_file, verbose=1, save_best_only=True)
 # Training the model on the training data and validating using the validation set
 history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
-        epochs=80, batch_size=128, callbacks=[reduce_lr, checkpointer, earlyStopping], verbose=2, shuffle=True)
+        epochs=80, batch_size=128, callbacks=[reduce_lr, checkpointer], verbose=2, shuffle=True)
 
 
 model.load_weights(load_file)
