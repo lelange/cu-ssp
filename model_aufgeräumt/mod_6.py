@@ -94,7 +94,7 @@ model.summary()
 ### monitor = 'val_weighted_accuracy'
 earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='auto')
 
-load_file = "./model/2c(3(21)42-200-0.003-400-600)-de-2LSTM-CB513.h5"
+load_file = "./model/mod_6-CB513.h5"
 
 checkpointer = ModelCheckpoint(filepath=load_file, verbose=1, save_best_only=True)
 
@@ -108,7 +108,7 @@ print("#########evaluate:##############")
 score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
 print(score)
 print ('test loss:', score[0])
-print ('test accuracy:', score[1])
+print ('test accuracy:', score[2])
 
 ###
 #model.fit([X_train,X_aug_train], y_train, batch_size = 128, epochs = 30, validation_data = ([X_test,X_aug_test], y_test), verbose = 1)

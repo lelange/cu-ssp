@@ -55,6 +55,21 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
+###validation data##
+
+n_samples = len(train_df)
+np.random.seed(0)
+validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
+
+X_val = X_train[validation_idx]
+X_train = X_train[training_idx]
+y_val = y_train[validation_idx]
+y_train = y_train[training_idx]
+X_aug_val = X_aug_train[validation_idx]
+X_aug_train = X_aug_train[training_idx]
+###end validation###
+
 # Dropout to prevent overfitting.
 droprate = 0.3
 
@@ -138,24 +153,36 @@ reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
 # reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
 #                             patience=8, min_lr=0.0005, verbose=1)
 
+#######
 # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
 model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
 
+### monitor = 'val_weighted_accuracy'
+earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='auto')
 
+load_file = "./model/mod_2-CB513.h5"
+
+checkpointer = ModelCheckpoint(filepath=load_file, verbose=1, save_best_only=True)
 # Training the model on the training data and validating using the validation set
-model.fit([X_train, X_aug_train], y_train, batch_size = 128, verbose = 1,
-            epochs = 80)
+history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
+        epochs=80, batch_size=128, callbacks=[reduce_lr, checkpointer, earlyStopping], verbose=2, shuffle=True)
 
-#prediction for cb513
 
-acc = model.evaluate([X_test,X_aug_test], y_test)
-print("evaluate via model.evaluate:")
-print (acc)
+model.load_weights(load_file)
+
+print("#########evaluate:##############")
+score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
+print(score)
+print ('test loss:', score[0])
+print ('test accuracy:', score[2])
+
+######
 
 y_pre = model.predict([X_test, X_aug_test])
 evaluate_acc(y_pre)
 
-print(model.metrics_names)
+
+
 
 
 
