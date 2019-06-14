@@ -143,7 +143,7 @@ y = TimeDistributed(Dense(n_tags, activation = "softmax"))(up1)
 model = Model([input, augment_input], y)
 model.summary()
 
-optim = RMSprop(lr=0.002)
+optim = RMSprop(lr=0.01)
 
 def scheduler(i, lr):
     if i in [60]:
