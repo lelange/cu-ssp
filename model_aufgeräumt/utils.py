@@ -132,3 +132,7 @@ def evaluate_acc(y_predicted):
     print('the accuracy is', np.mean(acc_list))
     print(str(equal_counter) + ' from ' + str(total) + ' proteins are of equal length')
     return acc_list
+
+def weighted_accuracy(y_true, y_pred):
+    return K.sum(K.equal(K.argmax(y_true, axis=-1),
+                  K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
