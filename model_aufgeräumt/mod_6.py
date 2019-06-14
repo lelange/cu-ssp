@@ -53,22 +53,16 @@ y_test = to_categorical(test_target_data)
 ###validation data##
 
 n_samples = len(train_df)
-
 np.random.seed(0)
 validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
 training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
 
 X_val = X_train[validation_idx]
-
 X_train = X_train[training_idx]
 y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
-
-
 X_aug_val = X_aug_train[validation_idx]
 X_aug_train = X_aug_train[training_idx]
-
-
 ###end validation###
 
 n_words = len(tokenizer_encoder.word_index) + 1
@@ -94,7 +88,7 @@ x = Bidirectional(CuDNNLSTM(units = 128, return_sequences = True))(x)
 y = TimeDistributed(Dense(n_tags, activation = "softmax"))(x)
 
 model = Model([input,input2], y)
-model.compile(optimizer = 'RMSprop', loss = "categorical_crossentropy", metrics = ["accuracy", accuracy, weighted_accuracy])
+model.compile(optimizer = 'RMSprop', loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
 model.summary()
 
 ### monitor = 'val_weighted_accuracy'
