@@ -24,7 +24,7 @@ cb6133filteredfilename = '../data/cb6133filtered.npy'
 maxlen_seq = 700 # protein residues padded to 700
 
 #load train and test
-train_df, X_aug_train = load_augmented_data(cb6133filteredfilename  ,maxlen_seq)
+train_df, X_aug_train = load_augmented_data(cb6133filteredfilename, maxlen_seq)
 train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.len <= maxlen_seq)].values.T
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
@@ -64,10 +64,10 @@ print('shape X_train: ', X_train.shape)
 X_train = X_train[training_idx]
 y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
-
+print("shape X_aug_train: ", X_aug_train.shape)
 X_aug_train = X_aug_train[training_idx]
 X_aug_val = X_aug_train[validation_idx]
-print("shape X_aug_train: ", X_aug_train.shape)
+
 
 ###end validation###
 
