@@ -53,13 +53,14 @@ data13=np.load("py_charm_code/data/casp13.npy").item()
 #train and test
 train_input_seqs, train_target_seqs = cullpdb[['seq', 'dssp']][(cullpdb.len <= maxlen_seq)].values.T
 test_input_seqs, test_target_seqs = data13[['seq','dssp']][(data13.len <= maxlen_seq)].values.T
+print('Shape train input seq: ', train_input_seqs.shape)
 
 #profiles
 X_pssm_train=cullpdb['pssm']
 X_hhm_train=cullpdb['hhm']
 
 X_pssm_test=data13['pssm']
-X_hhm_test=data13['hmm']
+X_hhm_test=data13['hhm']
 '''
 q8_beta = []
 test_target = []
@@ -107,8 +108,16 @@ X_val = X_train[validation_idx]
 X_train = X_train[training_idx]
 y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
-X_aug_val = X_aug_train[validation_idx]
-X_aug_train = X_aug_train[training_idx]
+X_pssm_val = X_pssm_train[validation_idx]
+X_pssm_train = X_pssm_train[training_idx]
+X_hhm_val = X_hhm_train[validation_idx]
+X_hhm_train = X_hhm_train[training_idx]
+
+print('Shape X_train: ', X_train.shape)
+print('Shape X_pssm_train: ', X_pssm_train.shape)
+print('Shape X_hhm train: ', X_hhm_train.shape)
+print('Shape y_train: ', y_train.shape)
+
 #### end validation
 
 '''
