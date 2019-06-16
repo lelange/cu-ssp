@@ -29,7 +29,7 @@ print('Shape train df: ', train_df.shape)
 train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.len <= maxlen_seq)].values.T
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
-print('Shape test input seq: ', test_input_seqs.shape)
+print('Shape train input seq: ', train_input_seqs.shape)
 
 # Using the tokenizer to encode and decode the sequences for use in training
 #tokenizer
@@ -75,7 +75,7 @@ X_aug_train = X_aug_train[training_idx]
 
 print('Shape X_train: ', X_train.shape)
 print('Shape X_aug_train:', X_aug_train.shape)
-print('Shape y_train: ', y_train)
+print('Shape y_train: ', y_train.shape)
 # Dropout to prevent overfitting.
 droprate = 0.3
 
@@ -149,8 +149,7 @@ y = TimeDistributed(Dense(n_tags, activation = "softmax"))(up1)
 # Defining the model as a whole and printing the summary
 model = Model([input, augment_input], y)
 # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
-model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
-model.summary()
+
 
 ####callbacks for fitting
 optim = RMSprop(lr=0.002)
@@ -164,7 +163,8 @@ reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
 #                             patience=8, min_lr=0.0005, verbose=1)
 
 load_file = "./model/mod_2-CB513.h5"
-
+model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
+model.summary()
 #earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='auto')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
 # Training the model on the training data and validating using the validation set
