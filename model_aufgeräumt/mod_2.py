@@ -25,9 +25,11 @@ cb6133filteredfilename = '../data/cb6133filtered.npy'
 
 #load train and test
 train_df, X_aug_train = load_augmented_data(cb6133filteredfilename  ,maxlen_seq)
+print('Shape train df: ', train_df.shape)
 train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.len <= maxlen_seq)].values.T
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
+print('Shape test input seq: ', test_input_seqs.shape)
 
 # Using the tokenizer to encode and decode the sequences for use in training
 #tokenizer
@@ -71,6 +73,9 @@ X_aug_val = X_aug_train[validation_idx]
 X_aug_train = X_aug_train[training_idx]
 #### end validation
 
+print('Shape X_train: ', X_train.shape)
+print('Shape X_aug_train:', X_aug_train.shape)
+print('Shape y_train: ', y_train)
 # Dropout to prevent overfitting.
 droprate = 0.3
 
