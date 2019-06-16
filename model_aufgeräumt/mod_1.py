@@ -72,6 +72,31 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
+#### validation data
+
+n_samples = len(train_df)
+np.random.seed(0)
+validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
+
+X_val = X_train[validation_idx]
+X_train = X_train[training_idx]
+y_val = y_train[validation_idx]
+y_train = y_train[training_idx]
+X_aug_val = X_aug_train[validation_idx]
+X_aug_train = X_aug_train[training_idx]
+#### end validation
+
+
+p = {'activation1':[relu, softmax],
+     'activation2':[relu, softmax],
+     'optimizer': ['Nadam', "RMSprop"],
+     'losses': ['categorical_crossentropy', keras.losses.binary_crossentropy],
+     'first_hidden_layer': [10, 8, 6],
+     'second_hidden_layer': [2, 4, 6],
+     'batch_size': [64, 128, 10000],
+     'epochs': [50, 75]}
+
 def train(X_train, y_train, X_val=None, y_val=None):
     """
     Main Training function with the following properties:
@@ -87,9 +112,15 @@ def train(X_train, y_train, X_val=None, y_val=None):
         metrics=["accuracy", accuracy])
 
     if X_val is not None and y_val is not None:
-        history = model.fit(X_train, y_train,
-                            batch_size=128, epochs=75,
-                            validation_data=(X_val, y_val))
+
+
+        earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
+        checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
+                                       mode='max')
+        # Training the model on the training data and validating using the validation set
+        history = model.fit(X_train, y_train, validation_data=(X_val, y_val),
+                            epochs=75, batch_size=128, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+
     else:
         history = model.fit(X_train, y_train,
                             batch_size=128, epochs=75)
@@ -154,25 +185,13 @@ def CNN_BIGRU():
 
     return model
 
-history, model = train([X_train, X_aug_train], y_train)
+load_file = "./model/mod_1-CB513.h5"
+history, model = train([X_train, X_aug_train], y_train, X_val=[X_val, X_aug_val], y_val=y_val)
 
-# Save the model as a JSON format
-"""
-model.save_weights("cb513_weights_1.h5")
-with open("model_1.json", "w") as json_file:
-    json_file.write(model.to_json())
+model.load_weights(load_file)
 
-# Save training history for parsing
-with open("history_1.pkl", "wb") as hist_file:
-    pickle.dump(history.history, hist_file)
-    
-"""
-
-########evaluate accuracy#######
-
-acc = model.evaluate([X_test,X_aug_test], y_test)
-print("evaluate via model.evaluate:")
-print (acc)
-
-y_pre = model.predict([X_test,X_aug_test])
-evaluate_acc(y_pre)
+print("####evaluate:")
+score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
+print(score)
+print ('test loss:', score[0])
+print ('test accuracy:', score[2])
