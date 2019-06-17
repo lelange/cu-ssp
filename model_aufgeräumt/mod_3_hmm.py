@@ -143,10 +143,10 @@ def build_model():
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = concatenate([x1, pssp_input, hhm_input], axis=2)
+    x1 = concatenate([x1, pssp_input, hhm_input])
 
     x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
-    x2 = concatenate([x2, pssp_input, hhm_input], axis=2)
+    x2 = concatenate([x2, pssp_input, hhm_input])
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
