@@ -138,15 +138,15 @@ Shape y_train:  (5234, 768, 9)
 
 def build_model():
     input = Input(shape=(None,))
-    pssp_input = Input(shape=(None, 22))
+    pssp_input = Input(shape=(None,))
     hhm_input = Input(shape=(None, ))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = concatenate([x1, profiles_input], axis=2)
+    x1 = concatenate([x1, pssp_input, hhm_input], axis=2)
 
     x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
-    x2 = concatenate([x2, profiles_input], axis=2)
+    x2 = concatenate([x2, pssp_input, hhm_input], axis=2)
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
@@ -171,16 +171,20 @@ def build_model():
     return model
 
 
-VERBOSE = 1
+
 model = build_model()
-model.fit([X_train, X_aug_train], y_train, batch_size=16, epochs=5, verbose=VERBOSE,
-          shuffle=True)
 
-########evaluate accuracy#######
-print(model.metrics_names)
-acc = model.evaluate([X_test, X_aug_test], y_test)
-print("evaluate via model.evaluate:")
-print (acc)
-y_pre = model.predict([X_test, X_aug_test])
-evaluate_acc(y_pre)
+load_file = "./model/mod_3_HMM-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
+#earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='auto')
+checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
+# Training the model on the training data and validating using the validation set
+history=model.fit([X_train, X_pssm_train, X_hhm_train], y_train, validation_data=([X_val, X_pssm_val, X_hhm_val], y_val),
+        epochs=5, batch_size=16, callbacks=[checkpointer], verbose=1, shuffle=True)
+
+model.load_weights(load_file)
+print("####evaluate:")
+score = model.evaluate([X_test, X_pssm_test, X_hhm_test], y_test, verbose=2, batch_size = 1)
+print(score)
+print ('test loss:', score[0])
+print ('test accuracy:', score[2])
