@@ -103,7 +103,7 @@ n_tags = len(tokenizer_decoder.word_index) + 1
 
 #### validation data
 
-n_samples = len(cullpdb)
+n_samples = train_input_seqs.shape[0]
 np.random.seed(0)
 validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
 training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
