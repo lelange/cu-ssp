@@ -48,11 +48,15 @@ print('Found GPU at: {}'.format(device_name))
 maxlen_seq = 800
 
 cullpdb =np.load("../data/cullpdb_train.npy").item()
+
 data13=np.load("../data/casp13.npy").item()
 
+cullpdb_df = pd.DataFrame(cullpdb)
+data13_df = pd.DataFrame(data13)
+
 #train and test
-train_input_seqs, train_target_seqs = cullpdb[['seq', 'dssp']][(cullpdb.len <= maxlen_seq)].values.T
-test_input_seqs, test_target_seqs = data13[['seq','dssp']][(data13.len <= maxlen_seq)].values.T
+train_input_seqs, train_target_seqs= cullpdb_df[['seq', 'dssp']][(np.logical_and((cullpdb_df['seq'].apply(len)<=maxlen_seq), (cullpdb_df['dssp'].apply(len)<=maxlen_seq)))].values.T
+test_input_seqs, test_target_seqs = data13_df[['seq','dssp']][(np.logical_and((data13_df['seq'].apply(len)<=maxlen_seq), (data13_df['dssp'].apply(len)<=maxlen_seq)))].values.T
 print('Shape train input seq: ', train_input_seqs.shape)
 
 #profiles
