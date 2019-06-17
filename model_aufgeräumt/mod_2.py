@@ -162,7 +162,7 @@ reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
 # reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
 #                             patience=8, min_lr=0.0005, verbose=1)
 
-load_file = "./model/mod_2-CB513.h5"
+load_file = "./model/mod_2-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 model.compile(optimizer = optim, loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
 model.summary()
 #earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='auto')

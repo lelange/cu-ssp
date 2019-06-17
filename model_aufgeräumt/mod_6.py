@@ -94,7 +94,7 @@ model.summary()
 ### monitor = 'val_weighted_accuracy'
 earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='auto')
 
-load_file = "./model/mod_6-CB513.h5"
+load_file = "./model/mod_6-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
 checkpointer = ModelCheckpoint(filepath=load_file, verbose=1, save_best_only=True)
 

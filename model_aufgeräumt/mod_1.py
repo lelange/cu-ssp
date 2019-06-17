@@ -185,7 +185,7 @@ def CNN_BIGRU():
 
     return model
 
-load_file = "./model/mod_1-CB513.h5"
+load_file = "./model/mod_1-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 history, model = train([X_train, X_aug_train], y_train, X_val=[X_val, X_aug_val], y_val=y_val)
 
 model.load_weights(load_file)

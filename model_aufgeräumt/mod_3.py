@@ -139,7 +139,7 @@ def build_model():
 
 model = build_model()
 
-load_file = "./model/mod_3-CB513.h5"
+load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
 #earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='auto')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
