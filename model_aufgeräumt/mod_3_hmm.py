@@ -118,7 +118,7 @@ print('Shape X_pssm_train: ', X_pssm_train.shape)
 print('Shape X_hhm train: ', X_hhm_train.shape)
 print('Shape y_train: ', y_train.shape)
 
-break
+
 #### end validation
 
 '''
