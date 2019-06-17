@@ -60,11 +60,11 @@ test_input_seqs, test_target_seqs = data13_df[['seq','dssp']][(np.logical_and((d
 print('Shape train input seq: ', train_input_seqs.shape)
 
 #profiles
-X_pssm_train=cullpdb['pssm']
-X_hhm_train=cullpdb['hhm']
+X_pssm_train=cullpdb_df['pssm']
+X_hhm_train=cullpdb_df['hhm']
 
-X_pssm_test=data13['pssm']
-X_hhm_test=data13['hhm']
+X_pssm_test=data13_df['pssm']
+X_hhm_test=data13_df['hhm']
 '''
 q8_beta = []
 test_target = []
