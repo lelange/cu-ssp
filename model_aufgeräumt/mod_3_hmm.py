@@ -118,13 +118,18 @@ print('Shape X_pssm_train: ', X_pssm_train.shape)
 print('Shape X_hhm train: ', X_hhm_train.shape)
 print('Shape y_train: ', y_train.shape)
 
-
-
+break
 #### end validation
 
 '''
 Model
+Shape train df:  (5534, 4)
+Shape train input seq:  (5534,)
 
+Shape X_train:  (5234, 768)
+Shape X_aug_train: (5234, 768, 22)
+
+Shape y_train:  (5234, 768, 9)
 '''
 
 def build_model():
