@@ -62,6 +62,20 @@ y_test = to_categorical(test_target_data)
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
+#### validation data
+
+n_samples = len(train_df)
+np.random.seed(0)
+validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
+
+X_val = X_train[validation_idx]
+X_train = X_train[training_idx]
+y_val = y_train[validation_idx]
+y_train = y_train[training_idx]
+X_aug_val = X_aug_train[validation_idx]
+X_aug_train = X_aug_train[training_idx]
+#### end validation
 
 
 ############################### Model starts here ##############################
@@ -155,17 +169,21 @@ model.compile(optimizer = rmsprop, loss = "categorical_crossentropy", metrics = 
 
 
 
-# Training the model on the training data and validating using the validation set
-model.fit([X_train, X_aug_train], y_train, batch_size = 64, epochs = 20, verbose = 1)
+load_file = "./model/mod_5-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
-########evaluate accuracy#######
-print(model.metrics_names)
-acc = model.evaluate([X_test,X_aug_test], y_test)
-print("evaluate via model.evaluate:")
-print (acc)
+earlyStopping = EarlyStopping(monitor='val_accuracy', patience=5, verbose=1, mode='max')
+checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
 
-y_pre = model.predict([X_test,X_aug_test])
-evaluate_acc(y_pre)
 
+history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
+        epochs=25, batch_size=64, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+
+
+model.load_weights(load_file)
+print("####evaluate:")
+score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
+print(score)
+print ('test loss:', score[0])
+print ('test accuracy:', score[2])
 
 

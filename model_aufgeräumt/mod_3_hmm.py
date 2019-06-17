@@ -118,6 +118,8 @@ print('Shape X_pssm_train: ', X_pssm_train.shape)
 print('Shape X_hhm train: ', X_hhm_train.shape)
 print('Shape y_train: ', y_train.shape)
 
+
+
 #### end validation
 
 '''
@@ -127,7 +129,8 @@ Model
 
 def build_model():
     input = Input(shape=(None,))
-    profiles_input = Input(shape=(None, 22))
+    pssp_input = Input(shape=(None, 22))
+    hhm_input = Input(shape=(None, ))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
