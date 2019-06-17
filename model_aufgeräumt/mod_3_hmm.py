@@ -47,8 +47,8 @@ print('Found GPU at: {}'.format(device_name))
 
 maxlen_seq = 800
 
-cullpdb =np.load("py_charm_code/data/cullpdb_train.npy").item()
-data13=np.load("py_charm_code/data/casp13.npy").item()
+cullpdb =np.load("../data/cullpdb_train.npy").item()
+data13=np.load("../data/casp13.npy").item()
 
 #train and test
 train_input_seqs, train_target_seqs = cullpdb[['seq', 'dssp']][(cullpdb.len <= maxlen_seq)].values.T
