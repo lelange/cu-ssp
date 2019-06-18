@@ -92,11 +92,11 @@ model.compile(optimizer = 'RMSprop', loss = "categorical_crossentropy", metrics 
 model.summary()
 
 ### monitor = 'val_weighted_accuracy'
-earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='auto')
+earlyStopping = EarlyStopping(monitor='val_accuracy', patience=5, verbose=1, mode='max')
 
 load_file = "./model/mod_6-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
-checkpointer = ModelCheckpoint(filepath=load_file, verbose=1, save_best_only=True)
+checkpointer = ModelCheckpoint(filepath=load_file, verbose=1, save_best_only=True, mode='max')
 
 history=model.fit([X_train,X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
         epochs=70, batch_size=128, callbacks=[checkpointer, earlyStopping], verbose=2, shuffle=True)
@@ -110,12 +110,5 @@ print(score)
 print ('test loss:', score[0])
 print ('test accuracy:', score[2])
 
-###
-#model.fit([X_train,X_aug_train], y_train, batch_size = 128, epochs = 30, validation_data = ([X_test,X_aug_test], y_test), verbose = 1)
-
-#acc = model.evaluate([X_test,X_aug_test], y_test)
-#print("evaluate via model.evaluate:")
-#print (acc)
-y_pre = model.predict([X_test,X_aug_test])
-
-evaluate_acc(y_pre)
+#Vorhersage abspeichern
+#y_pre = model.predict([X_test,X_aug_test])
