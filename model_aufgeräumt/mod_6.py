@@ -98,7 +98,7 @@ earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mo
 #reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=8, min_lr=0.0005, verbose=1)
 load_file = "./model/mod_6-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
-checkpointer = ModelCheckpoint(filepath=load_file, verbose=2, save_best_only=True, mode='max')
+checkpointer = ModelCheckpoint(filepath=load_file, verbose=2, monitor='val_accuracy', save_best_only=True, mode='max')
 
 history=model.fit([X_train,X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
         epochs=80, batch_size=128, callbacks=[checkpointer], verbose=2, shuffle=True)
