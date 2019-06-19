@@ -90,7 +90,7 @@ x = Bidirectional(CuDNNLSTM(units = 128, return_sequences = True))(x)
 y = TimeDistributed(Dense(n_tags, activation = "softmax"))(x)
 
 model = Model([input,input2], y)
-model.compile(optimizer = 'Nadam', loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
+model.compile(optimizer = 'RMSprop', loss = "categorical_crossentropy", metrics = ["accuracy", accuracy])
 model.summary()
 
 ### monitor = 'val_weighted_accuracy'
@@ -98,10 +98,10 @@ earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mo
 #reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=8, min_lr=0.0005, verbose=1)
 load_file = "./model/mod_6-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
-checkpointer = ModelCheckpoint(filepath=load_file, verbose=1, save_best_only=True, mode='max')
+checkpointer = ModelCheckpoint(filepath=load_file, verbose=2, save_best_only=True, mode='max')
 
 history=model.fit([X_train,X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
-        epochs=70, batch_size=128, callbacks=[checkpointer, earlyStopping], verbose=2, shuffle=True)
+        epochs=80, batch_size=128, callbacks=[checkpointer], verbose=2, shuffle=True)
 
 
 model.load_weights(load_file)
