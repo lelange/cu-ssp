@@ -15,6 +15,8 @@ from keras.engine.topology import Layer
 from tensorflow.keras.layers import Activation
 from tensorflow.layers import Flatten
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
+from keras.callbacks import TensorBoard, LearningRateScheduler, ReduceLROnPlateau
+
 
 from utils import *
 
