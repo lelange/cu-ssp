@@ -92,7 +92,7 @@ model.compile(optimizer = 'RMSprop', loss = "categorical_crossentropy", metrics 
 model.summary()
 
 ### monitor = 'val_weighted_accuracy'
-earlyStopping = EarlyStopping(monitor='val_accuracy', patience=5, verbose=1, mode='max')
+earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
 
 load_file = "./model/mod_6-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
