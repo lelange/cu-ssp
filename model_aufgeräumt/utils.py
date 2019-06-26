@@ -53,7 +53,7 @@ def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False,
         print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
 
 # Computes and returns the n-grams of a particular sequence, defaults to trigrams
-def seq2ngrams(seqs, n = 3):
+def seq2ngrams(seqs, n = 2):
     return np.array([[seq[i : i + n] for i in range(len(seq))] for seq in seqs])
 
 
