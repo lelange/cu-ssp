@@ -50,23 +50,30 @@ cb6133filteredfilename = '../data/cb6133filtered.npy'
 
 maxlen_seq = 800
 
-#load train and test
+#load train and test and cut length to maxlen_seq
 train_df, X_aug_train = load_augmented_data(cb6133filteredfilename  ,maxlen_seq)
 train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.len <= maxlen_seq)].values.T
+
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
 
 # Using the tokenizer to encode and decode the sequences for use in training
-#tokenizer
+# use preprocessing tools for text from keras to encode input sequence as word rank numbers and target sequence as one hot.
+# To ensure easy to use training and testing, all sequences are padded with zeros to the maximum sequence length
+# transform sequences to trigrams
 train_input_grams = seq2ngrams(train_input_seqs)
+#transform sequences
+#fit alphabet on train basis
 tokenizer_encoder = Tokenizer()
 tokenizer_encoder.fit_on_texts(train_input_grams)
+
 tokenizer_decoder = Tokenizer(char_level = True)
 tokenizer_decoder.fit_on_texts(train_target_seqs)
 
 #train
 train_input_data = tokenizer_encoder.texts_to_sequences(train_input_grams)
 X_train = sequence.pad_sequences(train_input_data, maxlen = maxlen_seq, padding = 'post')
+#transform targets to one-hot
 train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
 train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
 y_train = to_categorical(train_target_data)
