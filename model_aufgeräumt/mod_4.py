@@ -241,12 +241,12 @@ model.compile(optimizer = "nadam", loss = "categorical_crossentropy", metrics = 
 
 load_file = "./model/mod_4-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
-earlyStopping = EarlyStopping(monitor='val_accuracy', patience=8, verbose=1, mode='auto')
+earlyStopping = EarlyStopping(monitor='val_accuracy', patience=4, verbose=1, mode='max')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
 
 
 history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
-        epochs=15, batch_size=64, callbacks=[checkpointer, earlyStopping], verbose=2, shuffle=True)
+        epochs=15, batch_size=64, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
 
 
 model.load_weights(load_file)
