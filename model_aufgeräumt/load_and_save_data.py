@@ -11,7 +11,9 @@ data13_df = pd.DataFrame(data13)
 #load train, test, pssm-profiles and hmm-profiles which are not longer than maxlen_seq
 print('load data...')
 train_dssp = cullpdb_df['dssp'][cullpdb_df['seq'].apply(len)<=maxlen_seq].values
-train_pssm_list, train_hmm_list= cullpdb_df[['pssm', 'hhm']][(cullpdb_df['seq'].apply(len)<=maxlen_seq)].values
+train_pssm_list = cullpdb_df['pssm'][(cullpdb_df['seq'].apply(len)<=maxlen_seq)].values
+train_hmm_list = cullpdb_df['hhm'][(cullpdb_df['seq'].apply(len)<=maxlen_seq)].values
+
 
 test_dssp = data13_df['dssp'][data13_df['seq'].apply(len)<=maxlen_seq].values
 test_pssm_list, test_hmm_list = data13_df[['pssm', 'hhm']][(data13_df['seq'].apply(len)<=maxlen_seq)].values
