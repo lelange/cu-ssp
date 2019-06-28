@@ -35,11 +35,6 @@ train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
 
-print("types:")
-print(type(train_input_seqs), type(train_input_grams))
-print("shapes:")
-print(train_input_seqs.shape, train_input_grams.shape)
-
 '''
 maxlen_seq = 700
 normalize = False
