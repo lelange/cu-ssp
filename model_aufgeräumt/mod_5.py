@@ -22,7 +22,7 @@ import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
 
 from utils import *
-'''
+
 max_len =700
 maxlen_seq = 700
 
@@ -35,7 +35,12 @@ train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
 
-'''
+print("types:")
+print(type(train_input_seqs), type(train_input_grams))
+print("shapes:")
+print(train_input_seqs.shape, train_input_grams.shape)
+
+
 maxlen_seq = 700
 normalize = False
 standardize = False
@@ -75,6 +80,8 @@ train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
 print("types:")
 print(type(train_input_seqs), type(train_input_grams))
+print("shapes:")
+print(train_input_seqs.shape, train_input_grams.shape)
 
 # Use tokenizer to encode and decode the sequences
 tokenizer_encoder = Tokenizer()
