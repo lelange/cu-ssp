@@ -34,7 +34,7 @@ import os
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
 
 from utils import *
-'''
+
 print("##device name:")
 print(tf.test.gpu_device_name())
 print("##gpu available:")
@@ -45,7 +45,7 @@ if device_name != '/device:GPU:0':
     raise SystemError('GPU device not found')
 print('Found GPU at: {}'.format(device_name))
 
-'''
+
 
 maxlen_seq = 700
 normalize = False

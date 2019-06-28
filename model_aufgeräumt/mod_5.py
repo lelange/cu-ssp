@@ -22,7 +22,7 @@ import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
 
 from utils import *
-
+'''
 max_len =700
 maxlen_seq = 700
 
@@ -35,28 +35,63 @@ train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.
 test_df, X_aug_test = load_augmented_data(cb513filename,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
 
-# Using the tokenizer to encode and decode the sequences for use in training
-#tokenizer
+'''
+maxlen_seq = 700
+normalize = False
+standardize = False
+
+cullpdb =np.load("../data/cullpdb_train.npy").item()
+data13=np.load("../data/casp13.npy").item()
+cullpdb_df = pd.DataFrame(cullpdb)
+data13_df = pd.DataFrame(data13)
+
+#train and test primary structure
+train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq].values
+test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values
+
+#secondary
+train_target_seqs = np.load('../data/train_q8.npy')
+test_target_seqs = np.load('../data/test_q8.npy')
+
+#profiles
+if normalize:
+    # load normalized profiles
+    train_profiles = np.load('../data/train_profiles_norm.npy')
+    test_profiles = np.load('../data/test_profiles_norm.npy')
+elif standardize:
+    train_profiles = np.load('../data/train_profiles_stan.npy')
+    test_profiles = np.load('../data/test_profiles_stan.npy')
+else:
+    train_profiles = np.load('../data/train_profiles.npy')
+    test_profiles = np.load('../data/test_profiles.npy')
+
+#transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
+test_input_grams = seq2ngrams(test_input_seqs)
+
+# Use tokenizer to encode and decode the sequences
 tokenizer_encoder = Tokenizer()
 tokenizer_encoder.fit_on_texts(train_input_grams)
-tokenizer_decoder = Tokenizer(char_level = True)
+tokenizer_decoder = Tokenizer(char_level = True) #char_level=True means that every character is treated as a token
 tokenizer_decoder.fit_on_texts(train_target_seqs)
 
 #train
 train_input_data = tokenizer_encoder.texts_to_sequences(train_input_grams)
-X_train = sequence.pad_sequences(train_input_data, maxlen = maxlen_seq, padding = 'post')
 train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
-train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
-y_train = to_categorical(train_target_data)
 
 #test
-test_input_grams = seq2ngrams(test_input_seqs)
 test_input_data = tokenizer_encoder.texts_to_sequences(test_input_grams)
-X_test = sequence.pad_sequences(test_input_data, maxlen = maxlen_seq, padding = 'post')
 test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
+
+# pad sequences to maxlen_seq
+X_train = sequence.pad_sequences(train_input_data, maxlen = maxlen_seq, padding = 'post')
+X_test = sequence.pad_sequences(test_input_data, maxlen = maxlen_seq, padding = 'post')
+train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
 test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq, padding = 'post')
+
+# labels to one-hot
 y_test = to_categorical(test_target_data)
+y_train = to_categorical(train_target_data)
 
 # Computing the number of words and number of tags to be passed as parameters to the keras model
 n_words = len(tokenizer_encoder.word_index) + 1
@@ -64,17 +99,20 @@ n_tags = len(tokenizer_decoder.word_index) + 1
 
 #### validation data
 
-n_samples = len(train_df)
+n_samples = train_input_seqs.shape[0]
 np.random.seed(0)
 validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
 training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
 
 X_val = X_train[validation_idx]
 X_train = X_train[training_idx]
+
 y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
-X_aug_val = X_aug_train[validation_idx]
-X_aug_train = X_aug_train[training_idx]
+
+X_aug_val = train_profiles[validation_idx]
+X_aug_train = train_profiles[training_idx]
+
 #### end validation
 
 
@@ -82,7 +120,7 @@ X_aug_train = X_aug_train[training_idx]
 
 input = Input(shape = (maxlen_seq,))
 embed_out = Embedding(input_dim = n_words, output_dim = 128, input_length = maxlen_seq)(input)
-profile_input = Input(shape = (maxlen_seq, 22))
+profile_input = Input(shape = (maxlen_seq, 50))
 x = concatenate([embed_out, profile_input]) # 5600, 700, 150
 
 x1_out = Bidirectional(LSTM(units = 75, return_sequences=True, recurrent_dropout=0.2), merge_mode='concat')(x)
