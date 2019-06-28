@@ -222,6 +222,12 @@ load_file = "./model/mod_5-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h
 earlyStopping = EarlyStopping(monitor='val_accuracy', patience=5, verbose=1, mode='max')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
 
+print("First train seq shape: \n", X_train[0].shape)
+print("First train seq: \n", X_train[0])
+print("First train profile shape: \n", X_aug_train[0].shape)
+print("First train profile: \n", X_aug_train[0])
+print("First train label shape: \n", y_train[0].shape)
+print("First train label: \n", y_train[0])
 
 history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
         epochs=25, batch_size=64, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
