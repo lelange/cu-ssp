@@ -16,7 +16,9 @@ train_hmm_list = cullpdb_df['hhm'][(cullpdb_df['seq'].apply(len)<=maxlen_seq)].v
 
 
 test_dssp = data13_df['dssp'][data13_df['seq'].apply(len)<=maxlen_seq].values
-test_pssm_list, test_hmm_list = data13_df[['pssm', 'hhm']][(data13_df['seq'].apply(len)<=maxlen_seq)].values
+test_pssm_list = data13_df['pssm'][(data13_df['seq'].apply(len)<=maxlen_seq)].values
+test_hmm_list = data13_df['hhm'][(data13_df['seq'].apply(len)<=maxlen_seq)].values
+
 
 def make_q8(dssp):
     q8_beta = []
