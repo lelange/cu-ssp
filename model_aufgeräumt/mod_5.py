@@ -22,7 +22,7 @@ import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
 
 from utils import *
-
+'''
 max_len =700
 maxlen_seq = 700
 
@@ -40,7 +40,7 @@ print(type(train_input_seqs), type(train_input_grams))
 print("shapes:")
 print(train_input_seqs.shape, train_input_grams.shape)
 
-
+'''
 maxlen_seq = 700
 normalize = False
 standardize = False
