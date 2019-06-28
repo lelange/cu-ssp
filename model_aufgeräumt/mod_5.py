@@ -22,7 +22,7 @@ import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
 
 from utils import *
-
+'''
 max_len =700
 maxlen_seq = 700
 
@@ -46,13 +46,14 @@ data13=np.load("../data/casp13.npy").item()
 cullpdb_df = pd.DataFrame(cullpdb)
 data13_df = pd.DataFrame(data13)
 #train and test primary structure
-train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq].values
-test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values
+train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq].values.squeeze()
+test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values.squeeze()
 
 #secondary
-train_target_seqs = np.load('../data/train_q8.npy')
-test_target_seqs = np.load('../data/test_q8.npy')
-
+train_target_seqs = np.load('../data/train_q8.npy').squeeze()
+test_target_seqs = np.load('../data/test_q8.npy').squeeze()
+print("train target shape")
+print(train_target_seqs.shape)
 #profiles
 if normalize:
     # load normalized profiles
@@ -69,7 +70,7 @@ else:
     print("load profiles...")
 X_aug_train=train_profiles
 X_aug_test=test_profiles
-'''
+
 #transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
