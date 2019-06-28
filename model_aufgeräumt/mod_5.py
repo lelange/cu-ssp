@@ -22,7 +22,7 @@ import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
 
 from utils import *
-'''
+
 max_len =700
 maxlen_seq = 700
 
@@ -40,11 +40,11 @@ maxlen_seq = 700
 normalize = False
 standardize = False
 
+print("load data...")
 cullpdb =np.load("../data/cullpdb_train.npy").item()
 data13=np.load("../data/casp13.npy").item()
 cullpdb_df = pd.DataFrame(cullpdb)
 data13_df = pd.DataFrame(data13)
-
 #train and test primary structure
 train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq].values
 test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values
@@ -58,16 +58,23 @@ if normalize:
     # load normalized profiles
     train_profiles = np.load('../data/train_profiles_norm.npy')
     test_profiles = np.load('../data/test_profiles_norm.npy')
+    print("load normalized profiles... ")
 elif standardize:
     train_profiles = np.load('../data/train_profiles_stan.npy')
     test_profiles = np.load('../data/test_profiles_stan.npy')
+    print("load standardized profiles... ")
 else:
     train_profiles = np.load('../data/train_profiles.npy')
     test_profiles = np.load('../data/test_profiles.npy')
-
+    print("load profiles...")
+X_aug_train=train_profiles
+X_aug_test=test_profiles
+'''
 #transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
+print("types:")
+print(type(train_input_seqs), type(train_input_grams))
 
 # Use tokenizer to encode and decode the sequences
 tokenizer_encoder = Tokenizer()
@@ -110,8 +117,8 @@ X_train = X_train[training_idx]
 y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
 
-X_aug_val = train_profiles[validation_idx]
-X_aug_train = train_profiles[training_idx]
+X_aug_val = X_aug_train[validation_idx]
+X_aug_train = X_aug_train[training_idx]
 
 #### end validation
 
