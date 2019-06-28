@@ -64,6 +64,7 @@ def load_augmented_data(npy_path, max_len):
     residue_onehot = data_reshape[:,:,0:22]
     residue_q8_onehot = data_reshape[:,:,22:31]
     profile = data_reshape[:,:,35:57]
+    #pad profiles to same length
     zero_arr = np.zeros((profile.shape[0], max_len - profile.shape[1], profile.shape[2]))
     profile_padded = np.concatenate([profile, zero_arr], axis=1)
 

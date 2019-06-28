@@ -34,7 +34,7 @@ import os
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
 
 from utils import *
-
+'''
 print("##device name:")
 print(tf.test.gpu_device_name())
 print("##gpu available:")
@@ -45,57 +45,65 @@ if device_name != '/device:GPU:0':
     raise SystemError('GPU device not found')
 print('Found GPU at: {}'.format(device_name))
 
-maxlen_seq = 800
+'''
+
+maxlen_seq = 700
+normalize = False
+standardize = False
 
 cullpdb =np.load("../data/cullpdb_train.npy").item()
-
 data13=np.load("../data/casp13.npy").item()
-
 cullpdb_df = pd.DataFrame(cullpdb)
 data13_df = pd.DataFrame(data13)
 
-#train and test
-train_input_seqs, train_target_seqs= cullpdb_df[['seq', 'dssp']][(np.logical_and((cullpdb_df['seq'].apply(len)<=maxlen_seq), (cullpdb_df['dssp'].apply(len)<=maxlen_seq)))].values.T
-test_input_seqs, test_target_seqs = data13_df[['seq','dssp']][(np.logical_and((data13_df['seq'].apply(len)<=maxlen_seq), (data13_df['dssp'].apply(len)<=maxlen_seq)))].values.T
-print('Shape train input seq: ', train_input_seqs.shape)
+#train and test primary structure
+train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq].values
+test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values
+
+#secondary
+train_target_seqs = np.load('../data/train_q8.npy')
+test_target_seqs = np.load('../data/test_q8.npy')
 
 #profiles
-X_pssm_train=cullpdb_df['pssm']
-X_hhm_train=cullpdb_df['hhm']
+if normalize:
+    # load normalized profiles
+    train_profiles = np.load('../data/train_profiles_norm.npy')
+    test_profiles = np.load('../data/test_profiles_norm.npy')
+elif standardize:
+    train_profiles = np.load('../data/train_profiles_stan.npy')
+    test_profiles = np.load('../data/test_profiles_stan.npy')
+else:
+    train_profiles = np.load('../data/train_profiles.npy')
+    test_profiles = np.load('../data/test_profiles.npy')
 
-X_pssm_test=data13_df['pssm']
-X_hhm_test=data13_df['hhm']
-'''
-q8_beta = []
-test_target = []
-for item in dssp:
-    q8_beta.append(item.replace('-', 'L'))
-for item in q8_beta:
-    test_target.append(item.replace('_', 'L'))
-'''
 
-# Using the tokenizer to encode and decode the sequences for use in training
-#tokenizer
+#transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
+test_input_grams = seq2ngrams(test_input_seqs)
+
+# Use tokenizer to encode and decode the sequences
 tokenizer_encoder = Tokenizer()
 tokenizer_encoder.fit_on_texts(train_input_grams)
-tokenizer_decoder = Tokenizer(char_level = True)
+tokenizer_decoder = Tokenizer(char_level = True) #char_level=True means that every character is treated as a token
 tokenizer_decoder.fit_on_texts(train_target_seqs)
 
 #train
 train_input_data = tokenizer_encoder.texts_to_sequences(train_input_grams)
-X_train = sequence.pad_sequences(train_input_data, maxlen = maxlen_seq, padding = 'post')
 train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
-train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
-y_train = to_categorical(train_target_data)
 
 #test
-test_input_grams = seq2ngrams(test_input_seqs)
 test_input_data = tokenizer_encoder.texts_to_sequences(test_input_grams)
-X_test = sequence.pad_sequences(test_input_data, maxlen = maxlen_seq, padding = 'post')
 test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
+
+# pad sequences to maxlen_seq
+X_train = sequence.pad_sequences(train_input_data, maxlen = maxlen_seq, padding = 'post')
+X_test = sequence.pad_sequences(test_input_data, maxlen = maxlen_seq, padding = 'post')
+train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
 test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq, padding = 'post')
+
+# labels to one-hot
 y_test = to_categorical(test_target_data)
+y_train = to_categorical(train_target_data)
 
 # Computing the number of words and number of tags to be passed as parameters to the keras model
 n_words = len(tokenizer_encoder.word_index) + 1
@@ -110,43 +118,25 @@ training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
 
 X_val = X_train[validation_idx]
 X_train = X_train[training_idx]
+
 y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
-X_pssm_val = X_pssm_train[validation_idx]
-X_pssm_train = X_pssm_train[training_idx]
-X_hhm_val = X_hhm_train[validation_idx]
-X_hhm_train = X_hhm_train[training_idx]
 
-print('Shape X_train: ', X_train.shape)
-print('Shape X_pssm_train: ', X_pssm_train.shape)
-print('Shape X_hhm train: ', X_hhm_train.shape)
-print('Shape y_train: ', y_train.shape)
-
+X_aug_val = train_profiles[validation_idx]
+X_aug_train = train_profiles[training_idx]
 
 #### end validation
 
-'''
-Model
-Shape train df:  (5534, 4)
-Shape train input seq:  (5534,)
-
-Shape X_train:  (5234, 768)
-Shape X_aug_train: (5234, 768, 22)
-
-Shape y_train:  (5234, 768, 9)
-'''
-
 def build_model():
     input = Input(shape=(None,))
-    pssp_input = Input(shape=(None,))
-    hhm_input = Input(shape=(None, ))
+    profiles_input = Input(shape=(None, 22))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = concatenate([x1, pssp_input, hhm_input])
+    x1 = concatenate([x1, profiles_input], axis=2)
 
     x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
-    x2 = concatenate([x2, pssp_input, hhm_input])
+    x2 = concatenate([x2, profiles_input], axis=2)
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
@@ -170,21 +160,20 @@ def build_model():
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     return model
 
-
-
 model = build_model()
 
-load_file = "./model/mod_3_HMM-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
-#earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='auto')
+#earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
 # Training the model on the training data and validating using the validation set
-history=model.fit([X_train, X_pssm_train, X_hhm_train], y_train, validation_data=([X_val, X_pssm_val, X_hhm_val], y_val),
+history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
         epochs=5, batch_size=16, callbacks=[checkpointer], verbose=1, shuffle=True)
 
 model.load_weights(load_file)
 print("####evaluate:")
-score = model.evaluate([X_test, X_pssm_test, X_hhm_test], y_test, verbose=2, batch_size = 1)
+score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
 print(score)
 print ('test loss:', score[0])
 print ('test accuracy:', score[2])
+

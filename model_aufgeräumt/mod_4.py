@@ -10,7 +10,7 @@ from keras.regularizers import l2
 from sklearn.model_selection import train_test_split, GridSearchCV
 from keras.metrics import categorical_accuracy
 from keras import backend as K
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, StratifiedKFold, train_test_split
 import tensorflow as tf
 from keras.callbacks import TensorBoard, LearningRateScheduler, ModelCheckpoint, ReduceLROnPlateau
 from datetime import datetime
@@ -95,6 +95,12 @@ y_train = y_train[training_idx]
 X_aug_val = X_aug_train[validation_idx]
 X_aug_train = X_aug_train[training_idx]
 #### end validation
+
+###alternative
+k=5
+folds = list(StratifiedKFold(n_splits=k, shuffle= True, random_state=1).split(X_train, y_train))
+
+###
 
 '''
 #### tensorboard
