@@ -22,7 +22,7 @@ import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint
 
 from utils import *
-'''
+
 max_len =700
 maxlen_seq = 700
 
@@ -74,7 +74,7 @@ else:
     print("load profiles...")
 X_aug_train=train_profiles
 X_aug_test=test_profiles
-
+'''
 #transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
