@@ -131,7 +131,7 @@ X_aug_train = train_profiles[training_idx]
 
 def build_model():
     input = Input(shape=(None,))
-    profiles_input = Input(shape=(None, 22))
+    profiles_input = Input(shape=(None, 50))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
