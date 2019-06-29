@@ -89,8 +89,8 @@ test_target_seqs = test_dssp_q8
 #
 
 ##use only pssm profiles
-train_pssm_list = cullpdb_df['pssm'][seq_range_train].values.squeeze()
-test_pssm_list = data13_df['pssm'][seq_range_test].values.squeeze()
+#train_pssm_list = cullpdb_df['pssm'][seq_range_train].values.squeeze()
+#test_pssm_list = data13_df['pssm'][seq_range_test].values.squeeze()
 
 train_hmm_list = cullpdb_df['hhm'][seq_range_train].values.squeeze()
 test_hmm_list = data13_df['hhm'][seq_range_test].values.squeeze()
@@ -104,18 +104,18 @@ def reshape_and_pad(list):
             for k in range(len_profiles):
                 data[i][j][k]=list[i][j][k]
     return data
-train_pssm = reshape_and_pad(train_pssm_list)
-test_pssm = reshape_and_pad(test_pssm_list)
+#train_pssm = reshape_and_pad(train_pssm_list)
+#test_pssm = reshape_and_pad(test_pssm_list)
 
 train_hmm = reshape_and_pad(train_hmm_list)
 test_hmm = reshape_and_pad(test_hmm_list)
 
-train_profiles = np.concatenate((train_pssm, train_hmm),axis=2)
-test_profiles = np.concatenate((test_pssm, test_hmm),axis=2)
+#train_profiles = np.concatenate((train_pssm, train_hmm),axis=2)
+#test_profiles = np.concatenate((test_pssm, test_hmm),axis=2)
 
 
-X_aug_train=train_profiles
-X_aug_test=test_profiles
+X_aug_train=train_hmm
+X_aug_test=test_hmm
 
 ###end pssm profiles
 
