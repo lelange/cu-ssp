@@ -49,10 +49,10 @@ print('Found GPU at: {}'.format(device_name))
 
 maxlen_seq = 700
 minlen_seq= 100
-normalize = False
+normalize = True
 standardize = False
 pssm = True
-hmm = False
+hmm = True
 
 if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
