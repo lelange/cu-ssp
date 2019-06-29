@@ -57,8 +57,8 @@ cullpdb_df = pd.DataFrame(cullpdb)
 data13_df = pd.DataFrame(data13)
 
 #train and test primary structure
-train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq].values
-test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values
+train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq].values.squeeze()
+test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values.squeeze()
 
 #secondary
 train_target_seqs = np.load('../data/train_q8.npy')

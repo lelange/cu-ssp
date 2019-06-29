@@ -50,8 +50,8 @@ train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq]
 test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values.squeeze()
 
 #secondary
-train_target_seqs = np.load('../data/train_q8.npy').squeeze()
-test_target_seqs = np.load('../data/test_q8.npy').squeeze()
+train_target_seqs = np.load('../data/train_q8.npy')
+test_target_seqs = np.load('../data/test_q8.npy')
 print("train target shape")
 print(train_target_seqs.shape)
 #profiles
@@ -222,12 +222,12 @@ load_file = "./model/mod_5-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h
 earlyStopping = EarlyStopping(monitor='val_accuracy', patience=5, verbose=1, mode='max')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
 
-print("First train seq shape: \n", X_train[0].shape)
-print("First train seq: \n", X_train[0])
-print("First train profile shape: \n", X_aug_train[0].shape)
-print("First train profile: \n", X_aug_train[0])
-print("First train label shape: \n", y_train[0].shape)
-print("First train label: \n", y_train[0])
+print("First train seq shape: ", X_train[0].shape)
+print("First train seq: ", X_train[0])
+print("First train profile shape: ", X_aug_train[0].shape)
+print("First train profile: ", X_aug_train[0])
+print("First train label shape: ", y_train[0].shape)
+print("First train label: ", y_train[0])
 
 history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
         epochs=25, batch_size=64, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
