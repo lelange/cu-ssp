@@ -31,7 +31,8 @@ from keras.layers.recurrent import Recurrent
 from keras.engine import InputSpec
 from keras.engine.topology import Layer
 import os
-from keras.callbacks import EarlyStopping ,ModelCheckpoint
+from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard
+
 
 from utils import *
 
@@ -51,7 +52,7 @@ maxlen_seq = 700
 minlen_seq= 100
 normalize = True
 standardize = False
-pssm = True
+pssm = False
 hmm = True
 
 if not pssm and not hmm:
@@ -217,6 +218,8 @@ load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h
 
 earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
+tensorboard = keras.callbacks.TensorBoard(log_dir='./Graph', histogram_freq=0,
+          write_graph=True, write_images=True)
 # Training the model on the training data and validating using the validation set
 history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
         epochs=10, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
