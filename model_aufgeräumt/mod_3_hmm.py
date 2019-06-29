@@ -73,19 +73,12 @@ if normalize:
         test_pssm = np.load('../data/test_pssm.npy')
         train_pssm = normalize(train_pssm)
         test_pssm= normalize(test_pssm)
-    else:
-        train_pssm = None
-        test_pssm = None
+
     if hmm == True:
         train_hmm = np.load('../data/train_hmm.npy')
         test_hmm = np.load('../data/test_hmm.npy')
         train_hmm = normalize(train_hmm)
         test_hmm= normalize(test_hmm)
-    else:
-        train_hmm = None
-        test_hmm = None
-    train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
-    test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
 
 elif standardize:
     print("load standardized profiles... ")
@@ -94,38 +87,33 @@ elif standardize:
         test_pssm = np.load('../data/test_pssm.npy')
         train_pssm = standardize(train_pssm)
         test_pssm = standardize(test_pssm)
-    else:
-        train_pssm = None
-        test_pssm = None
+
     if hmm == True:
         train_hmm = np.load('../data/train_hmm.npy')
         test_hmm = np.load('../data/test_hmm.npy')
         train_hmm = standardize(train_hmm)
         test_hmm = standardize(test_hmm)
-    else:
-        train_hmm = None
-        test_hmm = None
-    train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
-    test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
 
 else:
     print("load profiles...")
     if pssm == True:
         train_pssm = np.load('../data/train_pssm.npy')
         test_pssm = np.load('../data/test_pssm.npy')
-        
-    else:
-        train_pssm = None
-        test_pssm = None
+
     if hmm == True:
         train_hmm = np.load('../data/train_hmm.npy')
         test_hmm = np.load('../data/test_hmm.npy')
 
-    else:
-        train_hmm = None
-        test_hmm = None
+
+if pssm and hmm:
     train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
     test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
+elif pssm:
+    train_profiles = train_pssm
+    test_profiles = test_pssm
+else:
+    train_profiles = train_hmm
+    test_profiles = test_hmm
 
 X_aug_train=train_profiles
 X_aug_test=test_profiles
