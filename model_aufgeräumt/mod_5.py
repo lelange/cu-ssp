@@ -52,8 +52,7 @@ test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].val
 #secondary
 train_target_seqs = np.load('../data/train_q8.npy')
 test_target_seqs = np.load('../data/test_q8.npy')
-print("train target shape")
-print(train_target_seqs.shape)
+
 #profiles
 if normalize:
     # load normalized profiles

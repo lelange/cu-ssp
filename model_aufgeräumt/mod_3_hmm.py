@@ -49,7 +49,7 @@ print('Found GPU at: {}'.format(device_name))
 
 maxlen_seq = 700
 normalize = False
-standardize = False
+standardize = True
 
 cullpdb =np.load("../data/cullpdb_train.npy").item()
 data13=np.load("../data/casp13.npy").item()
