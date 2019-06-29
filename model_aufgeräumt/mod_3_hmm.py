@@ -48,7 +48,7 @@ print('Found GPU at: {}'.format(device_name))
 
 
 maxlen_seq = 700
-minlen_seq= 0
+minlen_seq= 100
 normalize = False
 standardize = False
 
