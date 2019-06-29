@@ -117,6 +117,8 @@ else:
 
 X_aug_train=train_profiles
 X_aug_test=test_profiles
+
+
 ####
 
 
@@ -171,7 +173,9 @@ y_train = y_train[training_idx]
 X_aug_val = X_aug_train[validation_idx]
 X_aug_train = X_aug_train[training_idx]
 
-
+print("X train shape: ", X_train.shape)
+print("y train shape: ", y_train.shape)
+print("X aug train shape: ", X_aug_train.shape)
 #### end validation
 
 def build_model():
