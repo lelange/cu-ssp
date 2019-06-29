@@ -76,6 +76,8 @@ else:
     train_profiles = np.load('../data/train_profiles.npy')
     test_profiles = np.load('../data/test_profiles.npy')
 
+X_aug_train=train_profiles
+X_aug_test=test_profiles
 
 #transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
@@ -152,7 +154,7 @@ def build_model():
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
 
     # Defining the model as a whole and printing the summary
-    model = Model([input, pssp_input, hhm_input], y)
+    model = Model([input, profiles_input], y)
     # model.summary()
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
