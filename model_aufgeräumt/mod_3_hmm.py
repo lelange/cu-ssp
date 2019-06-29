@@ -92,12 +92,16 @@ elif standardize:
     if pssm == True:
         train_pssm = np.load('../data/train_pssm.npy')
         test_pssm = np.load('../data/test_pssm.npy')
+        train_pssm = standardize(train_pssm)
+        test_pssm = standardize(test_pssm)
     else:
         train_pssm = None
         test_pssm = None
     if hmm == True:
         train_hmm = np.load('../data/train_hmm.npy')
         test_hmm = np.load('../data/test_hmm.npy')
+        train_hmm = standardize(train_hmm)
+        test_hmm = standardize(test_hmm)
     else:
         train_hmm = None
         test_hmm = None
@@ -109,16 +113,14 @@ else:
     if pssm == True:
         train_pssm = np.load('../data/train_pssm.npy')
         test_pssm = np.load('../data/test_pssm.npy')
-        train_pssm = standardize(train_pssm)
-        test_pssm = standardize(test_pssm)
+        
     else:
         train_pssm = None
         test_pssm = None
     if hmm == True:
         train_hmm = np.load('../data/train_hmm.npy')
         test_hmm = np.load('../data/test_hmm.npy')
-        train_hmm = standardize(train_hmm)
-        test_hmm = standardize(test_hmm)
+
     else:
         train_hmm = None
         test_hmm = None
