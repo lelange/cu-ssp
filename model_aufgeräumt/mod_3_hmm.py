@@ -52,10 +52,10 @@ def parse_arguments():
     :return: command line arguments
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--pssm', type=str, required=False, help='use pssm profiles', action='store_true')
-    parser.add_argument('--hmm', type=str, required=False, help='use hmm profiles', action='store_true')
-    parser.add_argument('--normalize', type=str, required=True, help='nomalize profiles', action='store_true')
-    parser.add_argument('--standardize', type=str, required=True, help='standardize profiles', action='store_true')
+    parser.add_argument('--pssm', help='use pssm profiles', action='store_true')
+    parser.add_argument('--hmm', help='use hmm profiles', action='store_true')
+    parser.add_argument('--normalize', help='nomalize profiles', action='store_true')
+    parser.add_argument('--standardize',  help='standardize profiles', action='store_true')
     return parser.parse_args()
 
 parse_arguments()
