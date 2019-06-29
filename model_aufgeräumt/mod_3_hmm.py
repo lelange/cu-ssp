@@ -62,10 +62,10 @@ parse_arguments()
 
 maxlen_seq = 700
 minlen_seq= 100
-normalize = True
-standardize = False
-pssm = False
-hmm = True
+normalize = args.normalize
+standardize = args.standardize
+pssm = args.pssm
+hmm = args.hmm
 
 if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
