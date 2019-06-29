@@ -127,6 +127,13 @@ y_train = y_train[training_idx]
 X_aug_val = train_profiles[validation_idx]
 X_aug_train = train_profiles[training_idx]
 
+
+print("X train shape: ", X_train.shape)
+print("y train shape: ", y_train.shape)
+print("X aug train shape: ", X_aug_train.shape)
+
+sys.exit("Error message")
+
 #### end validation
 
 def build_model():
