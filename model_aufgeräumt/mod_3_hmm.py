@@ -1,4 +1,5 @@
 import sys
+import argparse
 
 sys.path.append('keras-tcn')
 from tcn import tcn
@@ -46,7 +47,18 @@ if device_name != '/device:GPU:0':
     raise SystemError('GPU device not found')
 print('Found GPU at: {}'.format(device_name))
 
+def parse_arguments():
+    """
+    :return: command line arguments
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--pssm', type=str, required=False, help='use pssm profiles', action='store_true')
+    parser.add_argument('--hmm', type=str, required=False, help='use hmm profiles', action='store_true')
+    parser.add_argument('--normalize', type=str, required=True, help='nomalize profiles', action='store_true')
+    parser.add_argument('--standardize', type=str, required=True, help='standardize profiles', action='store_true')
+    return parser.parse_args()
 
+parse_arguments()
 
 maxlen_seq = 700
 minlen_seq= 100
