@@ -222,7 +222,7 @@ model = build_model()
 
 load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
-#earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
+earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
 # Training the model on the training data and validating using the validation set
 history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
