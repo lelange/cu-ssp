@@ -127,7 +127,7 @@ train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
 
 # Use tokenizer to encode and decode the sequences
-tokenizer_encoder = Tokenizer()
+tokenizer_encoder = Tokenizer(char_level = True)
 tokenizer_encoder.fit_on_texts(train_input_grams)
 tokenizer_decoder = Tokenizer(char_level = True) #char_level=True means that every character is treated as a token
 tokenizer_decoder.fit_on_texts(train_target_seqs)
