@@ -58,7 +58,7 @@ def parse_arguments():
     parser.add_argument('--standardize',  help='standardize profiles', action='store_true')
     return parser.parse_args()
 
-parse_arguments()
+args = parse_arguments()
 
 maxlen_seq = 700
 minlen_seq= 100
