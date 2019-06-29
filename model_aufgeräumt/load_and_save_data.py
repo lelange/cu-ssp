@@ -56,8 +56,8 @@ def standardize(data):
 
 print("reshape and pad profiles...")
 train_pssm = reshape_and_pad(train_pssm_list)
-train_hmm = reshape_and_pad(train_hmm_list)
 test_pssm = reshape_and_pad(test_pssm_list)
+train_hmm = reshape_and_pad(train_hmm_list)
 test_hmm = reshape_and_pad(test_hmm_list)
 
 train_profiles = np.concatenate((train_pssm, train_hmm),axis=2)
@@ -65,8 +65,8 @@ test_profiles = np.concatenate((test_pssm, test_hmm),axis=2)
 
 print("normalize profiles...")
 train_pssm_norm = normalize(train_pssm)
-train_hmm_norm = normalize(train_hmm)
 test_pssm_norm = normalize(test_pssm)
+train_hmm_norm = normalize(train_hmm)
 test_hmm_norm = normalize(test_hmm)
 
 train_profiles_norm = np.concatenate((train_pssm_norm, train_hmm_norm),axis=2)

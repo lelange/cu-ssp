@@ -48,8 +48,9 @@ print('Found GPU at: {}'.format(device_name))
 
 
 maxlen_seq = 700
+minlen_seq= 0
 normalize = False
-standardize = True
+standardize = False
 
 cullpdb =np.load("../data/cullpdb_train.npy").item()
 data13=np.load("../data/casp13.npy").item()
@@ -57,9 +58,52 @@ cullpdb_df = pd.DataFrame(cullpdb)
 data13_df = pd.DataFrame(data13)
 
 #train and test primary structure
-train_input_seqs = cullpdb_df[['seq']][cullpdb_df['seq'].apply(len)<=maxlen_seq].values.squeeze()
-test_input_seqs= data13_df[['seq']][data13_df['seq'].apply(len)<=maxlen_seq].values.squeeze()
+train_input_seqs = cullpdb_df[['seq']][minlen_seq <= cullpdb_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
+test_input_seqs= data13_df[['seq']][minlen_seq <= data13_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
 
+
+#load secondary structure
+train_dssp = cullpdb_df['dssp'][minlen_seq <= cullpdb_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
+test_dssp = data13_df['dssp'][minlen_seq <= data13_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
+def make_q8(dssp):
+    q8_beta = []
+    q8 = []
+    for item in dssp:
+        q8_beta.append(item.replace('-', 'L'))
+    for item in q8_beta:
+        q8.append(item.replace('_', 'L'))
+    return q8
+print("change q8 sequences... ")
+train_dssp_q8 = make_q8(train_dssp)
+test_dssp_q8 = make_q8(test_dssp)
+train_target_seqs = train_dssp_q8
+test_target_seqs = test_dssp_q8
+
+#
+
+##use only pssm profiles
+train_pssm_list = cullpdb_df['pssm'][minlen_seq <= cullpdb_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
+test_pssm_list = data13_df['pssm'][minlen_seq <= data13_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
+
+def reshape_and_pad(list):
+    number_seq = len(list)
+    len_profiles = list[0].shape[1]
+    data = np.zeros([number_seq, maxlen_seq, len_profiles])
+    for i in range(number_seq):
+        for j in range(len(list[i])):
+            for k in range(len_profiles):
+                data[i][j][k]=list[i][j][k]
+    return data
+train_pssm = reshape_and_pad(train_pssm_list)
+test_pssm = reshape_and_pad(test_pssm_list)
+
+X_aug_train=train_pssm
+X_aug_test=test_pssm
+
+###end pssm profiles
+
+
+'''
 #secondary
 train_target_seqs = np.load('../data/train_q8.npy')
 test_target_seqs = np.load('../data/test_q8.npy')
@@ -69,15 +113,19 @@ if normalize:
     # load normalized profiles
     train_profiles = np.load('../data/train_profiles_norm.npy')
     test_profiles = np.load('../data/test_profiles_norm.npy')
+    print("load normalized profiles... ")
 elif standardize:
     train_profiles = np.load('../data/train_profiles_stan.npy')
     test_profiles = np.load('../data/test_profiles_stan.npy')
+    print("load standardized profiles... ")
 else:
     train_profiles = np.load('../data/train_profiles.npy')
     test_profiles = np.load('../data/test_profiles.npy')
-
+    print("load profiles...")
 X_aug_train=train_profiles
 X_aug_test=test_profiles
+'''
+
 
 #transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
@@ -124,15 +172,15 @@ X_train = X_train[training_idx]
 y_val = y_train[validation_idx]
 y_train = y_train[training_idx]
 
-X_aug_val = train_profiles[validation_idx]
-X_aug_train = train_profiles[training_idx]
+X_aug_val = X_aug_train[validation_idx]
+X_aug_train = X_aug_train[training_idx]
 
 
 #### end validation
 
 def build_model():
     input = Input(shape=(None,))
-    profiles_input = Input(shape=(None, 50))
+    profiles_input = Input(shape=(None, X_aug_train.shape[2]))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
