@@ -218,7 +218,7 @@ load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h
 
 earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
 checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
-tensorboard = keras.callbacks.TensorBoard(log_dir='./Graph', histogram_freq=0,
+#tensorboard = TensorBoard(log_dir='./Graph', histogram_freq=0,
           write_graph=True, write_images=True)
 # Training the model on the training data and validating using the validation set
 history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
