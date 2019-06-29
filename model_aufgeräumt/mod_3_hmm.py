@@ -84,8 +84,8 @@ if normalize:
     if pssm == True:
         train_pssm = np.load('../data/train_pssm.npy')
         test_pssm = np.load('../data/test_pssm.npy')
-        train_pssm = normal(train_pssm)
-        test_pssm= normal(test_pssm)
+        #train_pssm = normal(train_pssm)
+        #test_pssm= normal(test_pssm)
 
     if hmm == True:
         train_hmm = np.load('../data/train_hmm.npy')
