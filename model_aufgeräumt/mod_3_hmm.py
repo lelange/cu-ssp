@@ -51,97 +51,83 @@ maxlen_seq = 700
 minlen_seq= 100
 normalize = False
 standardize = False
+pssm = True
+hmm = False
 
-cullpdb =np.load("../data/cullpdb_train.npy").item()
-data13=np.load("../data/casp13.npy").item()
-cullpdb_df = pd.DataFrame(cullpdb)
-data13_df = pd.DataFrame(data13)
+if not pssm and not hmm:
+    raise Exception('you should use one of the profiles!')
 
-#select sequence lengths
-seq_train=cullpdb_df['seq']
-seq_test=data13_df['seq']
-seq_range_train = [minlen_seq<=len(seq_train[i])<=maxlen_seq for i in range(len(seq_train))]
-seq_range_test = [minlen_seq<=len(seq_test[i])<=maxlen_seq for i in range(len(seq_test))]
-
-
-#train and test primary structure
-train_input_seqs = cullpdb_df[['seq']][seq_range_train].values.squeeze()
-test_input_seqs= data13_df[['seq']][seq_range_test].values.squeeze()
-
-
-#load secondary structure
-train_dssp = cullpdb_df['dssp'][seq_range_train].values.squeeze()
-test_dssp = data13_df['dssp'][seq_range_test].values.squeeze()
-def make_q8(dssp):
-    q8_beta = []
-    q8 = []
-    for item in dssp:
-        q8_beta.append(item.replace('-', 'L'))
-    for item in q8_beta:
-        q8.append(item.replace('_', 'L'))
-    return q8
-print("change q8 sequences... ")
-train_dssp_q8 = make_q8(train_dssp)
-test_dssp_q8 = make_q8(test_dssp)
-train_target_seqs = train_dssp_q8
-test_target_seqs = test_dssp_q8
-
-#
-
-##use only pssm profiles
-#train_pssm_list = cullpdb_df['pssm'][seq_range_train].values.squeeze()
-#test_pssm_list = data13_df['pssm'][seq_range_test].values.squeeze()
-
-train_hmm_list = cullpdb_df['hhm'][seq_range_train].values.squeeze()
-test_hmm_list = data13_df['hhm'][seq_range_test].values.squeeze()
-
-def reshape_and_pad(list):
-    number_seq = len(list)
-    len_profiles = list[0].shape[1]
-    data = np.zeros([number_seq, maxlen_seq, len_profiles])
-    for i in range(number_seq):
-        for j in range(len(list[i])):
-            for k in range(len_profiles):
-                data[i][j][k]=list[i][j][k]
-    return data
-#train_pssm = reshape_and_pad(train_pssm_list)
-#test_pssm = reshape_and_pad(test_pssm_list)
-
-train_hmm = reshape_and_pad(train_hmm_list)
-test_hmm = reshape_and_pad(test_hmm_list)
-
-#train_profiles = np.concatenate((train_pssm, train_hmm),axis=2)
-#test_profiles = np.concatenate((test_pssm, test_hmm),axis=2)
-
-
-X_aug_train=train_hmm
-X_aug_test=test_hmm
-
-###end pssm profiles
-
-
-'''
-#secondary
+#inputs: primary structure
+train_input_seqs = np.load('../data/train_input.npy')
+test_input_seqs = np.load('../data/test_input.npy')
+#labels: secondary structure
 train_target_seqs = np.load('../data/train_q8.npy')
 test_target_seqs = np.load('../data/test_q8.npy')
 
 #profiles
 if normalize:
     # load normalized profiles
-    train_profiles = np.load('../data/train_profiles_norm.npy')
-    test_profiles = np.load('../data/test_profiles_norm.npy')
     print("load normalized profiles... ")
+    if pssm == True:
+        train_pssm = np.load('../data/train_pssm.npy')
+        test_pssm = np.load('../data/test_pssm.npy')
+        train_pssm = normalize(train_pssm)
+        test_pssm= normalize(test_pssm)
+    else:
+        train_pssm = None
+        test_pssm = None
+    if hmm == True:
+        train_hmm = np.load('../data/train_hmm.npy')
+        test_hmm = np.load('../data/test_hmm.npy')
+        train_hmm = normalize(train_hmm)
+        test_hmm= normalize(test_hmm)
+    else:
+        train_hmm = None
+        test_hmm = None
+    train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
+    test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
+
 elif standardize:
-    train_profiles = np.load('../data/train_profiles_stan.npy')
-    test_profiles = np.load('../data/test_profiles_stan.npy')
     print("load standardized profiles... ")
+    if pssm == True:
+        train_pssm = np.load('../data/train_pssm.npy')
+        test_pssm = np.load('../data/test_pssm.npy')
+    else:
+        train_pssm = None
+        test_pssm = None
+    if hmm == True:
+        train_hmm = np.load('../data/train_hmm.npy')
+        test_hmm = np.load('../data/test_hmm.npy')
+    else:
+        train_hmm = None
+        test_hmm = None
+    train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
+    test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
+
 else:
-    train_profiles = np.load('../data/train_profiles.npy')
-    test_profiles = np.load('../data/test_profiles.npy')
     print("load profiles...")
+    if pssm == True:
+        train_pssm = np.load('../data/train_pssm.npy')
+        test_pssm = np.load('../data/test_pssm.npy')
+        train_pssm = standardize(train_pssm)
+        test_pssm = standardize(test_pssm)
+    else:
+        train_pssm = None
+        test_pssm = None
+    if hmm == True:
+        train_hmm = np.load('../data/train_hmm.npy')
+        test_hmm = np.load('../data/test_hmm.npy')
+        train_hmm = standardize(train_hmm)
+        test_hmm = standardize(test_hmm)
+    else:
+        train_hmm = None
+        test_hmm = None
+    train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
+    test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
+
 X_aug_train=train_profiles
 X_aug_test=test_profiles
-'''
+####
 
 
 #transform sequence to n-grams, default n=3

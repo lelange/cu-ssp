@@ -12,6 +12,18 @@ import os, pickle
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
 
+def normalize(data):
+    min = np.min(data)
+    max = np.max(data)
+    data_ = (data-min)/(max-min)
+    return data_
+
+def standardize(data):
+    mean = np.mean(data)
+    std = np.std(data)
+    data_ = (data - mean) / std
+    return data_
+
 # The custom accuracy metric used for this task
 def accuracy(y_true, y_predicted):
     y = tf.argmax(y_true, axis =- 1)
