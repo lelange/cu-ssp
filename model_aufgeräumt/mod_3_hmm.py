@@ -57,14 +57,21 @@ data13=np.load("../data/casp13.npy").item()
 cullpdb_df = pd.DataFrame(cullpdb)
 data13_df = pd.DataFrame(data13)
 
+#select sequence lengths
+seq_train=cullpdb_df['seq']
+seq_test=data13_df['seq']
+seq_range_train = [minlen_seq<=len(seq_train[i])<=maxlen_seq for i in range(len(seq_train))]
+seq_range_test = [minlen_seq<=len(seq_test[i])<=maxlen_seq for i in range(len(seq_test))]
+
+
 #train and test primary structure
-train_input_seqs = cullpdb_df[['seq']][minlen_seq <= cullpdb_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
-test_input_seqs= data13_df[['seq']][minlen_seq <= data13_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
+train_input_seqs = cullpdb_df[['seq']][seq_range_train].values.squeeze()
+test_input_seqs= data13_df[['seq']][seq_range_test].values.squeeze()
 
 
 #load secondary structure
-train_dssp = cullpdb_df['dssp'][minlen_seq <= cullpdb_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
-test_dssp = data13_df['dssp'][minlen_seq <= data13_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
+train_dssp = cullpdb_df['dssp'][seq_range_train].values.squeeze()
+test_dssp = data13_df['dssp'][seq_range_test].values.squeeze()
 def make_q8(dssp):
     q8_beta = []
     q8 = []
@@ -82,8 +89,8 @@ test_target_seqs = test_dssp_q8
 #
 
 ##use only pssm profiles
-train_pssm_list = cullpdb_df['pssm'][minlen_seq <= cullpdb_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
-test_pssm_list = data13_df['pssm'][minlen_seq <= data13_df['seq'].apply(len) <= maxlen_seq].values.squeeze()
+train_pssm_list = cullpdb_df['pssm'][seq_range_train].values.squeeze()
+test_pssm_list = data13_df['pssm'][seq_range_test].values.squeeze()
 
 def reshape_and_pad(list):
     number_seq = len(list)
