@@ -92,6 +92,9 @@ test_target_seqs = test_dssp_q8
 train_pssm_list = cullpdb_df['pssm'][seq_range_train].values.squeeze()
 test_pssm_list = data13_df['pssm'][seq_range_test].values.squeeze()
 
+train_hmm_list = cullpdb_df['hhm'][seq_range_train].values.squeeze()
+test_hmm_list = data13_df['hhm'][seq_range_test].values.squeeze()
+
 def reshape_and_pad(list):
     number_seq = len(list)
     len_profiles = list[0].shape[1]
@@ -104,8 +107,15 @@ def reshape_and_pad(list):
 train_pssm = reshape_and_pad(train_pssm_list)
 test_pssm = reshape_and_pad(test_pssm_list)
 
-X_aug_train=train_pssm
-X_aug_test=test_pssm
+train_hmm = reshape_and_pad(train_hmm_list)
+test_hmm = reshape_and_pad(test_hmm_list)
+
+train_profiles = np.concatenate((train_pssm, train_hmm),axis=2)
+test_profiles = np.concatenate((test_pssm, test_hmm),axis=2)
+
+
+X_aug_train=train_profiles
+X_aug_test=test_profiles
 
 ###end pssm profiles
 
@@ -165,6 +175,9 @@ y_train = to_categorical(train_target_data)
 # Computing the number of words and number of tags to be passed as parameters to the keras model
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
+
+print("number words or endoder word index: ", n_words)
+print("number tags or decoder word index: ", n_tags)
 
 #### validation data
 
