@@ -12,13 +12,13 @@ import os, pickle
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
 
-def normalize(data):
+def normal(data):
     min = np.min(data)
     max = np.max(data)
     data_ = (data-min)/(max-min)
     return data_
 
-def standardize(data):
+def standard(data):
     mean = np.mean(data)
     std = np.std(data)
     data_ = (data - mean) / std

@@ -71,28 +71,28 @@ if normalize:
     if pssm == True:
         train_pssm = np.load('../data/train_pssm.npy')
         test_pssm = np.load('../data/test_pssm.npy')
-        train_pssm = normalize(train_pssm)
-        test_pssm= normalize(test_pssm)
+        train_pssm = normal(train_pssm)
+        test_pssm= normal(test_pssm)
 
     if hmm == True:
         train_hmm = np.load('../data/train_hmm.npy')
         test_hmm = np.load('../data/test_hmm.npy')
-        train_hmm = normalize(train_hmm)
-        test_hmm= normalize(test_hmm)
+        train_hmm = normal(train_hmm)
+        test_hmm= normal(test_hmm)
 
 elif standardize:
     print("load standardized profiles... ")
     if pssm == True:
         train_pssm = np.load('../data/train_pssm.npy')
         test_pssm = np.load('../data/test_pssm.npy')
-        train_pssm = standardize(train_pssm)
-        test_pssm = standardize(test_pssm)
+        train_pssm = standard(train_pssm)
+        test_pssm = standard(test_pssm)
 
     if hmm == True:
         train_hmm = np.load('../data/train_hmm.npy')
         test_hmm = np.load('../data/test_hmm.npy')
-        train_hmm = standardize(train_hmm)
-        test_hmm = standardize(test_hmm)
+        train_hmm = standard(train_hmm)
+        test_hmm = standard(test_hmm)
 
 else:
     print("load profiles...")
