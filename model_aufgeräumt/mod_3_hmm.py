@@ -212,7 +212,7 @@ def build_model():
 
 '''
 
-def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
+def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs = 5):
 
     model = build_model()
 
@@ -223,7 +223,7 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
     #tensorboard = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=7, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+            epochs=epochs, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
 
     model.load_weights(load_file)
     print("####evaluate:")
@@ -289,20 +289,20 @@ else:
     X_train_aug = [X_train, X_aug_train]
     X_val_aug = [X_val, X_aug_val]
     X_test_aug = [X_test, X_aug_test]
-    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test)
+    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=1)
 
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
-print("The program needed {:.2}s to load the data and {:.2}min {:.2}s in total.".format(time_data, m, s))
+print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-def message_me(model_name, m, s, cv_scores):
+def message_me(model_name, m, s):
     username = 'charlie.gpu'
     password = '19cee1Et742'
     recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
     client = fbchat.Client(username, password)
     msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F61A '
-                       '\n\n(Gesamtlaufzeit {:02}min {:02}s)'.format(model_name, m, s))
+                       '\n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s))
 
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
