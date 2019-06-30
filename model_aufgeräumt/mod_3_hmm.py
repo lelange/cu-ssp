@@ -208,9 +208,7 @@ def build_model():
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     return model
 '''
-X_train_aug = [X_train, X_aug_train]
-X_val_aug = [X_val, X_aug_val]
-X_test_aug = [X_test,X_aug_test]
+
 
 '''
 
@@ -235,38 +233,64 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
     print ('test accuracy:', score[2])
     return model, score[2]
 
-# Instantiate the cross validator
-kfold_splits = 10
-kf = KFold(n_splits=kfold_splits, shuffle=True)
 
-cv_scores = []
-model_history = []
 
-# Loop through the indices the split() method returns
-for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
-    print("Training on fold " + str(index + 1) + "/10...")
-    # Generate batches from indices
-    X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
-    X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
-    y_train_fold, y_val_fold = y_train[train_indices], y_train[val_indices]
+def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test):
+    # Instantiate the cross validator
+    kfold_splits = n_folds
+    kf = KFold(n_splits=kfold_splits, shuffle=True)
 
-    print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
-        X_val_fold.shape[0]) + " validation samples...")
+    cv_scores = []
+    model_history = []
 
-    X_train_aug_fold = [X_train_fold, X_aug_train_fold]
-    X_val_aug_fold = [X_val_fold, X_aug_val_fold]
+    # Loop through the indices the split() method returns
+    for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
+        print("Training on fold " + str(index + 1) + "/"+kfold_splits+"...")
+        # Generate batches from indices
+        X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
+        X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
+        y_train_fold, y_val_fold = y_train[train_indices], y_train[val_indices]
 
-    X_test_aug = [X_test, X_aug_test]
+        print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
+            X_val_fold.shape[0]) + " validation samples...")
 
-    model, test_acc = train_model(X_train_aug_fold, y_train_fold,
+        X_train_aug_fold = [X_train_fold, X_aug_train_fold]
+        X_val_aug_fold = [X_val_fold, X_aug_val_fold]
+
+        X_test_aug = [X_test, X_aug_test]
+
+        model, test_acc = train_model(X_train_aug_fold, y_train_fold,
                                   X_val_aug_fold, y_val_fold,
                                   X_test_aug, y_test)
 
-    print('>%.3f' % test_acc)
-    cv_scores.append(test_acc)
-    model_history.append(model)
+        print('>%.3f' % test_acc)
+        cv_scores.append(test_acc)
+        model_history.append(model)
+    return cv_scores, model_history
 
-print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
+crossvalidate = False
+
+if crossvalidate :
+    cv_scores, model_history = crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test)
+    print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
+else:
+    n_samples = len(train_df)
+    np.random.seed(0)
+    validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+    training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
+
+    X_val = X_train[validation_idx]
+    X_train = X_train[training_idx]
+    y_val = y_train[validation_idx]
+    y_train = y_train[training_idx]
+    X_aug_val = X_aug_train[validation_idx]
+    X_aug_train = X_aug_train[training_idx]
+
+    X_train_aug = [X_train, X_aug_train]
+    X_val_aug = [X_val, X_aug_val]
+    X_test_aug = [X_test, X_aug_test]
+    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test)
+
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
@@ -278,8 +302,7 @@ def message_me(model_name, m, s, cv_scores):
     recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
     client = fbchat.Client(username, password)
     msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F61A '
-                       '\n\n(Gesamtlaufzeit {:02}min {:02}s)'
-                       '\n\n Die Geschätzte Genauigkeit ist %.3f (%.3f)'.format(model_name, m, s, np.mean(cv_scores), np.std(cv_scores)))
+                       '\n\n(Gesamtlaufzeit {:02}min {:02}s)'.format(model_name, m, s))
 
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
