@@ -270,7 +270,7 @@ print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores))
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
-print("The program needed {:.2}s to load the data and {:02d}min {:02d}s in total.".format(time_data, m, s))
+print("The program needed {:.2}s to load the data and {:.2}min {:.2}s in total.".format(time_data, m, s))
 
 def message_me(model_name, m, s, cv_scores):
     username = 'charlie.gpu'
@@ -278,7 +278,7 @@ def message_me(model_name, m, s, cv_scores):
     recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
     client = fbchat.Client(username, password)
     msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F61A '
-                       '\n\n(Gesamtlaufzeit {:02d}min {:02d}s)'
+                       '\n\n(Gesamtlaufzeit {:02}min {:02}s)'
                        '\n\n Die Geschätzte Genauigkeit ist %.3f (%.3f)'.format(model_name, m, s, np.mean(cv_scores), np.std(cv_scores)))
 
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
