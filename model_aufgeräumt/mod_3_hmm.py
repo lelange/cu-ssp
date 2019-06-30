@@ -274,7 +274,7 @@ if crossvalidate :
     cv_scores, model_history = crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test)
     print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
 else:
-    n_samples = len(train_df)
+    n_samples = len(X_train)
     np.random.seed(0)
     validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
