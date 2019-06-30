@@ -1,56 +1,44 @@
 import sys
+import os
 import argparse
-
-sys.path.append('keras-tcn')
-from tcn import tcn
-import h5py
-from sklearn.model_selection import KFold
-import tensorflow as tf
+import time
 import numpy as np
 import dill as pickle
 import pandas as pd
+import tensorflow as tf
+sys.path.append('keras-tcn')
+from tcn import tcn
+import h5py
+
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+
+from keras import backend as K
+from keras import regularizers, constraints, initializers, activations
+
+from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard
+from keras.engine import InputSpec
+from keras.engine.topology import Layer
+from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU
+from keras.layers import Dropout, Flatten, Activation, RepeatVector, Permute
+
+from keras.layers import Dropout
+from keras.layers import merge
+from keras.layers.merge import concatenate
+from keras.layers.recurrent import Recurrent
+from keras.metrics import categorical_accuracy
+from keras.models import Model, Input, Sequential
+from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-from keras.models import Model, Input
-from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU
-from sklearn.model_selection import train_test_split
-from keras.metrics import categorical_accuracy
-from keras import backend as K
-from keras.models import Sequential
-from keras.layers import Dropout, Flatten, Activation, RepeatVector, Permute
-import tensorflow as tf
-from keras.layers.merge import concatenate
-# from google.colab import files
-from keras.layers import Dropout
-from keras import regularizers
-from keras.layers import merge
-from keras.optimizers import Adam
-from keras import backend as K
-from keras import regularizers, constraints, initializers, activations
-from keras.layers.recurrent import Recurrent
-from keras.engine import InputSpec
-from keras.engine.topology import Layer
-import os
-from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard
-
 import fbchat
 from fbchat.models import *
 import emoji
-#from getpass import getpass
-
 from utils import *
 
-import time
 start_time = time.time()
-
-print("--- %s seconds ---" % (time.time() - start_time))
-
 '''
-username = "annalena.lange.58"
-password = getpass()
-'''
-
 print("##device name:")
 print(tf.test.gpu_device_name())
 print("##gpu available:")
@@ -60,6 +48,8 @@ device_name = tf.test.gpu_device_name()
 if device_name != '/device:GPU:0':
     raise SystemError('GPU device not found')
 print('Found GPU at: {}'.format(device_name))
+
+'''
 
 def parse_arguments():
     """
@@ -145,16 +135,14 @@ else:
 X_aug_train=train_profiles
 X_aug_test=test_profiles
 
-
 ####
-
 
 #transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
 
 # Use tokenizer to encode and decode the sequences
-tokenizer_encoder = Tokenizer(char_level = True)
+tokenizer_encoder = Tokenizer()
 tokenizer_encoder.fit_on_texts(train_input_grams)
 tokenizer_decoder = Tokenizer(char_level = True) #char_level=True means that every character is treated as a token
 tokenizer_decoder.fit_on_texts(train_target_seqs)
@@ -184,30 +172,10 @@ n_tags = len(tokenizer_decoder.word_index) + 1
 print("number words or endoder word index: ", n_words)
 print("number tags or decoder word index: ", n_tags)
 
-#### validation data
-
-n_samples = train_input_seqs.shape[0]
-np.random.seed(0)
-validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
-training_idx = np.array(list(set(np.arange(n_samples))-set(validation_idx)))
-
-X_val = X_train[validation_idx]
-X_train = X_train[training_idx]
-
-y_val = y_train[validation_idx]
-y_train = y_train[training_idx]
-
-X_aug_val = X_aug_train[validation_idx]
-X_aug_train = X_aug_train[training_idx]
-
-print("X train shape: ", X_train.shape)
-print("y train shape: ", y_train.shape)
-print("X aug train shape: ", X_aug_train.shape)
-#### end validation
-
 time_data = time.time() - start_time
 
 def build_model():
+    model = None
     input = Input(shape=(None,))
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
 
@@ -239,33 +207,78 @@ def build_model():
     adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     return model
+'''
+X_train_aug = [X_train, X_aug_train]
+X_val_aug = [X_val, X_aug_val]
+X_test_aug = [X_test,X_aug_test]
 
-model = build_model()
+'''
 
-load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
 
-earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
-checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
-#tensorboard = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
-# Training the model on the training data and validating using the validation set
-history=model.fit([X_train, X_aug_train], y_train, validation_data=([X_val, X_aug_val], y_val),
-        epochs=10, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+    model = build_model()
 
-model.load_weights(load_file)
-print("####evaluate:")
-score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
-print(score)
-print ('test loss:', score[0])
-print ('test accuracy:', score[2])
+    load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+
+    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
+    checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
+    #tensorboard = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
+    # Training the model on the training data and validating using the validation set
+    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
+            epochs=5, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+
+    model.load_weights(load_file)
+    print("####evaluate:")
+    score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
+    print(score)
+    print ('test loss:', score[0])
+    print ('test accuracy:', score[2])
+    return model, score[2]
+
+# Instantiate the cross validator
+kfold_splits = 2
+kf = KFold(n_splits=kfold_splits, shuffle=True)
+
+cv_scores = []
+model_history = []
+
+# Loop through the indices the split() method returns
+for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
+    print("Training on fold " + str(index + 1) + "/10...")
+    # Generate batches from indices
+    X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
+    X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
+    y_train_fold, y_val_fold = y_train[train_indices], y_train[val_indices]
+
+    print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
+        X_val_fold.shape[0]) + " validation samples...")
+
+    X_train_aug_fold = [X_train_fold, X_aug_train_fold]
+    X_val_aug_fold = [X_val_fold, X_aug_val_fold]
+
+    X_test_aug = [X_test, X_aug_test]
+
+    model, test_acc = train_model(X_train_aug_fold, y_train_fold,
+                                  X_val_aug_fold, y_val_fold,
+                                  X_test_aug, y_test)
+    
+    print('>%.3f' % test_acc)
+    cv_scores.append(test_acc)
+    model_history.append(model)
+
+print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
 
 time_end = time.time() - start_time
+m, s = divmod(time_end, 60)
+print("The program needed {:.2}s to load the data and {:02d}min {:02d}s in total.".format(time_data, m, s))
 
-print("The program needed {:.2}s to load the data and {:.2}min in total.".format(time_data, time_end/60))
-username = 'charlie.gpu'
-password = '19cee1Et742'
-recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
-client = fbchat.Client(username, password)
+def message_me(model_name, m, s):
+    username = 'charlie.gpu'
+    password = '19cee1Et742'
+    recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
+    client = fbchat.Client(username, password)
+    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F61A \n\n(Gesamtlaufzeit {:02d}min {:02d}s)'.format(model_name, m, s))
+    sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
+    client.logout()
 
-msg = Message(text='{} ist erfolgreich durchgelaufen! :tada: \n\n(Gesamtlaufzeit {:.2}min)'.format(sys.argv[0], time_end/60))
-sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
-client.logout()
+message_me(sys.argv[0], m, s)
