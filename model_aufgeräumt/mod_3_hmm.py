@@ -225,7 +225,7 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
     #tensorboard = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=5, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+            epochs=7, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
 
     model.load_weights(load_file)
     print("####evaluate:")
@@ -236,7 +236,7 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
     return model, score[2]
 
 # Instantiate the cross validator
-kfold_splits = 2
+kfold_splits = 10
 kf = KFold(n_splits=kfold_splits, shuffle=True)
 
 cv_scores = []
@@ -261,7 +261,7 @@ for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train))
     model, test_acc = train_model(X_train_aug_fold, y_train_fold,
                                   X_val_aug_fold, y_val_fold,
                                   X_test_aug, y_test)
-    
+
     print('>%.3f' % test_acc)
     cv_scores.append(test_acc)
     model_history.append(model)
@@ -272,12 +272,15 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.2}s to load the data and {:02d}min {:02d}s in total.".format(time_data, m, s))
 
-def message_me(model_name, m, s):
+def message_me(model_name, m, s, cv_scores):
     username = 'charlie.gpu'
     password = '19cee1Et742'
     recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
     client = fbchat.Client(username, password)
-    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F61A \n\n(Gesamtlaufzeit {:02d}min {:02d}s)'.format(model_name, m, s))
+    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F61A '
+                       '\n\n(Gesamtlaufzeit {:02d}min {:02d}s)'
+                       '\n\n Die Geschätzte Genauigkeit ist %.3f (%.3f)'.format(model_name, m, s, np.mean(cv_scores), np.std(cv_scores)))
+
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
 
