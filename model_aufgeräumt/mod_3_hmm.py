@@ -36,6 +36,7 @@ from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard
 
 import fbchat
 from fbchat.models import *
+import emoji
 #from getpass import getpass
 
 from utils import *
@@ -265,6 +266,6 @@ password = '19cee1Et742'
 recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
 client = fbchat.Client(username, password)
 
-msg = Message(text='{} ist erfolgreich durchgelaufen! 🎉 \n\n(Gesamtlaufzeit {:.2}min)'.format(sys.argv[0], time_end/60))
+msg = Message(text='{} ist erfolgreich durchgelaufen! :tada: \n\n(Gesamtlaufzeit {:.2}min)'.format(sys.argv[0], time_end/60))
 sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
 client.logout()
