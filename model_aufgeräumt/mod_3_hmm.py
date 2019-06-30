@@ -36,12 +36,19 @@ from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard
 
 import fbchat
 from fbchat.models import *
-from getpass import getpass
+#from getpass import getpass
 
 from utils import *
 
+import time
+start_time = time.time()
+
+print("--- %s seconds ---" % (time.time() - start_time))
+
+'''
 username = "annalena.lange.58"
 password = getpass()
+'''
 
 print("##device name:")
 print(tf.test.gpu_device_name())
@@ -197,6 +204,8 @@ print("y train shape: ", y_train.shape)
 print("X aug train shape: ", X_aug_train.shape)
 #### end validation
 
+time_data = time.time() - start_time
+
 def build_model():
     input = Input(shape=(None,))
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
@@ -248,10 +257,14 @@ print(score)
 print ('test loss:', score[0])
 print ('test accuracy:', score[2])
 
-client = fbchat.Client(username, password)
-msg = "Hi, hier ist Charlie. Dein Programm"+sys.argv[0]+"ist erfolgreich durchgelaufen."
-sent = client.send(Message(text=msg), thread_id=client.uid, thread_type=ThreadType.USER)
+time_end = time.time() - start_time
 
-if sent:
-        print("Message sent successfully!")
+print("The program needed {:.2}s to load the data and {:.2}min in total.".format(time_data, time_end/60))
+username = 'charlie.gpu'
+password = '19cee1Et742'
+recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
+client = fbchat.Client(username, password)
+
+msg = Message(text='{} ist erfolgreich durchgelaufen! 🎉 \n\n(Gesamtlaufzeit {:.2}min)'.format(sys.argv[0], time_end/60))
+sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
 client.logout()
