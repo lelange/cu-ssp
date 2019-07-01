@@ -15,6 +15,8 @@ residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
 #Get 1024-dimensional embedding for per-protein predictions:
 protein_embd = torch.tensor(embedding).sum(dim=0).mean(dim=0) # Vector with shape [1024]
 
+test = residue_embd.cpu().detach().numpy()
 print(embedding.shape)
 print(residue_embd.shape)
 print(protein_embd.shape)
+print(test.shape)
