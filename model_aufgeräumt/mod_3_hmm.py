@@ -201,9 +201,8 @@ def build_model():
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     #x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = Dense(1024, activation="relu")(input)
-    x11 = Dense(1024, activation = "relu")(profiles_input)
-    x1 = concatenate([x1, x11])
+    x1 = Dense(700, activation="relu")(input)
+    x1 = concatenate([x1, profiles_input])
 
     #x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
     x2 = concatenate([x2, profiles_input])
