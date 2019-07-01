@@ -187,6 +187,10 @@ n_tags = len(tokenizer_decoder.word_index) + 1
 y_test = to_categorical(test_target_data)
 y_train = to_categorical(train_target_data)
 
+print("X train shape: ", X_train.shape)
+print("y train shape: ", y_train.shape)
+print("X aug train shape: ", X_aug_train.shape)
+
 
 time_data = time.time() - start_time
 
@@ -196,11 +200,11 @@ def build_model():
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
-    x1 = input #Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = concatenate([x1, profiles_input], axis=2)
+    x1 = Dense(, activation="relu")(input) #Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
+    x1 = concatenate([x1, profiles_input])
 
     x2 = input #Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
-    x2 = concatenate([x2, profiles_input], axis=2)
+    x2 = concatenate([x2, profiles_input])
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
