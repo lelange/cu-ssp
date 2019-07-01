@@ -105,3 +105,8 @@ venv.bak/
 
 model_5/cb6133filtered_profile.csv
 model_5/cb513_profile.csv
+data
+model_5/cb513.csv
+model_5/cb6133.csv
+model_5/cb6133_profile.csv
+model_5/cb6133filtered.csv
