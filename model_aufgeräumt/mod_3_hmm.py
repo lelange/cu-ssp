@@ -60,6 +60,7 @@ def parse_arguments():
     parser.add_argument('--hmm', help='use hmm profiles', action='store_true')
     parser.add_argument('--normalize', help='nomalize profiles', action='store_true')
     parser.add_argument('--standardize',  help='standardize profiles', action='store_true')
+    parser.add_argument('--cv', help='use crossvalidation' , action= 'store_true')
     return parser.parse_args()
 
 args = parse_arguments()
@@ -268,9 +269,9 @@ def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test):
         model_history.append(model)
     return cv_scores, model_history
 
-crossvalidate = False
 
-if crossvalidate :
+
+if args.cv :
     cv_scores, model_history = crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test)
     print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
 else:
@@ -289,7 +290,7 @@ else:
     X_train_aug = [X_train, X_aug_train]
     X_val_aug = [X_val, X_aug_val]
     X_test_aug = [X_test, X_aug_test]
-    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=1)
+    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=10)
 
 
 time_end = time.time() - start_time
