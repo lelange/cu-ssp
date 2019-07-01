@@ -20,6 +20,7 @@ embedding = seqvec.embed_sentence( list(seq) ) # List-of-Lists with shape [3,L,1
 #Get 1024-dimensional embedding for per-protein predictions:
 protein_embd = torch.tensor(embedding).sum(dim=0).mean(dim=0) # Vector with shape [1024]
 test = protein_embd.cpu().detach().numpy()
+print(test)
 print(embedding.shape)
 print(protein_embd.shape)
 print(test.shape)
