@@ -24,6 +24,7 @@ from keras.layers import Dropout, Flatten, Activation, RepeatVector, Permute
 
 from keras.layers import Dropout
 from keras.layers import merge
+from keras.layers.core import Reshape
 from keras.layers.merge import concatenate
 from keras.layers.recurrent import Recurrent
 from keras.metrics import categorical_accuracy
@@ -166,11 +167,11 @@ def build_model():
     model = None
     input = Input(shape=(None,))
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
-    profiles_input = profiles_input.reshape((None,))
+    reshaped = Reshape((None,))(profiles_input)
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     #x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = Dense(250, activation="relu")(profiles_input)
+    x1 = Dense(250, activation="relu")(reshaped)
     print(x1.shape)
     print(input.shape)
     x1 = concatenate([x1, input])
