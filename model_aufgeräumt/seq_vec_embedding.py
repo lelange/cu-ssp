@@ -2,7 +2,7 @@ from allennlp.commands.elmo import ElmoEmbedder
 from pathlib import Path
 import torch
 
-model_dir = Path('path_to_pretrained_SeqVec_directory')
+model_dir = Path('../../seqVec')
 weights = model_dir / 'weights.hdf5'
 options = model_dir / 'options.json'
 seqvec  = ElmoEmbedder(options,weights,cuda_device=0) # cuda_device=-1 for CPU
