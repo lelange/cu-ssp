@@ -10,5 +10,6 @@ seqvec  = ElmoEmbedder(options,weights,cuda_device=0) # cuda_device=-1 for CPU
 seq = 'SEQWENCE' # your amino acid sequence
 embedding = seqvec.embed_sentence( list(seq) ) # List-of-Lists with shape [3,L,1024]
 print(seq, embedding)
+print(embedding.shape)
 #Get 1024-dimensional embedding for per-residue predictions:
 #residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
