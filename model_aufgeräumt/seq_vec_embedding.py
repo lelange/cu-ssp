@@ -17,7 +17,7 @@ test_input = np.load('../data/test_input.npy')
 
 #Get embedding for amino acid sequence:
 seq = train_input[0]
-print(seq.shape)
+print(seq)
 embedding = seqvec.embed_sentence( list(seq) ) # List-of-Lists with shape [3,L,1024]
 
 #Get 1024-dimensional embedding for per-residue predictions:
