@@ -21,8 +21,9 @@ def calculate_and_save_embedding(input):
     # Get embedding for amino acid sequence:
     input_embedding = []
     times = []
-    t1 = time.time()
+
     for i, seq in enumerate(input):
+        t1 = time.time()
         print('\n \n----------------------')
         print('----------------------')
         print('Sequence ', (i + 1), '/', len(input))

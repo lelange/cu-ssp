@@ -76,8 +76,8 @@ if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
 
 #inputs: primary structure
-train_input_seqs = np.load('../data/train_input.npy')
-test_input_seqs = np.load('../data/test_input.npy')
+train_input_seqs = np.load('../data/train_input_embedding.npy')
+test_input_seqs = np.load('../data/test_input_embedding.npy')
 #labels: secondary structure
 train_target_seqs = np.load('../data/train_q8.npy')
 test_target_seqs = np.load('../data/test_q8.npy')
@@ -137,7 +137,7 @@ X_aug_train=train_profiles
 X_aug_test=test_profiles
 
 ####
-
+'''
 #transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
@@ -162,16 +162,31 @@ X_test = sequence.pad_sequences(test_input_data, maxlen = maxlen_seq, padding = 
 train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
 test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq, padding = 'post')
 
-# labels to one-hot
-y_test = to_categorical(test_target_data)
-y_train = to_categorical(train_target_data)
-
 # Computing the number of words and number of tags to be passed as parameters to the keras model
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
 print("number words or endoder word index: ", n_words)
 print("number tags or decoder word index: ", n_tags)
+'''
+#?# maxlen_seq = len(test_input_seqs[0])
+X_train = train_input_seqs
+X_test = test_input_seqs
+
+tokenizer_decoder = Tokenizer(char_level = True) #char_level=True means that every character is treated as a token
+tokenizer_decoder.fit_on_texts(train_target_seqs)
+train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
+test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
+
+train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
+test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq, padding = 'post')
+
+n_tags = len(tokenizer_decoder.word_index) + 1
+
+# labels to one-hot
+y_test = to_categorical(test_target_data)
+y_train = to_categorical(train_target_data)
+
 
 time_data = time.time() - start_time
 
@@ -181,10 +196,10 @@ def build_model():
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
-    x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
+    x1 = input #Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
     x1 = concatenate([x1, profiles_input], axis=2)
 
-    x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
+    x2 = input #Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
     x2 = concatenate([x2, profiles_input], axis=2)
 
     x1 = Dense(1200, activation="relu")(x1)
@@ -208,10 +223,6 @@ def build_model():
     adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     return model
-'''
-
-
-'''
 
 def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs = 5):
 
@@ -236,7 +247,7 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
 
 
 
-def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test):
+def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test, n_folds=10):
     # Instantiate the cross validator
     kfold_splits = n_folds
     kf = KFold(n_splits=kfold_splits, shuffle=True)
