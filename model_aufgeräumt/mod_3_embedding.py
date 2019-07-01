@@ -66,7 +66,7 @@ def parse_arguments():
 
 args = parse_arguments()
 
-maxlen_seq = 1024
+maxlen_seq = 700
 minlen_seq= 100
 normalize = args.normalize
 standardize = args.standardize
@@ -169,10 +169,11 @@ def build_model():
     profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2]))
     #reshaped = Reshape((None,))(profiles_input)
     #reshaped = Flatten()(profiles_input)
-
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
-    x1 = Embedding(input_dim=24, output_dim=250, input_length=None)(input)
+    x1 = Embedding(input_dim=24, output_dim=175, input_length=None)(input)
+    x1 =Reshape((None, 700, 256))
     #x1 = Dense(250, activation="relu")(reshaped)
+
     print(x1.shape)
     print(input.shape)
     x1 = concatenate([x1, profiles_input])
