@@ -302,7 +302,7 @@ def message_me(model_name, m, s):
     password = '19cee1Et742'
     recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
     client = fbchat.Client(username, password)
-    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F61A '
+    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F973 '
                        '\n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s))
 
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
