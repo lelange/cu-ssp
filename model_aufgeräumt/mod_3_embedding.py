@@ -167,7 +167,8 @@ def build_model():
     model = None
     input = Input(shape=(None,))
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
-    reshaped = Reshape((None,))(profiles_input)
+    #reshaped = Reshape((None,))(profiles_input)
+    reshaped = Flatten()(profiles_input)
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     #x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
