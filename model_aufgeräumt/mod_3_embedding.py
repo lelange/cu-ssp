@@ -76,8 +76,8 @@ if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
 
 #inputs: primary structure
-train_input_seqs = np.load('../data/train_input.npy')
-test_input_seqs = np.load('../data/test_input.npy')
+train_input_seqs = np.load('../data/train_input_embedding.npy')
+test_input_seqs = np.load('../data/test_input_embedding.npy')
 #labels: secondary structure
 train_target_seqs = np.load('../data/train_q8.npy')
 test_target_seqs = np.load('../data/test_q8.npy')
@@ -136,7 +136,8 @@ else:
 X_aug_train=train_profiles
 X_aug_test=test_profiles
 
-
+####
+'''
 #transform sequence to n-grams, default n=3
 train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
@@ -167,11 +168,31 @@ n_tags = len(tokenizer_decoder.word_index) + 1
 
 print("number words or endoder word index: ", n_words)
 print("number tags or decoder word index: ", n_tags)
+'''
+#?# maxlen_seq = len(test_input_seqs[0])
+X_train = train_input_seqs
+X_test = test_input_seqs
+
+tokenizer_decoder = Tokenizer(char_level = True) #char_level=True means that every character is treated as a token
+tokenizer_decoder.fit_on_texts(train_target_seqs)
+train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
+test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
+
+train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
+test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq, padding = 'post')
+
+n_tags = len(tokenizer_decoder.word_index) + 1
 
 # labels to one-hot
 y_test = to_categorical(test_target_data)
 y_train = to_categorical(train_target_data)
 
+print("X train shape: ", X_train.shape)
+print("y train shape: ", y_train.shape)
+print("X aug train shape: ", X_aug_train.shape)
+
+print(X_train[0])
+print(type(X_train[0]))
 time_data = time.time() - start_time
 
 def build_model():
@@ -180,10 +201,11 @@ def build_model():
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
-    x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = concatenate([x1, profiles_input])
+    #x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
+    x1 = Dense(1024, activation="relu")(profiles_input)
+    x1 = concatenate([x1, input])
 
-    x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
+    #x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
     x2 = concatenate([x2, profiles_input])
 
     x1 = Dense(1200, activation="relu")(x1)
