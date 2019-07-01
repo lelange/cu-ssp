@@ -191,7 +191,8 @@ print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
 print("X aug train shape: ", X_aug_train.shape)
 
-
+print(X_train[0])
+print(type(X_train[0]))
 time_data = time.time() - start_time
 
 def build_model():
@@ -201,8 +202,8 @@ def build_model():
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     #x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = Dense(700, activation="relu")(input)
-    x1 = concatenate([x1, profiles_input])
+    x1 = Dense(1024, activation="relu")(profiles_input)
+    x1 = concatenate([x1, input])
 
     #x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
     x2 = concatenate([x2, profiles_input])
