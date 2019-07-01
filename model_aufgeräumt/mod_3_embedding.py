@@ -66,7 +66,7 @@ def parse_arguments():
 
 args = parse_arguments()
 
-maxlen_seq = 700
+maxlen_seq = 1024
 minlen_seq= 100
 normalize = args.normalize
 standardize = args.standardize
