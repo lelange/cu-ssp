@@ -21,10 +21,11 @@ def calculate_and_save_embedding(input):
     # Get embedding for amino acid sequence:
     input_embedding = []
     times = []
+    t = time.time()
     for i, seq in enumerate(input):
         print('\n \n----------------------')
         print('----------------------')
-        print('Sequence ', (i + 1), '/', len(input))
+        print('Sequence ', (i + 1), '/', len(input[i]))
         print('----------------------')
         embedding = seqvec.embed_sentence(list(seq))  # List-of-Lists with shape [3,L,1024]
 
@@ -34,7 +35,7 @@ def calculate_and_save_embedding(input):
         protein_embd = torch.tensor(embedding).sum(dim=0).mean(dim=0)  # Vector with shape [1024]
         protein_embd_np = protein_embd.cpu().detach().numpy()
         input_embedding.append(protein_embd_np)
-        t = time.time() - start_time
+        t = time.time() - t
         times.append(t)
         print("For {} residues {:.0f}s needed.".format(len(input), t))
 
