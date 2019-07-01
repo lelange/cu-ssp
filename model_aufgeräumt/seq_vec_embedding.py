@@ -23,7 +23,7 @@ times = []
 for i,seq in enumerate(train_input):
     print('\n \n----------------------')
     print('----------------------')
-    print(i+'/'+len(train_input))
+    print(i, '/', len(train_input))
     print('----------------------')
     embedding = seqvec.embed_sentence( list(seq) ) # List-of-Lists with shape [3,L,1024]
 
