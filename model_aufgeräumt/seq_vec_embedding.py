@@ -1,6 +1,11 @@
 from allennlp.commands.elmo import ElmoEmbedder
 from pathlib import Path
 import torch
+import sys
+import os
+import argparse
+import time
+import numpy as np
 
 model_dir = Path('../../seqVec')
 weights = model_dir / 'weights.hdf5'
