@@ -166,12 +166,13 @@ def build_model():
     model = None
     input = Input(shape=(None,))
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
+    profiles_input = profiles_input.reshape((None,))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     #x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = Dense(1024, activation="relu")(profiles_input)
+    x1 = Dense(250, activation="relu")(profiles_input)
     print(x1.shape)
-    print(profiles_input.shape)
+    print(input.shape)
     x1 = concatenate([x1, input])
 
     #x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
