@@ -178,7 +178,8 @@ def build_model():
     x1 = concatenate([x1, input])
 
     #x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
-    x2 = concatenate([x2, profiles_input])
+    x2 = Dense(125, activation= "relu")(reshaped)
+    x2 = concatenate([x2, input])
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
