@@ -165,8 +165,8 @@ time_data = time.time() - start_time
 
 def build_model():
     model = None
-    input = Input(shape=(None,))
-    profiles_input = Input(shape=(None, X_aug_train.shape[2]))
+    input = Input(shape=(X_train.shape[1],))
+    profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2]))
     #reshaped = Reshape((None,))(profiles_input)
     reshaped = Flatten()(profiles_input)
 
