@@ -137,38 +137,7 @@ X_aug_train=train_profiles
 X_aug_test=test_profiles
 
 ####
-'''
-#transform sequence to n-grams, default n=3
-train_input_grams = seq2ngrams(train_input_seqs)
-test_input_grams = seq2ngrams(test_input_seqs)
 
-# Use tokenizer to encode and decode the sequences
-tokenizer_encoder = Tokenizer()
-tokenizer_encoder.fit_on_texts(train_input_grams)
-tokenizer_decoder = Tokenizer(char_level = True) #char_level=True means that every character is treated as a token
-tokenizer_decoder.fit_on_texts(train_target_seqs)
-
-#train
-train_input_data = tokenizer_encoder.texts_to_sequences(train_input_grams)
-train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
-
-#test
-test_input_data = tokenizer_encoder.texts_to_sequences(test_input_grams)
-test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
-
-# pad sequences to maxlen_seq
-X_train = sequence.pad_sequences(train_input_data, maxlen = maxlen_seq, padding = 'post')
-X_test = sequence.pad_sequences(test_input_data, maxlen = maxlen_seq, padding = 'post')
-train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
-test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq, padding = 'post')
-
-# Computing the number of words and number of tags to be passed as parameters to the keras model
-n_words = len(tokenizer_encoder.word_index) + 1
-n_tags = len(tokenizer_decoder.word_index) + 1
-
-print("number words or endoder word index: ", n_words)
-print("number tags or decoder word index: ", n_tags)
-'''
 #?# maxlen_seq = len(test_input_seqs[0])
 X_train = train_input_seqs
 X_test = test_input_seqs

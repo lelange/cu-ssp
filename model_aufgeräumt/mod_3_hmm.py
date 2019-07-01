@@ -181,6 +181,8 @@ def build_model():
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
+    print(x1.shape)
+    print(profiles_input.shape)
     x1 = concatenate([x1, profiles_input])
 
     x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
