@@ -171,7 +171,7 @@ def build_model():
     #reshaped = Flatten()(profiles_input)
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=24, output_dim=175, input_length=None)(input)
-    x1 =Reshape((None, 700, 256))
+    x1 = Reshape((None, 700, 256))(x1)
     #x1 = Dense(250, activation="relu")(reshaped)
 
     print(x1.shape)
