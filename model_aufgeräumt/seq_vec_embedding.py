@@ -1,4 +1,5 @@
 from allennlp.commands.elmo import ElmoEmbedder
+from keras.preprocessing import text, sequence
 from pathlib import Path
 import torch
 import sys
@@ -7,8 +8,6 @@ import argparse
 import time
 import numpy as np
 
-
-
 model_dir = Path('../../seqVec')
 weights = model_dir / 'weights.hdf5'
 options = model_dir / 'options.json'
@@ -16,6 +15,10 @@ seqvec  = ElmoEmbedder(options,weights,cuda_device=0) # cuda_device=-1 for CPU
 #inputs: primary structure
 train_input = np.load('../data/train_input.npy')
 test_input = np.load('../data/test_input.npy')
+
+X_train = sequence.pad_sequences(train_input, maxlen = 700, padding = 'post')
+X_test = sequence.pad_sequences(test_input, maxlen = 700, padding = 'post')
+
 
 def calculate_and_save_embedding(input):
     # Get embedding for amino acid sequence:
@@ -46,12 +49,12 @@ def calculate_and_save_embedding(input):
     return input_embedding, times
 
 start_time = time.time()
-train_input_embedding, train_times = calculate_and_save_embedding(train_input)
+train_input_embedding, train_times = calculate_and_save_embedding(X_train)
 np.save('../data/train_times_residue.npy', train_times)
 np.save('../data/train_input_embedding_residue.npy', train_input_embedding)
 
 
 start_time = time.time()
-test_input_embedding, test_times = calculate_and_save_embedding(test_input)
+test_input_embedding, test_times = calculate_and_save_embedding(X_test)
 np.save('../data/test_times_residue.npy', test_times)
 np.save('../data/test_input_embedding_residue.npy', test_input_embedding)

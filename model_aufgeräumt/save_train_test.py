@@ -77,8 +77,8 @@ test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq,
 n_words = len(tokenizer_encoder.word_index) + 1
 n_tags = len(tokenizer_decoder.word_index) + 1
 
-print("number words or endoder word index: ", n_words)
-print("number tags or decoder word index: ", n_tags)
+print("number words or endoder word index: ", n_words) #24
+print("number tags or decoder word index: ", n_tags) #9
 
 # labels to one-hot
 y_test = to_categorical(test_target_data)
