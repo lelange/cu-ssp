@@ -16,9 +16,6 @@ seqvec  = ElmoEmbedder(options,weights,cuda_device=0) # cuda_device=-1 for CPU
 train_input = np.load('../data/train_input.npy')
 test_input = np.load('../data/test_input.npy')
 
-X_train = sequence.pad_sequences(train_input, maxlen = 700, padding = 'post', dtype = 'object')
-X_test = sequence.pad_sequences(test_input, maxlen = 700, padding = 'post', dtype = 'object')
-
 
 def calculate_and_save_embedding(input):
     # Get embedding for amino acid sequence:
@@ -37,7 +34,9 @@ def calculate_and_save_embedding(input):
         residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
         # Get 1024-dimensional embedding for per-protein predictions:
         #protein_embd = torch.tensor(embedding).sum(dim=0).mean(dim=0)  # Vector with shape [1024]
-        residue_embd_np = residue_embd.cpu().detach().numpy()
+        residue_embd_pad = torch.nn.ConstantPad1d((0, (700-len(input[i]))), 0)(residue_embd)
+        residue_embd_np = residue_embd_pad.cpu().detach().numpy()
+        print(residue_embd_np.shape)
         input_embedding.append(residue_embd_np)
         t = time.time() - t1
         times.append(t)
@@ -49,12 +48,12 @@ def calculate_and_save_embedding(input):
     return input_embedding, times
 
 start_time = time.time()
-train_input_embedding, train_times = calculate_and_save_embedding(X_train)
+train_input_embedding, train_times = calculate_and_save_embedding(train_input)
 np.save('../data/train_times_residue.npy', train_times)
 np.save('../data/train_input_embedding_residue.npy', train_input_embedding)
 
 
 start_time = time.time()
-test_input_embedding, test_times = calculate_and_save_embedding(X_test)
+test_input_embedding, test_times = calculate_and_save_embedding(test_input)
 np.save('../data/test_times_residue.npy', test_times)
 np.save('../data/test_input_embedding_residue.npy', test_input_embedding)
