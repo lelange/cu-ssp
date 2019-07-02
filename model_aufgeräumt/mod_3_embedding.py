@@ -181,7 +181,7 @@ def build_model():
 
     x2 = Embedding(input_dim=24, output_dim=175, input_length=None)(input)
     #x2 = Dense(125, activation= "relu")(reshaped)
-    x2 = Reshape((700, 256,))
+    x2 = Reshape((700, 256,))(x2)
     x2 = concatenate([x2, profiles_input])
     print("x2 shape: ", x2.shape)
 
