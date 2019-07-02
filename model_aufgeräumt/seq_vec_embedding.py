@@ -31,13 +31,12 @@ def calculate_and_save_embedding(input):
         embedding = seqvec.embed_sentence(list(seq))  # List-of-Lists with shape [3,L,1024]
 
         # Get 1024-dimensional embedding for per-residue predictions:
-        # residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
+        residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
         # Get 1024-dimensional embedding for per-protein predictions:
-        protein_embd = torch.tensor(embedding).sum(dim=0).mean(dim=0)  # Vector with shape [1024]
-        protein_embd_np = protein_embd.cpu().detach().numpy()
-        input_embedding.append(protein_embd_np)
+        #protein_embd = torch.tensor(embedding).sum(dim=0).mean(dim=0)  # Vector with shape [1024]
+        residue_embd_np = residue_embd.cpu().detach().numpy()
+        input_embedding.append(residue_embd_np)
         t = time.time() - t1
-        t1 = t
         times.append(t)
         print("For {} residues {:.0f}s needed.".format(len(input[i]), t))
 
@@ -48,11 +47,11 @@ def calculate_and_save_embedding(input):
 
 start_time = time.time()
 train_input_embedding, train_times = calculate_and_save_embedding(train_input)
-np.save('../data/train_times.npy', train_times)
-np.save('../data/train_input_embedding.npy', train_input_embedding)
+np.save('../data/train_times_residue.npy', train_times)
+np.save('../data/train_input_embedding_residue.npy', train_input_embedding)
 
 
 start_time = time.time()
 test_input_embedding, test_times = calculate_and_save_embedding(test_input)
-np.save('../data/test_times.npy', test_times)
-np.save('../data/test_input_embedding.npy', test_input_embedding)
+np.save('../data/test_times_residue.npy', test_times)
+np.save('../data/test_input_embedding_residue.npy', test_input_embedding)

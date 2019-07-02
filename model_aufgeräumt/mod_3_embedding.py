@@ -166,14 +166,11 @@ time_data = time.time() - start_time
 def build_model():
     model = None
     input = Input(shape=(X_train.shape[1],))
-    profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2]))
+    profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
     #reshaped = Reshape((None,))(profiles_input)
     #reshaped = Flatten()(profiles_input)
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
-    x1 = Embedding(input_dim=24, output_dim=350, input_length=None)(input)
-    x1 = Dropout(0.3)(x1)
-    print(np.array(x1).shape)
-    x1 = Reshape((700, 512,))(x1)
+    #x1 = Embedding(input_dim=24, output_dim=350, input_length=None)(input)
     #x1 = Dense(250, activation="relu")(reshaped)
 
     print(x1.shape)
@@ -304,4 +301,4 @@ def message_me(model_name, m, s):
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
 
-message_me(sys.argv[0], m, s)
+#message_me(sys.argv[0], m, s)
