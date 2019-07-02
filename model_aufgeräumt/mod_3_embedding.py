@@ -171,6 +171,7 @@ def build_model():
     #reshaped = Flatten()(profiles_input)
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     x1 = Embedding(input_dim=24, output_dim=350, input_length=None)(input)
+    x1 = Dropout(0.3)(x1)
     print(np.array(x1).shape)
     x1 = Reshape((700, 512,))(x1)
     #x1 = Dense(250, activation="relu")(reshaped)
@@ -180,6 +181,7 @@ def build_model():
     x1 = concatenate([x1, profiles_input])
 
     x2 = Embedding(input_dim=24, output_dim=175, input_length=None)(input)
+    x2 = Dropout(0.3)(x2)
     #x2 = Dense(125, activation= "relu")(reshaped)
     x2 = Reshape((700, 256,))(x2)
     x2 = concatenate([x2, profiles_input])
