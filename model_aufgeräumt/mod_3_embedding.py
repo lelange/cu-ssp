@@ -76,12 +76,10 @@ hmm = args.hmm
 if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
 
-#inputs: primary structure
-train_input_seqs = np.load('../data/train_input_embedding.npy')
-test_input_seqs = np.load('../data/test_input_embedding.npy')
-#labels: secondary structure
-train_target_seqs = np.load('../data/train_q8.npy')
-test_target_seqs = np.load('../data/test_q8.npy')
+X_train = np.load('../data/X_train_6133.npy')
+y_train = np.load('../data/y_train_6133.npy')
+X_test = np.load('../data/X_test_513.npy')
+y_test = np.load('../data/y_test_513.npy')
 
 #profiles
 if normalize:
@@ -137,6 +135,14 @@ else:
 X_aug_train=train_profiles
 X_aug_test=test_profiles
 
+'''
+#inputs: primary structure
+train_input_seqs = np.load('../data/train_input_embedding.npy')
+test_input_seqs = np.load('../data/test_input_embedding.npy')
+#labels: secondary structure
+train_target_seqs = np.load('../data/train_q8.npy')
+test_target_seqs = np.load('../data/test_q8.npy')
+
 #?# maxlen_seq = len(test_input_seqs[0])
 X_train = train_input_seqs
 X_test = test_input_seqs
@@ -154,6 +160,8 @@ n_tags = len(tokenizer_decoder.word_index) + 1
 # labels to one-hot
 y_test = to_categorical(test_target_data)
 y_train = to_categorical(train_target_data)
+
+'''
 
 print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
