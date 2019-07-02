@@ -16,8 +16,8 @@ seqvec  = ElmoEmbedder(options,weights,cuda_device=0) # cuda_device=-1 for CPU
 train_input = np.load('../data/train_input.npy')
 test_input = np.load('../data/test_input.npy')
 
-X_train = sequence.pad_sequences(train_input, maxlen = 700, padding = 'post')
-X_test = sequence.pad_sequences(test_input, maxlen = 700, padding = 'post')
+X_train = sequence.pad_sequences(train_input, maxlen = 700, padding = 'post', dtype = 'object')
+X_test = sequence.pad_sequences(test_input, maxlen = 700, padding = 'post', dtype = 'object')
 
 
 def calculate_and_save_embedding(input):
