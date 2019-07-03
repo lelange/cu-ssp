@@ -120,7 +120,6 @@ def build_model():
 def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs = epochs):
 
     model = build_model()
-
     load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
@@ -157,7 +156,7 @@ else:
     X_train_aug = [X_train, X_aug_train]
     X_val_aug = [X_val, X_aug_val]
     X_test_aug = [X_test, X_aug_test]
-    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=10)
+    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=epochs)
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
