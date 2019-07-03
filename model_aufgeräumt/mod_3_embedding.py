@@ -33,6 +33,7 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
+import random
 import fbchat
 from fbchat.models import *
 import telegram
@@ -193,15 +194,15 @@ def build_model():
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
-    x1 = Dropout(0.5)(x1)
+    #x1 = Dropout(0.5)(x1)
     # Defining a bidirectional LSTM using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)
-    x2 = Dropout(0.5)(x2)
+    #x2 = Dropout(0.5)(x2)
     x2 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x2)
-    x2 = Dropout(0.5)(x2)
+    #x2 = Dropout(0.5)(x2)
     COMBO_MOVE = concatenate([x1, x2])
     w = Dense(500, activation="relu")(COMBO_MOVE)  # try 500
-    w = Dropout(0.5)(w)
+    w = Dropout(0.4)(w)
     w = tcn.TCN(return_sequences=True)(w)
 
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
@@ -316,7 +317,7 @@ def telegram_me(m, s, model_name=sys.argv[0]):
     Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
     chat_ID = "69661085"
     bot = telegram.Bot(token=Token)
-    msg = '{} ist erfolgreich durchgelaufen! \U0001F60E \n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
+    msg = '{} ist erfolgreich durchgelaufen! \U0001F60D \n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
     bot.send_message(chat_id=chat_ID, text=msg)
 
 telegram_me(m, s)
