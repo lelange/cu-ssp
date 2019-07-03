@@ -76,9 +76,9 @@ hmm = args.hmm
 if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
 
-X_train = np.load('../data/X_train_6133.npy')
+X_train = np.load('../data/train_input_embedding_residue.npy')
 y_train = np.load('../data/y_train_6133.npy')
-X_test = np.load('../data/X_test_513.npy')
+X_test = np.load('../data/test_input_embedding_residue.npy')
 y_test = np.load('../data/y_test_513.npy')
 
 #profiles
@@ -169,11 +169,12 @@ print("X aug train shape: ", X_aug_train.shape)
 
 print(X_train[0])
 print(type(X_train[0]))
+print(y_train[0])
 time_data = time.time() - start_time
 
 def build_model():
     model = None
-    input = Input(shape=(X_train.shape[1],))
+    input = Input(shape=(X_train.shape[1], X_train.shape[2],))
     profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
     #reshaped = Reshape((None,))(profiles_input)
     #reshaped = Flatten()(profiles_input)
@@ -181,19 +182,15 @@ def build_model():
     #x1 = Embedding(input_dim=24, output_dim=350, input_length=None)(input)
     #x1 = Dense(250, activation="relu")(reshaped)
 
-    print(x1.shape)
-    print(input.shape)
-    x1 = concatenate([x1, profiles_input])
-
-    x2 = Embedding(input_dim=24, output_dim=175, input_length=None)(input)
-    x2 = Dropout(0.3)(x2)
+    x1 = concatenate([input, profiles_input])
+    #experiment with dense layer
     #x2 = Dense(125, activation= "relu")(reshaped)
-    x2 = Reshape((700, 256,))(x2)
-    x2 = concatenate([x2, profiles_input])
+    x2 = concatenate([input, profiles_input])
     print("x2 shape: ", x2.shape)
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
+    x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
 
     # Defining a bidirectional LSTM using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)

@@ -82,6 +82,13 @@ test_input_seqs = np.load('../data/test_input.npy')
 train_target_seqs = np.load('../data/train_q8.npy')
 test_target_seqs = np.load('../data/test_q8.npy')
 
+'''
+X_train = np.load('../data/X_train_6133.npy')
+y_train = np.load('../data/y_train_6133.npy')
+X_test = np.load('../data/X_test_513.npy')
+y_test = np.load('../data/y_test_513.npy')
+'''
+
 #profiles
 if normalize:
     # load normalized profiles
@@ -137,7 +144,7 @@ X_aug_train=train_profiles
 X_aug_test=test_profiles
 
 
-#transform sequence to n-grams, default n=3
+#transform sequence to n-grams, default n=1
 train_input_grams = seq2ngrams(train_input_seqs)
 test_input_grams = seq2ngrams(test_input_seqs)
 
