@@ -184,7 +184,8 @@ def build_model():
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
     #x1 = Embedding(input_dim=24, output_dim=350, input_length=None)(input)
     #x1 = Dense(250, activation="relu")(reshaped)
-
+    input = Dropout(0.2)(input)
+    profiles_input = Dropout(0.2)(profiles_input)
     x1 = concatenate([input, profiles_input])
     #experiment with dense layer
     #x2 = Dense(125, activation= "relu")(reshaped)
@@ -194,13 +195,15 @@ def build_model():
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
-
+    x1 = Dropout(0.5)(x1)
     # Defining a bidirectional LSTM using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)
+    x2 = Dropout(0.5)(x2)
     x2 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x2)
+    x2 = Dropout(0.5)(x2)
     COMBO_MOVE = concatenate([x1, x2])
     w = Dense(500, activation="relu")(COMBO_MOVE)  # try 500
-    w = Dropout(0.4)(w)
+    w = Dropout(0.5)(w)
     w = tcn.TCN(return_sequences=True)(w)
 
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
@@ -247,7 +250,7 @@ def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test, n
 
     # Loop through the indices the split() method returns
     for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
-        print("Training on fold " + str(index + 1) + "/"+kfold_splits+"...")
+        print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
         # Generate batches from indices
         X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
         X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
