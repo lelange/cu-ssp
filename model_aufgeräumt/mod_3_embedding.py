@@ -35,6 +35,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
 import fbchat
 from fbchat.models import *
+import telegram
 import emoji
 from utils import *
 
@@ -309,3 +310,12 @@ def message_me(model_name, m, s):
     client.logout()
 
 #message_me(sys.argv[0], m, s)
+
+def telegram_me(m, s, model_name=sys.argv[0]):
+    Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
+    chat_ID = "69661085"
+    bot = telegram.Bot(token=Token)
+    msg = '{} ist erfolgreich durchgelaufen! \U0001F60E \n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
+    bot.send_message(chat_id=chat_ID, text=msg)
+
+telegram_me(m, s)
