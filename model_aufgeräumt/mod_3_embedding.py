@@ -162,6 +162,8 @@ y_test = to_categorical(test_target_data)
 y_train = to_categorical(train_target_data)
 
 '''
+n_tags = 9
+n_words = 24
 
 print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
