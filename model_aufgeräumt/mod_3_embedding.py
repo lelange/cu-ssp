@@ -110,7 +110,7 @@ def build_model():
 
     # Defining the model as a whole and printing the summary
     model = Model([input, profiles_input], y)
-    # model.summary()
+    model.summary()
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
     adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
