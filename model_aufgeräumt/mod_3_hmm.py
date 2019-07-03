@@ -84,9 +84,10 @@ test_target_seqs = np.load('../data/test_q8.npy')
 
 '''
 X_train = np.load('../data/X_train_6133.npy')
-y_train = np.load('../data/y_train_6133.npy')
 X_test = np.load('../data/X_test_513.npy')
+y_train = np.load('../data/y_train_6133.npy')
 y_test = np.load('../data/y_test_513.npy')
+
 '''
 
 #profiles

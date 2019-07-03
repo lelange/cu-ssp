@@ -44,29 +44,33 @@ start_time = time.time()
 
 args = parse_arguments()
 
-maxlen_seq = 700
-minlen_seq= 100
 
 normalize = args.normalize
 standardize = args.standardize
 pssm = args.pssm
 hmm = args.hmm
+embedding = args.embedding
+epochs = args.epochs
+
+n_tags = 9
+n_words = 24
 
 if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
 
 #inputs: primary structure
-X_train = np.load('../data/train_input_embedding_residue.npy')
-X_test = np.load('../data/test_input_embedding_residue.npy')
+if embedding:
+    X_train = np.load('../data/train_input_embedding_residue.npy')
+    X_test = np.load('../data/test_input_embedding_residue.npy')
+else:
+    X_train = np.load('../data/X_train_6133.npy')
+    X_test = np.load('../data/X_test_513.npy')
 
 #labels: secondary structure
 y_train = np.load('../data/y_train_6133.npy')
 y_test = np.load('../data/y_test_513.npy')
 
 X_aug_train, X_aug_test = prepare_profiles()
-
-n_tags = 9
-n_words = 24
 
 print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
@@ -114,7 +118,7 @@ def build_model():
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     return model
 
-def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs = 5):
+def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs = epochs):
 
     model = build_model()
 
