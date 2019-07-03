@@ -33,16 +33,14 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-import random
 import fbchat
 from fbchat.models import *
 import telegram
-import emoji
 from utils import *
 
 start_time = time.time()
 
-args = parse_arguments()
+args = parse_arguments(default_epochs=6)
 
 normalize = args.normalize
 standardize = args.standardize
@@ -90,7 +88,6 @@ def build_model():
     #experiment with dense layer
     #x2 = Dense(125, activation= "relu")(reshaped)
     x2 = concatenate([input, profiles_input])
-    print("x2 shape: ", x2.shape)
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)

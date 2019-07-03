@@ -18,14 +18,14 @@ def parse_arguments():
     """
     :return: command line arguments
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(default_epochs)
     parser.add_argument('-pssm', help='use pssm profiles', action='store_true')
     parser.add_argument('-hmm', help='use hmm profiles', action='store_true')
     parser.add_argument('-normalize', help='nomalize profiles', action='store_true')
     parser.add_argument('-standardize',  help='standardize profiles', action='store_true')
     parser.add_argument('-cv', help='use crossvalidation' , action= 'store_true')
     parser.add_argument('-embedding', help='embed input vectors via elmo embedder', action='store_true')
-    parser.add_argument('-epochs',type=int ,required=False, help='number of training epochs', default='6')
+    parser.add_argument('-epochs',type=int ,required=False, help='number of training epochs', default=default_epochs)
     return parser.parse_args()
 
 def normal(data):
