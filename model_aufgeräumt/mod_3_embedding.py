@@ -131,19 +131,12 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
             epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
 
-    # plot loss during training
-    plt.subplot(211)
-    plt.title('Loss')
-    plt.plot(history.history['loss'], label='train')
-    plt.plot(history.history['val_loss'], label='val')
-    plt.legend()
     # plot accuracy during training
-    plt.subplot(212)
     plt.title('Accuracy')
     plt.plot(history.history['accuracy'], label='train')
     plt.plot(history.history['val_accuracy'], label='val')
     plt.legend()
-    plt.savefig('./plots/mod_3-CB513-'+datetime.now().strftime("%m_%d-%H_%M")+'_accuracy_and_loss.png')
+    plt.savefig('./plots/mod_3-CB513-'+datetime.now().strftime("%m_%d-%H_%M")+'_accuracy.png')
 
     model.load_weights(load_file)
     print("####evaluate:")
