@@ -7,6 +7,7 @@ from keras.utils import to_categorical
 from keras import backend as K
 import tensorflow as tf
 import argparse
+import telegram
 from datetime import datetime
 import os, pickle
 
@@ -36,6 +37,47 @@ def standard(data):
     std = np.std(data)
     data_ = (data - mean) / std
     return data_
+
+def prepare_profiles(pssm=pssm, hmm=hmm, normalize=normalize, standardize=standardize):
+    # profiles
+    if pssm == True:
+        print("load pssm profiles... ")
+        train_pssm = np.load('../data/train_pssm.npy')
+        test_pssm = np.load('../data/test_pssm.npy')
+
+        if normalize:
+            print('normalize pssm profiles...')
+            train_pssm = normal(train_pssm)
+            test_pssm= normal(test_pssm)
+
+        if standardize:
+            train_pssm = standard(train_pssm)
+            test_pssm = standard(test_pssm)
+
+    if hmm == True:
+        print("load hmm profiles... ")
+        train_hmm = np.load('../data/train_hmm.npy')
+        test_hmm = np.load('../data/test_hmm.npy')
+
+        if normalize:
+            train_hmm = normal(train_hmm)
+            test_hmm = normal(test_hmm)
+
+        if standardize:
+            train_hmm = standard(train_hmm)
+            test_hmm = standard(test_hmm)
+
+    if pssm and hmm:
+        train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
+        test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
+    elif pssm:
+        train_profiles = train_pssm
+        test_profiles = test_pssm
+    else:
+        train_profiles = train_hmm
+        test_profiles = test_hmm
+
+    return train_profiles, test_profiles
 
 # The custom accuracy metric used for this task
 def accuracy(y_true, y_predicted):
@@ -180,3 +222,36 @@ def message_me(model_name, m, s):
 
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
+
+def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test, n_folds=10):
+    # Instantiate the cross validator
+    kfold_splits = n_folds
+    kf = KFold(n_splits=kfold_splits, shuffle=True)
+
+    cv_scores = []
+    model_history = []
+
+    # Loop through the indices the split() method returns
+    for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
+        print('\n\n----------------------')
+        print('----------------------')
+        print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
+        print('----------------------')
+
+        # Generate batches from indices
+        X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
+        X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
+        y_train_fold, y_val_fold = y_train[train_indices], y_train[val_indices]
+
+        print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
+            X_val_fold.shape[0]) + " validation samples...")
+
+        model, test_acc = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
+                                  [X_val_fold, X_aug_val_fold], y_val_fold,
+                                  [X_test, X_aug_test], y_test)
+
+        print('>%.3f' % test_acc)
+        cv_scores.append(test_acc)
+        model_history.append(model)
+
+    return cv_scores, model_history

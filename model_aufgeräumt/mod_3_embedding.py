@@ -55,81 +55,16 @@ hmm = args.hmm
 if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
 
+#inputs: primary structure
 X_train = np.load('../data/train_input_embedding_residue.npy')
-y_train = np.load('../data/y_train_6133.npy')
 X_test = np.load('../data/test_input_embedding_residue.npy')
+
+#labels: secondary structure
+y_train = np.load('../data/y_train_6133.npy')
 y_test = np.load('../data/y_test_513.npy')
 
-
-def prepare_profiles(pssm=pssm, hmm=hmm, normalize=normalize, standardize=standardize):
-    # profiles
-    if pssm == True:
-        print("load pssm profiles... ")
-        train_pssm = np.load('../data/train_pssm.npy')
-        test_pssm = np.load('../data/test_pssm.npy')
-
-        if normalize:
-            print('normalize pssm profiles...')
-            train_pssm = normal(train_pssm)
-            test_pssm= normal(test_pssm)
-
-        if standardize:
-            train_pssm = standard(train_pssm)
-            test_pssm = standard(test_pssm)
-
-    if hmm == True:
-        print("load hmm profiles... ")
-        train_hmm = np.load('../data/train_hmm.npy')
-        test_hmm = np.load('../data/test_hmm.npy')
-
-        if normalize:
-            train_hmm = normal(train_hmm)
-            test_hmm = normal(test_hmm)
-
-        if standardize:
-            train_hmm = standard(train_hmm)
-            test_hmm = standard(test_hmm)
-
-    if pssm and hmm:
-        train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
-        test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
-    elif pssm:
-        train_profiles = train_pssm
-        test_profiles = test_pssm
-    else:
-        train_profiles = train_hmm
-        test_profiles = test_hmm
-
-    return train_profiles, test_profiles
-
 X_aug_train, X_aug_test = prepare_profiles()
-'''
-#inputs: primary structure
-train_input_seqs = np.load('../data/train_input_embedding.npy')
-test_input_seqs = np.load('../data/test_input_embedding.npy')
-#labels: secondary structure
-train_target_seqs = np.load('../data/train_q8.npy')
-test_target_seqs = np.load('../data/test_q8.npy')
 
-#?# maxlen_seq = len(test_input_seqs[0])
-X_train = train_input_seqs
-X_test = test_input_seqs
-
-tokenizer_decoder = Tokenizer(char_level = True) #char_level=True means that every character is treated as a token
-tokenizer_decoder.fit_on_texts(train_target_seqs)
-train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
-test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
-
-train_target_data = sequence.pad_sequences(train_target_data, maxlen = maxlen_seq, padding = 'post')
-test_target_data = sequence.pad_sequences(test_target_data, maxlen = maxlen_seq, padding = 'post')
-
-n_tags = len(tokenizer_decoder.word_index) + 1
-
-# labels to one-hot
-y_test = to_categorical(test_target_data)
-y_train = to_categorical(train_target_data)
-
-'''
 n_tags = 9
 n_words = 24
 
@@ -137,9 +72,6 @@ print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
 print("X aug train shape: ", X_aug_train.shape)
 
-print(X_train[0])
-print(type(X_train[0]))
-print(y_train[0])
 time_data = time.time() - start_time
 
 def build_model():
@@ -203,43 +135,6 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
     print ('test accuracy:', score[2])
     return model, score[2]
 
-
-
-def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test, n_folds=10):
-    # Instantiate the cross validator
-    kfold_splits = n_folds
-    kf = KFold(n_splits=kfold_splits, shuffle=True)
-
-    cv_scores = []
-    model_history = []
-
-    # Loop through the indices the split() method returns
-    for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
-        print('\n\n----------------------')
-        print('----------------------')
-        print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
-        print('----------------------')
-
-        # Generate batches from indices
-        X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
-        X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
-        y_train_fold, y_val_fold = y_train[train_indices], y_train[val_indices]
-
-        print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
-            X_val_fold.shape[0]) + " validation samples...")
-
-        model, test_acc = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
-                                  [X_val_fold, X_aug_val_fold], y_val_fold,
-                                  [X_test, X_aug_test], y_test)
-
-        print('>%.3f' % test_acc)
-        cv_scores.append(test_acc)
-        model_history.append(model)
-
-    return cv_scores, model_history
-
-
-
 if args.cv :
     cv_scores, model_history = crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test)
     print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
@@ -260,7 +155,6 @@ else:
     X_val_aug = [X_val, X_aug_val]
     X_test_aug = [X_test, X_aug_test]
     model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=10)
-
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
