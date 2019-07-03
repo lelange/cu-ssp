@@ -41,35 +41,12 @@ import emoji
 from utils import *
 
 start_time = time.time()
-'''
-print("##device name:")
-print(tf.test.gpu_device_name())
-print("##gpu available:")
-print(tf.test.is_gpu_available(cuda_only=False, min_cuda_compute_capability=None))
-
-device_name = tf.test.gpu_device_name()
-if device_name != '/device:GPU:0':
-    raise SystemError('GPU device not found')
-print('Found GPU at: {}'.format(device_name))
-
-'''
-
-def parse_arguments():
-    """
-    :return: command line arguments
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--pssm', help='use pssm profiles', action='store_true')
-    parser.add_argument('--hmm', help='use hmm profiles', action='store_true')
-    parser.add_argument('--normalize', help='nomalize profiles', action='store_true')
-    parser.add_argument('--standardize',  help='standardize profiles', action='store_true')
-    parser.add_argument('--cv', help='use crossvalidation' , action= 'store_true')
-    return parser.parse_args()
 
 args = parse_arguments()
 
 maxlen_seq = 700
 minlen_seq= 100
+
 normalize = args.normalize
 standardize = args.standardize
 pssm = args.pssm
@@ -83,60 +60,49 @@ y_train = np.load('../data/y_train_6133.npy')
 X_test = np.load('../data/test_input_embedding_residue.npy')
 y_test = np.load('../data/y_test_513.npy')
 
-#profiles
-if normalize:
-    # load normalized profiles
-    print("load normalized profiles... ")
+
+def prepare_profiles(pssm=pssm, hmm=hmm, normalize=normalize, standardize=standardize):
+    # profiles
     if pssm == True:
-        train_pssm = np.load('../data/train_pssm.npy')
-        test_pssm = np.load('../data/test_pssm.npy')
-        #train_pssm = normal(train_pssm)
-        #test_pssm= normal(test_pssm)
-
-    if hmm == True:
-        train_hmm = np.load('../data/train_hmm.npy')
-        test_hmm = np.load('../data/test_hmm.npy')
-        train_hmm = normal(train_hmm)
-        test_hmm= normal(test_hmm)
-
-elif standardize:
-    print("load standardized profiles... ")
-    if pssm == True:
-        train_pssm = np.load('../data/train_pssm.npy')
-        test_pssm = np.load('../data/test_pssm.npy')
-        train_pssm = standard(train_pssm)
-        test_pssm = standard(test_pssm)
-
-    if hmm == True:
-        train_hmm = np.load('../data/train_hmm.npy')
-        test_hmm = np.load('../data/test_hmm.npy')
-        train_hmm = standard(train_hmm)
-        test_hmm = standard(test_hmm)
-
-else:
-    print("load profiles...")
-    if pssm == True:
+        print("load pssm profiles... ")
         train_pssm = np.load('../data/train_pssm.npy')
         test_pssm = np.load('../data/test_pssm.npy')
 
+        if normalize:
+            print('normalize pssm profiles...')
+            train_pssm = normal(train_pssm)
+            test_pssm= normal(test_pssm)
+
+        if standardize:
+            train_pssm = standard(train_pssm)
+            test_pssm = standard(test_pssm)
+
     if hmm == True:
+        print("load hmm profiles... ")
         train_hmm = np.load('../data/train_hmm.npy')
         test_hmm = np.load('../data/test_hmm.npy')
 
+        if normalize:
+            train_hmm = normal(train_hmm)
+            test_hmm = normal(test_hmm)
 
-if pssm and hmm:
-    train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
-    test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
-elif pssm:
-    train_profiles = train_pssm
-    test_profiles = test_pssm
-else:
-    train_profiles = train_hmm
-    test_profiles = test_hmm
+        if standardize:
+            train_hmm = standard(train_hmm)
+            test_hmm = standard(test_hmm)
 
-X_aug_train=train_profiles
-X_aug_test=test_profiles
+    if pssm and hmm:
+        train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
+        test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
+    elif pssm:
+        train_profiles = train_pssm
+        test_profiles = test_pssm
+    else:
+        train_profiles = train_hmm
+        test_profiles = test_hmm
 
+    return train_profiles, test_profiles
+
+X_aug_train, X_aug_test = prepare_profiles()
 '''
 #inputs: primary structure
 train_input_seqs = np.load('../data/train_input_embedding.npy')
@@ -249,7 +215,11 @@ def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test, n
 
     # Loop through the indices the split() method returns
     for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
+        print('\n\n----------------------')
+        print('----------------------')
         print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
+        print('----------------------')
+
         # Generate batches from indices
         X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
         X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
@@ -258,18 +228,14 @@ def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test, n
         print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
             X_val_fold.shape[0]) + " validation samples...")
 
-        X_train_aug_fold = [X_train_fold, X_aug_train_fold]
-        X_val_aug_fold = [X_val_fold, X_aug_val_fold]
-
-        X_test_aug = [X_test, X_aug_test]
-
-        model, test_acc = train_model(X_train_aug_fold, y_train_fold,
-                                  X_val_aug_fold, y_val_fold,
-                                  X_test_aug, y_test)
+        model, test_acc = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
+                                  [X_val_fold, X_aug_val_fold], y_val_fold,
+                                  [X_test, X_aug_test], y_test)
 
         print('>%.3f' % test_acc)
         cv_scores.append(test_acc)
         model_history.append(model)
+
     return cv_scores, model_history
 
 
@@ -300,24 +266,4 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-def message_me(model_name, m, s):
-    username = 'charlie.gpu'
-    password = '19cee1Et742'
-    recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
-    client = fbchat.Client(username, password)
-    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F973 '
-                       '\n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s))
-
-    sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
-    client.logout()
-
-#message_me(sys.argv[0], m, s)
-
-def telegram_me(m, s, model_name=sys.argv[0]):
-    Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
-    chat_ID = "69661085"
-    bot = telegram.Bot(token=Token)
-    msg = '{} ist erfolgreich durchgelaufen! \U0001F60D \n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
-    bot.send_message(chat_id=chat_ID, text=msg)
-
-telegram_me(m, s)
+telegram_me(m, s, sys.argv[0])

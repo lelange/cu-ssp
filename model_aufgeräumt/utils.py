@@ -6,11 +6,24 @@ from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
 from keras import backend as K
 import tensorflow as tf
+import argparse
 from datetime import datetime
 import os, pickle
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
+
+def parse_arguments():
+    """
+    :return: command line arguments
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--pssm', help='use pssm profiles', action='store_true')
+    parser.add_argument('--hmm', help='use hmm profiles', action='store_true')
+    parser.add_argument('--normalize', help='nomalize profiles', action='store_true')
+    parser.add_argument('--standardize',  help='standardize profiles', action='store_true')
+    parser.add_argument('--cv', help='use crossvalidation' , action= 'store_true')
+    return parser.parse_args()
 
 def normal(data):
     min = np.min(data)
@@ -149,3 +162,21 @@ def evaluate_acc(y_predicted):
 def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
+
+def telegram_me(m, s, model_name):
+    Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
+    chat_ID = "69661085"
+    bot = telegram.Bot(token=Token)
+    msg = '{} ist erfolgreich durchgelaufen! \U0001F60D \n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
+    bot.send_message(chat_id=chat_ID, text=msg)
+
+def message_me(model_name, m, s):
+    username = 'charlie.gpu'
+    password = '19cee1Et742'
+    recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
+    client = fbchat.Client(username, password)
+    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F973 '
+                       '\n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s))
+
+    sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
+    client.logout()
