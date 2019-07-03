@@ -10,6 +10,8 @@ sys.path.append('keras-tcn')
 from tcn import tcn
 import h5py
 
+import matplotlib.pyplot as plt
+
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 
@@ -122,12 +124,27 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
 
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
-    tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=batch_size, write_graph=True, write_grads=False,
-                              write_images=False, embeddings_freq=0, embeddings_layer_names=None,
-                              embeddings_metadata=None, embeddings_data=None, update_freq='batch')
+    #tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=batch_size, write_graph=True, write_grads=False,
+                             # write_images=False, embeddings_freq=0, embeddings_layer_names=None,
+                             # embeddings_metadata=None, embeddings_data=None, update_freq='batch')
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping, tensorboard], verbose=1, shuffle=True)
+            epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+
+    # plot loss during training
+    plt.subplot(211)
+    plt.title('Loss')
+    plt.plot(history.history['loss'], label='train')
+    plt.plot(history.history['val_loss'], label='test')
+    plt.legend()
+    # plot accuracy during training
+    plt.subplot(212)
+    plt.title('Accuracy')
+    plt.plot(history.history['acc'], label='train')
+    plt.plot(history.history['val_acc'], label='test')
+    plt.legend()
+    plt.show()
+
 
     model.load_weights(load_file)
     print("####evaluate:")
