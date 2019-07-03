@@ -19,6 +19,7 @@ from keras.layers import *
 from sklearn.model_selection import train_test_split, KFold
 from keras.metrics import categorical_accuracy
 from keras import backend as K
+from keras.optimizers import Nadam
 from keras.regularizers import l1, l2
 import tensorflow as tf
 import keras
