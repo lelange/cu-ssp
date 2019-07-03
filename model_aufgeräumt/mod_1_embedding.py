@@ -141,7 +141,6 @@ def CNN_BIGRU():
     input = Input(shape=(X_train.shape[1], X_train.shape[2],))
     profile_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
     x = concatenate([input, profile_input])
-    x = TimeDistributed(Dropout(0.2))(x)
 
     x = super_conv_block(x)
     x = conv_block(x)
