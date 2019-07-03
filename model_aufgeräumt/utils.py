@@ -25,7 +25,7 @@ def parse_arguments():
     parser.add_argument('-standardize',  help='standardize profiles', action='store_true')
     parser.add_argument('-cv', help='use crossvalidation' , action= 'store_true')
     parser.add_argument('-embedding', help='embed input vectors via elmo embedder', action='store_true')
-    parser.add_argument('-epochs', required=False, help='number of training epochs', default='6')
+    parser.add_argument('-epochs',type=int ,required=False, help='number of training epochs', default='6')
     return parser.parse_args()
 
 def normal(data):
