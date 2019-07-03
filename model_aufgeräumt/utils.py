@@ -40,7 +40,7 @@ def standard(data):
     data_ = (data - mean) / std
     return data_
 
-def prepare_profiles(pssm=pssm, hmm=hmm, normalize=normalize, standardize=standardize):
+def prepare_profiles(pssm, hmm, normalize, standardize):
     # profiles
     if pssm == True:
         print("load pssm profiles... ")

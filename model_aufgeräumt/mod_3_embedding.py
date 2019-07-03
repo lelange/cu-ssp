@@ -44,7 +44,6 @@ start_time = time.time()
 
 args = parse_arguments()
 
-
 normalize = args.normalize
 standardize = args.standardize
 pssm = args.pssm
@@ -70,7 +69,7 @@ else:
 y_train = np.load('../data/y_train_6133.npy')
 y_test = np.load('../data/y_test_513.npy')
 
-X_aug_train, X_aug_test = prepare_profiles()
+X_aug_train, X_aug_test = prepare_profiles(pssm, hmm, normalize, standardize)
 
 print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
