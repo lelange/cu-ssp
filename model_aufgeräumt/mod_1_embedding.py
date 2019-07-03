@@ -91,7 +91,7 @@ def train_model(X_train_aug, y_train,
 
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=epochs, batch_size=128, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
+            epochs=epochs, batch_size=64, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
 
     model.load_weights(load_file)
     print('\n----------------------')
@@ -141,10 +141,12 @@ def CNN_BIGRU():
     input = Input(shape=(X_train.shape[1], X_train.shape[2],))
     profile_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
     x = concatenate([input, profile_input])
-
+    '''
     x = super_conv_block(x)
     x = conv_block(x)
     x = TimeDistributed(Dropout(0.5))(x)
+    '''
+
     x = super_conv_block(x)
     x = conv_block(x)
     x = TimeDistributed(Dropout(0.5))(x)
