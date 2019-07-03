@@ -48,6 +48,7 @@ pssm = args.pssm
 hmm = args.hmm
 embedding = args.embedding
 epochs = args.epochs
+batch_size = 16
 
 n_tags = 9
 n_words = 24
@@ -121,10 +122,12 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
 
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
-    #tensorboard = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
+    tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=batch_size, write_graph=True, write_grads=False,
+                              write_images=False, embeddings_freq=0, embeddings_layer_names=None,
+                              embeddings_metadata=None, embeddings_data=None, update_freq='batch')
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=epochs, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+            epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping, tensorboard], verbose=1, shuffle=True)
 
     model.load_weights(load_file)
     print("####evaluate:")

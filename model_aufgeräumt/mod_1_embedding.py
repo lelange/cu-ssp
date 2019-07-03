@@ -22,12 +22,13 @@ from keras import backend as K
 from keras.regularizers import l1, l2
 import tensorflow as tf
 import keras
-from keras.callbacks import EarlyStopping ,ModelCheckpoint
+from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard
 
 import sys
 import time
 
 from utils import *
+
 
 start_time = time.time()
 
@@ -84,6 +85,7 @@ def train_model(X_train_aug, y_train,
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
                                    mode='max')
+
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
             epochs=epochs, batch_size=128, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
