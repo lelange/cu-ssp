@@ -132,19 +132,13 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
             epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
 
     # plot loss during training
-    plt.subplot(211)
-    plt.title('Loss')
-    plt.plot(history.history['loss'], label='train')
-    plt.plot(history.history['val_loss'], label='test')
-    plt.legend()
+
     # plot accuracy during training
-    plt.subplot(212)
     plt.title('Accuracy')
     plt.plot(history.history['acc'], label='train')
     plt.plot(history.history['val_acc'], label='test')
     plt.legend()
     plt.show()
-
 
     model.load_weights(load_file)
     print("####evaluate:")
