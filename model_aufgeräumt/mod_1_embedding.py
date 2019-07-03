@@ -77,7 +77,7 @@ def train_model(X_train_aug, y_train,
         Epochs - 50
     """
     model = CNN_BIGRU()
-    optim = Nadam(lr=0.02, beta_1=0.9, beta_2=0.999, epsilon=None, schedule_decay=0.004)
+    optim = Nadam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, schedule_decay=0.004)
     model.compile(
         optimizer=optim,
         loss="categorical_crossentropy",
@@ -141,14 +141,17 @@ def CNN_BIGRU():
     input = Input(shape=(X_train.shape[1], X_train.shape[2],))
     profile_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
     x = concatenate([input, profile_input])
-    x = Dropout(0.2)(x)
+    x = TimeDistributed(Dropout(0.2))(x)
 
     x = super_conv_block(x)
     x = conv_block(x)
+    x = TimeDistributed(Dropout(0.5))(x)
     x = super_conv_block(x)
     x = conv_block(x)
+    x = TimeDistributed(Dropout(0.5))(x)
     x = super_conv_block(x)
     x = conv_block(x)
+    x = TimeDistributed(Dropout(0.5))(x)
 
     x = Bidirectional(CuDNNGRU(units=256, return_sequences=True, recurrent_regularizer=l2(0.2)))(x)
     x = TimeDistributed(Dropout(0.5))(x)
