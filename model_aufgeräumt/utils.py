@@ -14,11 +14,11 @@ import os, pickle
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
 
-def parse_arguments():
+def parse_arguments(default_epochs):
     """
     :return: command line arguments
     """
-    parser = argparse.ArgumentParser(default_epochs)
+    parser = argparse.ArgumentParser()
     parser.add_argument('-pssm', help='use pssm profiles', action='store_true')
     parser.add_argument('-hmm', help='use hmm profiles', action='store_true')
     parser.add_argument('-normalize', help='nomalize profiles', action='store_true')
