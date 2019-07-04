@@ -87,11 +87,11 @@ def train_model(X_train_aug, y_train,
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
                                    mode='max')
-    reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=8, verbose=1, mode='max')
+    #reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=8, verbose=1, mode='max')
 
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=epochs, batch_size=32, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
+            epochs=epochs, batch_size=32, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
 
     model.load_weights(load_file)
     print('\n----------------------')
