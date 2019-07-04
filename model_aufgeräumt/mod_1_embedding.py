@@ -91,7 +91,7 @@ def train_model(X_train_aug, y_train,
 
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=epochs, batch_size=64, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
+            epochs=epochs, batch_size=32, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
 
     model.load_weights(load_file)
     print('\n----------------------')
