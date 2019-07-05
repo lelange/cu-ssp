@@ -92,7 +92,7 @@ def build_model():
     input = Input(shape=(X_train.shape[1], X_train.shape[2],))
 
     if hmm:
-        profiles_input = Input(shape=(None, X_aug_train.shape[2]))
+        profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
         inp = [input, profiles_input]
