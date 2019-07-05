@@ -55,8 +55,6 @@ batch_size = 16
 n_tags = 9
 n_words = 24
 
-if not pssm and not hmm:
-    raise Exception('you should use one of the profiles!')
 
 #inputs: primary structure
 if embedding:
@@ -70,7 +68,11 @@ else:
 y_train = np.load('../data/y_train_6133.npy')
 y_test = np.load('../data/y_test_513.npy')
 
-X_aug_train, X_aug_test = prepare_profiles(pssm, hmm, normalize, standardize)
+if pssm or hmm:
+    X_aug_train, X_aug_test = prepare_profiles(pssm, hmm, normalize, standardize)
+else:
+    X_aug_train = None
+    X_aug_test = None
 
 print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
@@ -81,16 +83,14 @@ time_data = time.time() - start_time
 def build_model():
     model = None
     input = Input(shape=(X_train.shape[1], X_train.shape[2],))
-    profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
-    #reshaped = Reshape((None,))(profiles_input)
-    #reshaped = Flatten()(profiles_input)
-    # Defining an embedding layer mapping from the words (n_words) to a vector of len 128
-    #x1 = Embedding(input_dim=24, output_dim=350, input_length=None)(input)
-    #x1 = Dense(250, activation="relu")(reshaped)
-    x1 = concatenate([input, profiles_input])
-    #experiment with dense layer
-    #x2 = Dense(125, activation= "relu")(reshaped)
-    x2 = concatenate([input, profiles_input])
+    if pssm or hmm:
+        profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
+        x1 = concatenate([input, profiles_input])
+        x2 = concatenate([input, profiles_input])
+    else:
+        profiles_input = None
+        x1 = input
+        x2 = input
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
@@ -161,9 +161,12 @@ else:
     X_train = X_train[training_idx]
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
-    X_aug_val = X_aug_train[validation_idx]
-    X_aug_train = X_aug_train[training_idx]
-
+    if pssm or hmm:
+        X_aug_val = X_aug_train[validation_idx]
+        X_aug_train = X_aug_train[training_idx]
+    else:
+        X_aug_val = None
+        X_aug_train = None
     X_train_aug = [X_train, X_aug_train]
     X_val_aug = [X_val, X_aug_val]
     X_test_aug = [X_test, X_aug_test]
