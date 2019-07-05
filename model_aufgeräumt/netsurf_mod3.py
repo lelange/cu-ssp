@@ -46,57 +46,62 @@ args = parse_arguments(default_epochs=10)
 
 normalize = args.normalize
 standardize = args.standardize
-pssm = args.pssm
 hmm = args.hmm
 embedding = args.embedding
 epochs = args.epochs
+plot = args.plot
+
 batch_size = 16
 
-n_tags = 9
-n_words = 24
+n_tags = 8
+data_root = '../data/netsurfp/'
 
+file_train = 'train'
+file_test = 'cb513' #choose from ['cb513', 'ts115', 'casp12']
 
-#inputs: primary structure
+def get_data(filename, hmm, normalize, standardize):
+    input_seq =  np.load(data_root+filename+'_input.npy')
+    q8 = np.load(data_root+filename+'_q8.npy')
+    if hmm:
+        profiles = np.load(data_root+filename+'_hmm.npy')
+        if normalize:
+            profiles = normal(profiles)
+        if standardize:
+            profiles = standard(profiles)
+    else:
+        profiles = None
+    return  input_seq, profiles, q8
+
+#load data
 if embedding:
-    X_train = np.load('../data/train_input_embedding_residue.npy')
-    X_test = np.load('../data/test_input_embedding_residue.npy')
-else:
-    X_train = np.load('../data/X_train_6133.npy')
-    X_test = np.load('../data/X_test_513.npy')
+    print('not available yet!')
+X_train, X_aug_train, y_train = get_data(file_train, hmm, normalize, standardize)
+X_test, X_aug_test, y_test = get_data(file_test, hmm, normalize, standardize)
 
-#labels: secondary structure
-y_train = np.load('../data/y_train_6133.npy')
-y_test = np.load('../data/y_test_513.npy')
-
-if pssm or hmm:
-    X_aug_train, X_aug_test = prepare_profiles(pssm, hmm, normalize, standardize)
-else:
-    X_aug_train = None
-    X_aug_test = None
 
 print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
-if pssm or hmm:
+if hmm:
     print("X aug train shape: ", X_aug_train.shape)
 
 time_data = time.time() - start_time
 
 def build_model():
     model = None
-    input = Input(shape=(X_train.shape[1], X_train.shape[2],))
-    if pssm or hmm:
-        profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
-        x1 = concatenate([input, profiles_input])
-        x2 = concatenate([input, profiles_input])
+    input = Input(shape=(None,))
+    x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
+    x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
+    if hmm:
+        profiles_input = Input(shape=(None, X_aug_train.shape[2]))
+        x1 = concatenate([x1, profiles_input])
+        x2 = concatenate([x2, profiles_input])
         inp = [input, profiles_input]
     else:
-        x1 = input
-        x2 = input
         inp = input
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
+
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
-    #x1 = Dropout(0.5)(x1)
     # Defining a bidirectional LSTM using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)
     #x2 = Dropout(0.5)(x2)
@@ -111,7 +116,7 @@ def build_model():
 
     # Defining the model as a whole and printing the summary
     model = Model(inp, y)
-    model.summary()
+    #model.summary()
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
     adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
@@ -135,11 +140,12 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
             epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
 
     # plot accuracy during training
-    plt.title('Accuracy')
-    plt.plot(history.history['accuracy'], label='train')
-    plt.plot(history.history['val_accuracy'], label='val')
-    plt.legend()
-    plt.savefig('./plots/mod_3-CB513-'+datetime.now().strftime("%m_%d-%H_%M")+'_accuracy.png')
+    if plot:
+        plt.title('Accuracy')
+        plt.plot(history.history['accuracy'], label='train')
+        plt.plot(history.history['val_accuracy'], label='val')
+        plt.legend()
+        plt.savefig('./plots/mod_3-CB513-' + datetime.now().strftime("%m_%d-%H_%M") + '_accuracy.png')
 
     model.load_weights(load_file)
     print("####evaluate:")
@@ -162,7 +168,7 @@ else:
     X_train = X_train[training_idx]
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
-    if pssm or hmm:
+    if hmm:
         X_aug_val = X_aug_train[validation_idx]
         X_aug_train = X_aug_train[training_idx]
         X_train_aug = [X_train, X_aug_train]
