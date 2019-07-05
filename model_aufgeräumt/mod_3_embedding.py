@@ -110,7 +110,11 @@ def build_model():
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
 
     # Defining the model as a whole and printing the summary
-    model = Model([input, profiles_input], y)
+    if pssm or hmm:
+        inp = [input, profiles_input]
+    else:
+        inp = input
+    model = Model(inp, y)
     model.summary()
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
