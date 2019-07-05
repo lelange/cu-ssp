@@ -25,8 +25,6 @@ data_cb513 = np.load(data_root+'CB513_HHblits.npz')
 data_ts115 = np.load(data_root+'TS115_HHblits.npz')
 data_casp12 = np.load(data_root+'CASP12_HHblits.npz')
 
-database = data['data']
-
 def get_mask(data):
     return data[:,:,50]
 
