@@ -76,7 +76,8 @@ else:
 
 print("X train shape: ", X_train.shape)
 print("y train shape: ", y_train.shape)
-print("X aug train shape: ", X_aug_train.shape)
+if pssm or hmm:
+    print("X aug train shape: ", X_aug_train.shape)
 
 time_data = time.time() - start_time
 
