@@ -29,13 +29,13 @@ def get_mask(data):
     return data[:,:,50]
 
 def get_input(data, seq_range):
-    return data[:,:,:20][seq_range]
+    return data[:,:maxlen_seq,:20][seq_range]
 
 def get_hmm(data, seq_range):
-    return data[:,:,20:50][seq_range]
+    return data[:,:maxlen_seq,20:50][seq_range]
 
 def get_q8(data, seq_range):
-    return data[:,:,57:65][seq_range]
+    return data[:,:maxlen_seq,57:65][seq_range]
 
 def get_and_save_data(data, filename):
     database = data['data']
