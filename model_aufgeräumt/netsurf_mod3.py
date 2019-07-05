@@ -54,6 +54,7 @@ plot = args.plot
 batch_size = 16
 
 n_tags = 8
+n_words = 20
 data_root = '../data/netsurfp/'
 
 file_train = 'train'
@@ -88,15 +89,16 @@ time_data = time.time() - start_time
 
 def build_model():
     model = None
-    input = Input(shape=(None,))
-    x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
+    input = Input(shape=(X_train.shape[1], X_train.shape[2],))
+
     if hmm:
         profiles_input = Input(shape=(None, X_aug_train.shape[2]))
-        x1 = concatenate([x1, profiles_input])
-        x2 = concatenate([x2, profiles_input])
+        x1 = concatenate([input, profiles_input])
+        x2 = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
+        x1 = input
+        x2 = input
         inp = input
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
