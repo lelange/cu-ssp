@@ -88,11 +88,11 @@ def build_model():
         profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
+        inp = [input, profiles_input]
     else:
-        profiles_input = None
         x1 = input
         x2 = input
-
+        inp = input
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
@@ -110,10 +110,6 @@ def build_model():
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
 
     # Defining the model as a whole and printing the summary
-    if pssm or hmm:
-        inp = [input, profiles_input]
-    else:
-        inp = input
     model = Model(inp, y)
     model.summary()
 
@@ -169,12 +165,14 @@ else:
     if pssm or hmm:
         X_aug_val = X_aug_train[validation_idx]
         X_aug_train = X_aug_train[training_idx]
+        X_train_aug = [X_train, X_aug_train]
+        X_val_aug = [X_val, X_aug_val]
+        X_test_aug = [X_test, X_aug_test]
     else:
-        X_aug_val = None
-        X_aug_train = None
-    X_train_aug = [X_train, X_aug_train]
-    X_val_aug = [X_val, X_aug_val]
-    X_test_aug = [X_test, X_aug_test]
+        X_train_aug = X_train
+        X_val_aug = X_val
+        X_test_aug = X_test
+
     model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=epochs)
 
 time_end = time.time() - start_time
