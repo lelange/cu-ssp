@@ -89,14 +89,15 @@ time_data = time.time() - start_time
 
 def build_model():
     model = None
-    input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
 
     if hmm:
+        input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
         profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
+        input = Input(shape=(X_train_aug.shape[1], X_train_aug.shape[2],))
         x1 = input
         x2 = input
         inp = input
