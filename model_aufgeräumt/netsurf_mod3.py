@@ -168,7 +168,10 @@ if args.cv :
     test_acc = np.mean(cv_scores)
     print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
 else:
-    n_samples = len(X_train_aug)
+    if hmm:
+        n_samples = len(X_train_aug[0])
+    else:
+        n_samples = len(X_train_aug)
     np.random.seed(0)
     validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
