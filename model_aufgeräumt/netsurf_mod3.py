@@ -103,7 +103,7 @@ def build_model():
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
 
-    x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
+    #x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
     # Defining a bidirectional LSTM using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)
     #x2 = Dropout(0.5)(x2)

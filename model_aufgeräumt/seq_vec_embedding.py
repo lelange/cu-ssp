@@ -14,8 +14,8 @@ options = model_dir / 'options.json'
 seqvec  = ElmoEmbedder(options,weights,cuda_device=0) # cuda_device=-1 for CPU
 
 #inputs: primary structure
-train_input = np.load('../data/train_input.npy')
-test_input = np.load('../data/test_input.npy')
+train_input = np.load('../data/netsurfp/train_input.npy')
+test_input = np.load('../data/netsurfp/cb513_input.npy')
 
 
 def calculate_and_save_embedding(input):
