@@ -231,12 +231,13 @@ def message_me(model_name, m, s):
     recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
     client = fbchat.Client(username, password)
     msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F973 '
-                       '\n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s))
+                       '\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s))
 
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
 
-def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test, n_folds=10):
+def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
+    X_train, X_aug_train = X_train_aug
     # Instantiate the cross validator
     kfold_splits = n_folds
     kf = KFold(n_splits=kfold_splits, shuffle=True)
@@ -259,9 +260,10 @@ def crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test, n
         print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
             X_val_fold.shape[0]) + " validation samples...")
 
-        model, test_acc = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
-                                  [X_val_fold, X_aug_val_fold], y_val_fold,
-                                  [X_test, X_aug_test], y_test)
+        model= train_model([X_train_fold, X_aug_train_fold], y_train_fold,
+                                  [X_val_fold, X_aug_val_fold], y_val_fold)
+
+        test_acc = evaluate_model(model, load_file, test_ind = [0])
 
         print('>%.3f' % test_acc)
         cv_scores.append(test_acc)

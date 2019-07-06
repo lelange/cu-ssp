@@ -58,9 +58,10 @@ n_words = 20
 data_root = '../data/netsurfp/'
 
 file_train = 'train'
-file_test = 'cb513' #choose from ['cb513', 'ts115', 'casp12']
+file_test = ['cb513', 'ts115', 'casp12']
 
 def get_data(filename, hmm, normalize, standardize):
+    print('Load ' + filename + ' data...')
     input_seq =  np.load(data_root+filename+'_input.npy')
     q8 = np.load(data_root+filename+'_q8.npy')
     if hmm:
@@ -69,30 +70,29 @@ def get_data(filename, hmm, normalize, standardize):
             profiles = normal(profiles)
         if standardize:
             profiles = standard(profiles)
+        input_aug = [input_seq, profiles]
     else:
-        profiles = None
-    return  input_seq, profiles, q8
+        input_aug = input_seq
+    return  input_aug, q8
 
 #load data
 if embedding:
     print('not available yet!')
-X_train, X_aug_train, y_train = get_data(file_train, hmm, normalize, standardize)
-X_test, X_aug_test, y_test = get_data(file_test, hmm, normalize, standardize)
+X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
 
-
-print("X train shape: ", X_train.shape)
+print("X train shape: ", X_train_aug[0].shape)
 print("y train shape: ", y_train.shape)
 if hmm:
-    print("X aug train shape: ", X_aug_train.shape)
+    print("X aug train shape: ", X_train_aug[1].shape)
 
 time_data = time.time() - start_time
 
 def build_model():
     model = None
-    input = Input(shape=(X_train.shape[1], X_train.shape[2],))
+    input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
 
     if hmm:
-        profiles_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
+        profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
         inp = [input, profiles_input]
@@ -125,10 +125,10 @@ def build_model():
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     return model
 
-def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs = epochs):
+load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
+def train_model(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     model = build_model()
-    load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
@@ -149,40 +149,45 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
         plt.legend()
         plt.savefig('./plots/mod_3-CB513-' + datetime.now().strftime("%m_%d-%H_%M") + '_accuracy.png')
 
-    model.load_weights(load_file)
-    print("####evaluate:")
-    score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-    print(score)
-    print ('test loss:', score[0])
-    print ('test accuracy:', score[2])
-    return model, score[2]
+    return model
+
+def evaluate_model(model, load_file, test_ind = None):
+    if test_ind is None:
+        test_ind = range(len(file_test))
+    for i in test_ind:
+        X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
+        model.load_weights(load_file)
+        print("####evaluate" + file_test[i] +":")
+        score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
+        print(file_test[i] +' test loss:', score[0])
+        print(file_test[i] +' test accuracy:', score[2])
+    return score[2]
 
 if args.cv :
-    cv_scores, model_history = crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test)
+    cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
     test_acc = np.mean(cv_scores)
     print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
 else:
-    n_samples = len(X_train)
+    n_samples = len(X_train_aug)
     np.random.seed(0)
     validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
 
-    X_val = X_train[validation_idx]
-    X_train = X_train[training_idx]
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
-    if hmm:
-        X_aug_val = X_aug_train[validation_idx]
-        X_aug_train = X_aug_train[training_idx]
-        X_train_aug = [X_train, X_aug_train]
-        X_val_aug = [X_val, X_aug_val]
-        X_test_aug = [X_test, X_aug_test]
-    else:
-        X_train_aug = X_train
-        X_val_aug = X_val
-        X_test_aug = X_test
 
-    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=epochs)
+    if hmm:
+        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
+        X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
+    else:
+        X_val_aug = X_train_aug[validation_idx]
+        X_train_aug = X_train_aug[training_idx]
+
+    model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
+    test_acc = evaluate_model(model, load_file)
+    ##test other test sets
+
+
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
