@@ -159,7 +159,8 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
 
 if args.cv :
     cv_scores, model_history = crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test)
-    print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
+    test_acc = np.mean(cv_scores)
+    print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
 else:
     n_samples = len(X_train)
     np.random.seed(0)
@@ -187,4 +188,4 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-telegram_me(m, s, sys.argv[0])
+telegram_me(m, s, sys.argv[0], test_acc)
