@@ -180,8 +180,8 @@ else:
     y_train = y_train[training_idx]
 
     if hmm:
-        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
         X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
+        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
     else:
         X_val_aug = X_train_aug[validation_idx]
         X_train_aug = X_train_aug[training_idx]
