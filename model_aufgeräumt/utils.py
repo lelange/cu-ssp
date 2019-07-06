@@ -212,7 +212,7 @@ def telegram_me(m, s, model_name, test_acc = None, hmm=None, standardize=None, n
     Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
     chat_ID = "69661085"
     bot = telegram.Bot(token=Token)
-    msg = '{} ist erfolgreich durchgelaufen! \U0001F60D \n\n' \
+    msg = '{} ist erfolgreich durchgelaufen! \U0001F60E \n\n' \
           '(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
     if hmm:
         verb = ''
@@ -220,9 +220,9 @@ def telegram_me(m, s, model_name, test_acc = None, hmm=None, standardize=None, n
             verb += 'standardisierte '
         if normalize:
             verb += 'und normalisierte '
-        msg+='Es wurden '+verb+'HMM Profile verwendet.'
+        msg+='\nEs wurden '+verb+'HMM Profile verwendet.'
     if test_acc is not None:
-        msg += '\n Test accuracy: {:.3%}'.format(test_acc)
+        msg += '\nTest accuracy: {:.3%}'.format(test_acc)
     bot.send_message(chat_id=chat_ID, text=msg)
 
 def message_me(model_name, m, s):
