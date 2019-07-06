@@ -212,7 +212,7 @@ def telegram_me(m, s, model_name, test_acc = None, hmm=None, standardize=None, n
     Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
     chat_ID = "69661085"
     bot = telegram.Bot(token=Token)
-    msg = '{} ist erfolgreich durchgelaufen! \U0001F60C \n\n' \
+    msg = '{} ist erfolgreich durchgelaufen! \U0001F60B \n\n' \
           '(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
     if hmm:
         verb = ''
