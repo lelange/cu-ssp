@@ -64,7 +64,7 @@ def get_data(filename, hmm, normalize, standardize):
 
     print('Load ' + filename + ' data...')
     if embedding:
-        input_seq = np.load(data_root + filename + 'netsurfp_input_embedding_residue.npy')
+        input_seq = np.load(data_root + filename + '_netsurfp_input_embedding_residue.npy')
     else:
         input_seq =  np.load(data_root+filename+'_input.npy')
     q8 = np.load(data_root + filename + '_q8.npy')
@@ -192,7 +192,7 @@ else:
         X_train_aug = X_train_aug[training_idx]
 
     model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
-    test_acc = evaluate_model(model, load_file)
+    test_acc = evaluate_model(model, load_file, [0])
     ##test other test sets
 
 
