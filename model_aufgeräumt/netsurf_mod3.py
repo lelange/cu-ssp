@@ -53,7 +53,7 @@ embedding = args.embedding
 epochs = args.epochs
 plot = args.plot
 no_input = args.no_input
-hyperopt = args.hyperopt
+optimize = args.optimize
 
 batch_size = 16
 
@@ -291,7 +291,7 @@ else:
         X_val_aug = X_train_aug[validation_idx]
         X_train_aug = X_train_aug[training_idx]
 
-    if hyperopt:
+    if optimize:
         test_params = {
             'dense1': 1200,
             'dropout1': 0.5,
