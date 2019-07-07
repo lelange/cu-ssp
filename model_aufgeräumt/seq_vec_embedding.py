@@ -25,9 +25,21 @@ def onehot_to_seq(oh_seq, index):
         if m != 0:
             i = np.argmax(o)
             s += index[i]
-        else:
-            break
+        else: #for unknown proteins all-zero encoding, will be called X
+            s += index[-1]
     return s
+
+data_root = '../data/netsurfp/'
+data_train = np.load(data_root+'Train_HHblits.npz')
+data_cb513 = np.load(data_root+'CB513_HHblits.npz')
+
+maxlen_seq = 600
+minlen_seq= 100
+
+def get_seq_mask(data):
+    mask = data['data'][:,:,50]
+    seq_range = [minlen_seq<=mask[i].sum()<=maxlen_seq for i in range(len(mask))]
+    return mask[seq_range]
 
 #create sequence representation
 '''
@@ -58,7 +70,7 @@ def telegram_me(m, s, model_name, test_acc = None, hmm=False, standardize=False,
         msg += '\nTest accuracy: {:.3%}'.format(test_acc)
     bot.send_message(chat_id=chat_ID, text=msg)
 
-def calculate_and_save_embedding(input):
+def calculate_and_save_embedding(input, mask_seq):
     # Get embedding for amino acid sequence:
     input_embedding = []
     times = []
@@ -69,14 +81,15 @@ def calculate_and_save_embedding(input):
         print('----------------------')
         print('Sequence ', (i + 1), '/', len(input))
         print('----------------------')
-        input_seq = onehot_to_seq(seq, list('ACEDGFIHKMLNQPSRTWVY') )
+
+        input_seq = onehot_to_seq(seq[mask_seq[i]>0], list('ACEDGFIHKMLNQPSRTWVYX') )
         embedding = seqvec.embed_sentence(list(input_seq))  # List-of-Lists with shape [3,L,1024]
 
         # Get 1024-dimensional embedding for per-residue predictions:
         residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
         # Get 1024-dimensional embedding for per-protein predictions:
         #protein_embd = torch.tensor(embedding).sum(dim=0).mean(dim=0)  # Vector with shape [1024]
-        residue_embd_pad = torch.nn.ConstantPad2d((0, 0, 0, (600-len(input_seq) )), 0)(residue_embd)
+        residue_embd_pad = torch.nn.ConstantPad2d((0, 0, 0, (maxlen_seq-len(input_seq) )), 0)(residue_embd)
         residue_embd_np = residue_embd_pad.cpu().detach().numpy()
         print(residue_embd_np.shape)
         input_embedding.append(residue_embd_np)
@@ -90,18 +103,18 @@ def calculate_and_save_embedding(input):
     return input_embedding, times
 
 start_time = time.time()
-train_input_embedding, train_times = calculate_and_save_embedding(train_input)
-np.save('../data/train_netsurfp_times_residue.npy', train_times)
-np.save('../data/train_netsurfp_input_embedding_residue_netsurfp.npy', train_input_embedding)
+train_input_embedding, train_times = calculate_and_save_embedding(train_input, mask_seq=get_seq_mask(data_train))
+np.save(data_root+'train_netsurfp_times_residue.npy', train_times)
+np.save(data_root+'train_netsurfp_input_embedding_residue.npy', train_input_embedding)
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 telegram_me(m, s, sys.argv[0])
 
 start_time = time.time()
-test_input_embedding, test_times = calculate_and_save_embedding(test_input)
-np.save('../data/test_netsurfp_times_residue.npy', test_times)
-np.save('../data/test_netsurfp_input_embedding_residue.npy', test_input_embedding)
+test_input_embedding, test_times = calculate_and_save_embedding(test_input, mask_seq=get_seq_mask(data_cb513))
+np.save(data_root+'cb513_netsurfp_times_residue.npy', test_times)
+np.save(data_root+'cb513_netsurfp_input_embedding_residue.npy', test_input_embedding)
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)

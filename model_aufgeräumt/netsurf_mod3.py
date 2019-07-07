@@ -61,9 +61,13 @@ file_train = 'train'
 file_test = ['cb513', 'ts115', 'casp12']
 
 def get_data(filename, hmm, normalize, standardize):
+
     print('Load ' + filename + ' data...')
-    input_seq =  np.load(data_root+filename+'_input.npy')
-    q8 = np.load(data_root+filename+'_q8.npy')
+    if embedding:
+        input_seq = np.load(data_root + filename + 'netsurfp_input_embedding_residue.npy')
+    else:
+        input_seq =  np.load(data_root+filename+'_input.npy')
+    q8 = np.load(data_root + filename + '_q8.npy')
     if hmm:
         profiles = np.load(data_root+filename+'_hmm.npy')
         if normalize:
@@ -76,14 +80,14 @@ def get_data(filename, hmm, normalize, standardize):
     return  input_aug, q8
 
 #load data
-if embedding:
-    print('not available yet!')
 X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
 
-print("X train shape: ", X_train_aug[0].shape)
-print("y train shape: ", y_train.shape)
 if hmm:
+    print("X train shape: ", X_train_aug[0].shape)
     print("X aug train shape: ", X_train_aug[1].shape)
+else:
+    print("X train shape: ", X_train_aug.shape)
+print("y train shape: ", y_train.shape)
 
 time_data = time.time() - start_time
 

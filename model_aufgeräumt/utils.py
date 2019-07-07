@@ -208,7 +208,7 @@ def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
 
-def telegram_me(m, s, model_name, test_acc = None, hmm=None, standardize=None, normalize = None):
+def telegram_me(m, s, model_name, test_acc = None, hmm=False, standardize=False, normalize = False):
     Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
     chat_ID = "69661085"
     bot = telegram.Bot(token=Token)
