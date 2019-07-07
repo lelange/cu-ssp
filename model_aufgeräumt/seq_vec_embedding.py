@@ -53,13 +53,14 @@ def calculate_and_save_embedding(input):
         print('----------------------')
         print('Sequence ', (i + 1), '/', len(input))
         print('----------------------')
-        embedding = seqvec.embed_sentence(list(onehot_to_seq(seq, list('ACEDGFIHKMLNQPSRTWVY') )))  # List-of-Lists with shape [3,L,1024]
+        input_seq = onehot_to_seq(seq, list('ACEDGFIHKMLNQPSRTWVY') )
+        embedding = seqvec.embed_sentence(list(input_seq))  # List-of-Lists with shape [3,L,1024]
 
         # Get 1024-dimensional embedding for per-residue predictions:
         residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
         # Get 1024-dimensional embedding for per-protein predictions:
         #protein_embd = torch.tensor(embedding).sum(dim=0).mean(dim=0)  # Vector with shape [1024]
-        residue_embd_pad = torch.nn.ConstantPad2d((0, 0, 0, (700-len(input[i]) )), 0)(residue_embd)
+        residue_embd_pad = torch.nn.ConstantPad2d((0, 0, 0, (600-len(input_seq[i]) )), 0)(residue_embd)
         residue_embd_np = residue_embd_pad.cpu().detach().numpy()
         print(residue_embd_np.shape)
         input_embedding.append(residue_embd_np)
