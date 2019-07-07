@@ -50,6 +50,7 @@ hmm = args.hmm
 embedding = args.embedding
 epochs = args.epochs
 plot = args.plot
+no_input = args.no_input
 
 batch_size = 16
 
@@ -66,7 +67,15 @@ def get_data(filename, hmm, normalize, standardize):
     if embedding:
         input_seq = np.load(data_root + filename + '_netsurfp_input_embedding_residue.npy')
     else:
-        input_seq =  np.load(data_root+filename+'_input.npy')
+        if no_input:
+            input_seq = np.load(data_root + filename + '_hmm.npy')
+            if normalize:
+                input_seq = normal(input_seq)
+            if standardize:
+                input_seq = standard(input_seq)
+
+        else:
+            input_seq =  np.load(data_root+filename+'_input.npy')
     q8 = np.load(data_root + filename + '_q8.npy')
     if hmm:
         profiles = np.load(data_root+filename+'_hmm.npy')
