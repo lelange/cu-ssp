@@ -20,6 +20,7 @@ def parse_arguments(default_epochs):
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-no_input', help='do not use input data', action='store_true')
+    parser.add_argument('-hyperopt', help='perform hyperoptimization', action='store_true')
     parser.add_argument('-pssm', help='use pssm profiles', action='store_true')
     parser.add_argument('-hmm', help='use hmm profiles', action='store_true')
     parser.add_argument('-normalize', help='nomalize profiles', action='store_true')
