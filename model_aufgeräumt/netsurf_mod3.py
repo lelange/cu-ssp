@@ -167,7 +167,7 @@ space = {
     'batch_size': hp.choice('batch_size', UNIT_CHOICES)
 }
 
-def build_model_ho(params, epochs = epochs, verbose=1):
+def build_model_ho(params, epochs = epochs, verbose=2):
     model = None
     print('----------------------')
     print('----------------------')
@@ -219,12 +219,13 @@ def build_model_ho(params, epochs = epochs, verbose=1):
                         epochs=epochs, batch_size=params['batch_size'], callbacks=[checkpointer, earlyStopping],
                         verbose=verbose, shuffle=True)
 
+    #test and evaluate performance
     X_test_aug, y_test = get_data(file_test[0], hmm, normalize, standardize)
     model.load_weights(load_file)
     print('\n----------------------')
     print('----------------------')
     print("evaluate" + file_test[0] + ":")
-    score = model.evaluate(X_test_aug, y_test, verbose=verbose, batch_size=1)
+    score = model.evaluate(X_test_aug, y_test, verbose=0, batch_size=1)
     print(file_test[0] + ' test accuracy:', score[2])
 
     return {'accuracy': score[2], 'status': STATUS_OK}
@@ -315,7 +316,7 @@ else:
         trials = Trials()
         best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
         #save trials
-        pickle.dump(trials, open("hyperopt_trials.p", "wb"))
+        pickle.dump(trials, open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "wb"))
         ###trials = pickle.load(open("hyperopt_trials.p", "rb"))
         print('Space evaluation: ')
         space_eval(space, best)
