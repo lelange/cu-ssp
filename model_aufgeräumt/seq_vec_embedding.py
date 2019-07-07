@@ -103,7 +103,8 @@ def calculate_and_save_embedding(input, mask_seq):
     return input_embedding, times
 
 start_time = time.time()
-train_input_embedding, train_times = calculate_and_save_embedding(train_input, mask_seq=get_seq_mask(data_train))
+mask = get_seq_mask(data_train)
+train_input_embedding, train_times = calculate_and_save_embedding(train_input, mask_seq=mask[:,:600])
 np.save(data_root+'train_netsurfp_times_residue.npy', train_times)
 np.save(data_root+'train_netsurfp_input_embedding_residue.npy', train_input_embedding)
 
@@ -112,7 +113,8 @@ m, s = divmod(time_end, 60)
 telegram_me(m, s, sys.argv[0])
 
 start_time = time.time()
-test_input_embedding, test_times = calculate_and_save_embedding(test_input, mask_seq=get_seq_mask(data_cb513))
+mask = get_seq_mask(data_cb513)
+test_input_embedding, test_times = calculate_and_save_embedding(test_input, mask_seq=mask[:,:600])
 np.save(data_root+'cb513_netsurfp_times_residue.npy', test_times)
 np.save(data_root+'cb513_netsurfp_input_embedding_residue.npy', test_input_embedding)
 
