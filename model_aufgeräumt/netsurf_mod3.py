@@ -42,6 +42,8 @@ from utils import *
 
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 start_time = time.time()
 
 args = parse_arguments(default_epochs=10)
@@ -83,8 +85,10 @@ def get_data(filename, hmm, normalize, standardize):
     if hmm:
         profiles = np.load(data_root+filename+'_hmm.npy')
         if normalize:
+            print('Normalize...')
             profiles = normal(profiles)
         if standardize:
+            print('Standardize...')
             profiles = standard(profiles)
         input_aug = [input_seq, profiles]
     else:
@@ -224,7 +228,7 @@ def build_model_ho(params, epochs = epochs, verbose=2):
     model.load_weights(load_file)
     print('\n----------------------')
     print('----------------------')
-    print("evaluate" + file_test[0] + ":")
+    print("evaluate " + file_test[0] + ":")
     score = model.evaluate(X_test_aug, y_test, verbose=0, batch_size=1)
     print(file_test[0] + ' test accuracy:', score[2])
 
