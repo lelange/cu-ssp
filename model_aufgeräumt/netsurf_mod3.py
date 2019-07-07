@@ -228,7 +228,7 @@ def build_model_ho(params, epochs = epochs, verbose=2):
     score = model.evaluate(X_test_aug, y_test, verbose=0, batch_size=1)
     print(file_test[0] + ' test accuracy:', score[2])
 
-    return {'accuracy': score[2], 'status': STATUS_OK}
+    return {'loss': -score[2], 'status': STATUS_OK}
 
 load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
