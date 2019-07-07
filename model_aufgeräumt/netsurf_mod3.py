@@ -309,7 +309,7 @@ else:
             'batch_size': 16,
         }
         build_model_ho(load_file, X_train_aug, y_train, X_val_aug, y_val,
-                       epochs=epochs,params=test_params, verbose=0)
+                       epochs=epochs,params=test_params, verbose=1)
     else:
         model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file, [0])
