@@ -23,6 +23,7 @@ def onehot_to_seq(oh_seq, index):
         m = np.max(o)
         if m != 0:
             i = np.argmax(o)
+            print(m, i, index[i])
             s += index[i]
         else:
             break
