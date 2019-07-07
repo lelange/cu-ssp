@@ -7,6 +7,7 @@ import os
 import argparse
 import time
 import numpy as np
+import telegram
 
 model_dir = Path('../../seqVec')
 weights = model_dir / 'weights.hdf5'
@@ -40,7 +41,22 @@ for i, is_seq in enumerate(seq_mask):
     q8_seq.append(seq)
 
 '''
-
+def telegram_me(m, s, model_name, test_acc = None, hmm=False, standardize=False, normalize = False):
+    Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
+    chat_ID = "69661085"
+    bot = telegram.Bot(token=Token)
+    msg = '{} ist erfolgreich durchgelaufen! \U0001F60B \n\n' \
+          '(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
+    if hmm:
+        verb = ''
+        if standardize:
+            verb += 'standardisierte '
+        if normalize:
+            verb += 'und normalisierte '
+        msg+='\nEs wurden '+verb+'HMM Profile verwendet.'
+    if test_acc is not None:
+        msg += '\nTest accuracy: {:.3%}'.format(test_acc)
+    bot.send_message(chat_id=chat_ID, text=msg)
 
 def calculate_and_save_embedding(input):
     # Get embedding for amino acid sequence:
@@ -78,8 +94,15 @@ train_input_embedding, train_times = calculate_and_save_embedding(train_input)
 np.save('../data/train_netsurfp_times_residue.npy', train_times)
 np.save('../data/train_netsurfp_input_embedding_residue_netsurfp.npy', train_input_embedding)
 
+time_end = time.time() - start_time
+m, s = divmod(time_end, 60)
+telegram_me(m, s, sys.argv[0])
 
 start_time = time.time()
 test_input_embedding, test_times = calculate_and_save_embedding(test_input)
 np.save('../data/test_netsurfp_times_residue.npy', test_times)
 np.save('../data/test_netsurfp_input_embedding_residue.npy', test_input_embedding)
+
+time_end = time.time() - start_time
+m, s = divmod(time_end, 60)
+telegram_me(m, s, sys.argv[0])
