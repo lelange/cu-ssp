@@ -167,8 +167,7 @@ space = {
     'batch_size': hp.choice('batch_size', UNIT_CHOICES)
 }
 
-def build_model_ho(load_file, X_train_aug, y_train, X_val_aug, y_val, params,
-                   epochs = epochs, verbose=0):
+def build_model_ho(params, epochs = epochs, verbose=1):
     model = None
     print('----------------------')
     print('----------------------')
@@ -224,7 +223,7 @@ def build_model_ho(load_file, X_train_aug, y_train, X_val_aug, y_val, params,
     model.load_weights(load_file)
     print('\n----------------------')
     print('----------------------')
-    print("evaluate" + file_test[i] + ":")
+    print("evaluate" + file_test[0] + ":")
     score = model.evaluate(X_test_aug, y_test, verbose=verbose, batch_size=1)
     print(file_test[0] + ' test accuracy:', score[2])
 
@@ -308,9 +307,21 @@ else:
             'decay': 0.0001,
             'batch_size': 16,
         }
-        build_model_ho(load_file, X_train_aug, y_train, X_val_aug, y_val,
-                       params=test_params,
+        build_model_ho(params=test_params,
                        epochs=epochs, verbose=1)
+        trials = Trials()
+        best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
+        #save trials
+        pickle.dump(trials, open("hyperopt_trials.p", "wb"))
+        ###trials = pickle.load(open("hyperopt_trials.p", "rb"))
+        print('Space evaluation: ')
+        space_eval(space, best)
+        data = list(map(_flatten, extract_params(trials)))
+        df = pd.DataFrame(list(data))
+        df = df.fillna(0)  # missing values occur when the object is not populated
+        corr = df.corr()
+        print(corr)
+
     else:
         model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file, [0])
