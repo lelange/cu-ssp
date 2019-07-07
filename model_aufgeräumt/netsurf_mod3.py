@@ -145,7 +145,7 @@ def build_model():
 
 
 DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
-UNIT_CHOICES = np.arange(100, 1201, 100, dtype=int)
+UNIT_CHOICES = list(range(100, 1201, 100))
 BATCH_CHOICES = np.arange(16, 129, 16, dtype=int)
 LR_CHOICES = [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01]
 space = {
@@ -291,6 +291,8 @@ else:
         X_train_aug = X_train_aug[training_idx]
 
     if optimize:
+        '''
+        todo: morgen ausprobieren
         test_params = {
             'dense1': 1200,
             'dropout1': 0.5,
@@ -309,6 +311,7 @@ else:
         }
         build_model_ho(params=test_params,
                        epochs=epochs, verbose=1)
+        '''
         trials = Trials()
         best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
         #save trials
