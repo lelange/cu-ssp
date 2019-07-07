@@ -145,7 +145,7 @@ def build_model():
 
 
 DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
-UNIT_CHOICES = l[100, 200, 500, 800, 1000, 1200]
+UNIT_CHOICES = [100, 200, 500, 800, 1000, 1200]
 BATCH_CHOICES = np.arange(16, 100, 16, dtype=int)
 LR_CHOICES = [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01]
 space = {
