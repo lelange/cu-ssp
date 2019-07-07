@@ -23,7 +23,6 @@ def onehot_to_seq(oh_seq, index):
         m = np.max(o)
         if m != 0:
             i = np.argmax(o)
-            print(m, i, index[i])
             s += index[i]
         else:
             break
@@ -54,7 +53,7 @@ def calculate_and_save_embedding(input):
         print('----------------------')
         print('Sequence ', (i + 1), '/', len(input))
         print('----------------------')
-        embedding = seqvec.embed_sentence(list(onehot_to_seq(seq, list('GHIBESTC') )))  # List-of-Lists with shape [3,L,1024]
+        embedding = seqvec.embed_sentence(list(onehot_to_seq(seq, list('ACEDGFIHKMLNQPSRTWVY') )))  # List-of-Lists with shape [3,L,1024]
 
         # Get 1024-dimensional embedding for per-residue predictions:
         residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
