@@ -150,25 +150,26 @@ def build_model():
 
 DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
 UNIT_CHOICES = [100, 200, 500, 800, 1000, 1200]
-BATCH_CHOICES = np.arange(16, 100, 16, dtype=int)
+GRU_CHOICES = [100, 200, 300, 400, 500, 600]
+BATCH_CHOICES = [16, 32, 48, 64, 96]
 LR_CHOICES = [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01]
 space = {
     'dense1': hp.choice('dense1', UNIT_CHOICES),
     'dropout1': hp.choice('dropout1', DROPOUT_CHOICES),
-    'gru1': hp.choice('gru1', UNIT_CHOICES),
+    'gru1': hp.choice('gru1', GRU_CHOICES),
     # nesting the layers ensures they're only un-rolled sequentially
     'gru2': hp.choice('gru2', [False, {
-        'gru2_units': hp.choice('gru2_units', UNIT_CHOICES),
+        'gru2_units': hp.choice('gru2_units', GRU_CHOICES),
         # only make the 3rd layer availabile if the 2nd one is
         'gru3': hp.choice('gru3', [False, {
-            'gru3_units': hp.choice('gru3_units', UNIT_CHOICES)
+            'gru3_units': hp.choice('gru3_units', GRU_CHOICES)
         }]),
     }]),
     'dense2': hp.choice('dense2', UNIT_CHOICES),
     'dropout2': hp.choice('dropout2', DROPOUT_CHOICES),
     'lr': hp.choice('lr', LR_CHOICES),
     'decay': hp.choice('decay', LR_CHOICES),
-    'batch_size': hp.choice('batch_size', UNIT_CHOICES)
+    'batch_size': hp.choice('batch_size', BATCH_CHOICES)
 }
 
 def build_model_ho(params, epochs = epochs, verbose=2):
