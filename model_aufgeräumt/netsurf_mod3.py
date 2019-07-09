@@ -318,13 +318,13 @@ else:
         build_model_ho(params=test_params,
                        epochs=epochs, verbose=2)
         '''
-        # ----create a Trials database to store experiment results
-        #trials = Trials()
-        #----- use that Trials database for fmin
-        #best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
-        #----save trials
+        #---- create a Trials database to store experiment results
+        trials = Trials()
+        #---- use that Trials database for fmin
+        best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
+        #---- save trials
         pickle.dump(trials, open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "wb"))
-        trials = pickle.load(open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "rb"))
+        #trials = pickle.load(open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "rb"))
         print('Space evaluation: ')
         space_eval(space, best)
         data = list(map(_flatten, extract_params(trials)))
