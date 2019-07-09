@@ -151,7 +151,7 @@ def build_model():
 DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
 UNIT_CHOICES = [100, 200, 500, 800, 1000, 1200]
 GRU_CHOICES = [100, 200, 300, 400, 500, 600]
-BATCH_CHOICES = [16, 32, 48, 64, 96]
+BATCH_CHOICES = [16, 32]
 LR_CHOICES = [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01]
 space = {
     'dense1': hp.choice('dense1', UNIT_CHOICES),
@@ -316,13 +316,15 @@ else:
             'batch_size': 16,
         }
         build_model_ho(params=test_params,
-                       epochs=epochs, verbose=1)
+                       epochs=epochs, verbose=2)
         '''
-        trials = Trials()
-        best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
-        #save trials
+        # ----create a Trials database to store experiment results
+        #trials = Trials()
+        #----- use that Trials database for fmin
+        #best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
+        #----save trials
         pickle.dump(trials, open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "wb"))
-        ###trials = pickle.load(open("hyperopt_trials.p", "rb"))
+        trials = pickle.load(open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "rb"))
         print('Space evaluation: ')
         space_eval(space, best)
         data = list(map(_flatten, extract_params(trials)))
