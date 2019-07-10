@@ -110,28 +110,28 @@ def build_model():
     conv1 = conv_block(merged_input, 128, droprate)
     pool1 = MaxPooling1D(pool_size=2)(conv1)
 
-    conv2 = conv_block(pool1, 192, droprate)
+    conv2 = conv_block(pool1, 150, droprate)
     pool2 = MaxPooling1D(pool_size=2)(conv2)
 
-    conv3 = conv_block(pool2, 384, droprate)
+    conv3 = conv_block(pool2, 300, droprate)
     pool3 = MaxPooling1D(pool_size=2)(conv3)
 
-    conv4 = conv_block(pool3, 768, droprate)
+    conv4 = conv_block(pool3, 600, droprate)
     pool4 = MaxPooling1D(pool_size=2)(conv4)
 
-    conv5 = conv_block(pool4, 1536, droprate)
+    conv5 = conv_block(pool4, 1200, droprate)
 
-    up4 = up_block(conv5, 768)
+    up4 = up_block(conv5, 600)
     up4 = concatenate([conv4, up4], axis=2)
-    up4 = conv_block(up4, 768, droprate)
+    up4 = conv_block(up4, 600, droprate)
 
-    up3 = up_block(up4, 384)
+    up3 = up_block(up4, 300)
     up3 = concatenate([conv3, up3], axis=2)
-    up3 = conv_block(up3, 384, droprate)
+    up3 = conv_block(up3, 300, droprate)
 
-    up2 = up_block(up3, 192)
+    up2 = up_block(up3, 150)
     up2 = concatenate([conv2, up2], axis=2)
-    up2 = conv_block(up2, 192, droprate)
+    up2 = conv_block(up2, 150, droprate)
 
     up1 = up_block(up2, 128)
     up1 = concatenate([conv1, up1], axis=2)
