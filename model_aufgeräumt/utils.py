@@ -243,6 +243,28 @@ def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
 
+def train_val_split(hmm, X_train_aug, y_train):
+    if hmm:
+        n_samples = len(X_train_aug[0])
+    else:
+        n_samples = len(X_train_aug)
+    np.random.seed(0)
+    validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+    training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
+
+    y_val = y_train[validation_idx]
+    y_train = y_train[training_idx]
+
+    if hmm:
+        X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
+        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
+    else:
+        X_val_aug = X_train_aug[validation_idx]
+        X_train_aug = X_train_aug[training_idx]
+
+    return X_train_aug, y_train, X_val_aug, y_val
+
+
 def telegram_me(m, s, model_name, test_acc = None, hmm=False, standardize=False, normalize = False, no_input = False, embedding=False):
     Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
     chat_ID = "69661085"
