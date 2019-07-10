@@ -178,7 +178,7 @@ def evaluate_model(model, load_file, test_ind = None):
         test_ind = range(len(file_test))
     for i in test_ind:
         X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
-        model.load_weights(load_file)
+        #model.load_weights(load_file)
         print("####evaluate" + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
         print(file_test[i] +' test loss:', score[0])
