@@ -14,8 +14,6 @@ from sklearn.model_selection import KFold, StratifiedKFold, train_test_split
 import tensorflow as tf
 from keras.callbacks import TensorBoard, LearningRateScheduler, ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 from datetime import datetime
-import os, pickle
-from keras.callbacks import EarlyStopping
 
 import sys
 import os
@@ -182,7 +180,7 @@ def build_model():
                               kernel_initializer='glorot_uniform'))(x)
 
     # Defining the model as a whole and printing the summary
-    model = Model([inp, y)
+    model = Model(inp, y)
 
     model.compile(optimizer="nadam", loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     model.summary()

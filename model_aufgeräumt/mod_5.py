@@ -43,6 +43,7 @@ plot = args.plot
 no_input = args.no_input
 optimize = args.optimize
 cross_validate = args.cv
+tv_perc = args.tv_perc
 batch_size = 64
 
 n_tags = 8
@@ -185,33 +186,13 @@ def evaluate_model(model, load_file, test_ind = None):
         print(file_test[i] +' test accuracy:', score[2])
     return score[2]
 
-def train_val_split(hmm, X_train_aug, y_train):
-    if hmm:
-        n_samples = len(X_train_aug[0])
-    else:
-        n_samples = len(X_train_aug)
-    np.random.seed(0)
-    validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
-    training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
-
-    y_val = y_train[validation_idx]
-    y_train = y_train[training_idx]
-
-    if hmm:
-        X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
-        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
-    else:
-        X_val_aug = X_train_aug[validation_idx]
-        X_train_aug = X_train_aug[training_idx]
-
-    return X_train_aug, y_train, X_val_aug, y_val
 
 if cross_validate :
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
     test_acc = np.mean(cv_scores)
     print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
 else:
-    X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train)
+    X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
     model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
     test_acc = evaluate_model(model, load_file)
 

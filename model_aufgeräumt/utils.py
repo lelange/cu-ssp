@@ -30,6 +30,7 @@ def parse_arguments(default_epochs):
     parser.add_argument('-cv', help='use crossvalidation' , action= 'store_true')
     parser.add_argument('-embedding', help='embed input vectors via elmo embedder', action='store_true')
     parser.add_argument('-epochs',type=int ,required=False, help='number of training epochs', default=default_epochs)
+    parser.add_argument('-tv_perc', required=False, help='ratio train validation split')
     parser.add_argument('-plot', help='plot accuracy', action='store_true')
     return parser.parse_args()
 
@@ -243,13 +244,15 @@ def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
 
-def train_val_split(hmm, X_train_aug, y_train):
+def train_val_split(hmm, X_train_aug, y_train, perc = None):
     if hmm:
         n_samples = len(X_train_aug[0])
     else:
         n_samples = len(X_train_aug)
     np.random.seed(0)
-    size = int(n_samples*0.8)
+    if perc is None:
+        perc = 0.8
+    size = int(n_samples*perc)
     validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
 
