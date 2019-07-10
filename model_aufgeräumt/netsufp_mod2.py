@@ -15,6 +15,7 @@ from keras.callbacks import TensorBoard, LearningRateScheduler, ModelCheckpoint,
 from datetime import datetime
 import os
 from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
+import sys
 
 import time
 import dill as pickle
@@ -232,7 +233,7 @@ else:
 
     else:
         model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
-        test_acc = evaluate_model(model, load_file, [0])
+        test_acc = evaluate_model(model, load_file)
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
