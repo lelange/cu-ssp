@@ -122,19 +122,19 @@ def build_model():
     conv5 = conv_block(pool4, 1200, droprate)
 
     up4 = up_block(conv5, 600)
-    up4 = concatenate([conv4, up4], axis=2)
+    up4 = concatenate([conv4, up4])
     up4 = conv_block(up4, 600, droprate)
 
     up3 = up_block(up4, 300)
-    up3 = concatenate([conv3, up3], axis=2)
+    up3 = concatenate([conv3, up3])
     up3 = conv_block(up3, 300, droprate)
 
     up2 = up_block(up3, 150)
-    up2 = concatenate([conv2, up2], axis=2)
+    up2 = concatenate([conv2, up2])
     up2 = conv_block(up2, 150, droprate)
 
     up1 = up_block(up2, 128)
-    up1 = concatenate([conv1, up1], axis=2)
+    up1 = concatenate([conv1, up1])
     up1 = conv_block(up1, 128, droprate)
 
     up1 = BatchNormalization()(up1)
