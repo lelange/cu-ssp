@@ -70,7 +70,7 @@ def build_model():
 
     # one dense layer to remove sparsity
     x = Dense(128, activation='relu', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')(x)
-    x = Reshape([maxlen_seq, 128, 1])(x)
+    #x = Reshape([maxlen_seq, 128, 1])(x)
 
     # Defining 3 convolutional layers with different kernel sizes
     # kernel size = 3
