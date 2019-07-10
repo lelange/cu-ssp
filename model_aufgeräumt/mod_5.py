@@ -5,8 +5,8 @@
 ############################################
 
 ##### Load .npy data file and generate sequence csv and profile csv files  #####
-import pandas as pd
 import numpy as np
+import pandas as pd
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
@@ -53,13 +53,6 @@ file_test = ['cb513', 'ts115', 'casp12']
 
 #load data
 X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
-
-if hmm:
-    print("X train shape: ", X_train_aug[0].shape)
-    print("X aug train shape: ", X_train_aug[1].shape)
-else:
-    print("X train shape: ", X_train_aug.shape)
-print("y train shape: ", y_train.shape)
 
 time_data = time.time() - start_time
 ############################### Model starts here ##############################
