@@ -118,7 +118,7 @@ def build_model():
     pool3 = MaxPooling1D(pool_size=2)(conv3)
 
     conv4 = conv_block(pool3, 600, droprate)
-    pool4 = MaxPooling1D(pool_size=1)(conv4)
+    pool4 = MaxPooling1D(pool_size=2)(conv4)
 
     conv5 = conv_block(pool4, 1200, droprate)
 
