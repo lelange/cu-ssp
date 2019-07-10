@@ -209,6 +209,7 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
 def evaluate_model(model, load_file, test_ind = None):
     if test_ind is None:
         test_ind = range(len(file_test))
+    test_accs = {}
     for i in test_ind:
         X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
         model.load_weights(load_file)
@@ -216,7 +217,8 @@ def evaluate_model(model, load_file, test_ind = None):
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
         print(file_test[i] +' test loss:', score[0])
         print(file_test[i] +' test accuracy:', score[2])
-    return score[2]
+        test_accs.update({file_test[i]:score[2]})
+    return test_accs
 
 
 if cross_validate :

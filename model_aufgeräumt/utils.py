@@ -252,6 +252,7 @@ def train_val_split(hmm, X_train_aug, y_train, perc = None):
     np.random.seed(0)
     if perc is None:
         perc = 0.8
+    print(type(n_samples), type(perc))
     size = int(n_samples*perc)
     validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
@@ -287,7 +288,8 @@ def telegram_me(m, s, model_name, test_acc = None, hmm=False, standardize=False,
     if embedding:
         msg+='\n Die Input-Daten wurden ins 1024-dim. eingebettet.'
     if test_acc is not None:
-        msg += '\nTest accuracy: {:.3%}'.format(test_acc)
+        for key, value in test_acc.items():
+            msg += '\n'+key+' test accuracy: {:.3%}'.format(value)
     bot.send_message(chat_id=chat_ID, text=msg)
 
 def message_me(model_name, m, s):
