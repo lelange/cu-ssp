@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-maxlen_seq = 600
+maxlen_seq = 602
 minlen_seq= 100
 
 # [0:20] Amino Acids (sparse encoding)
@@ -53,9 +53,9 @@ def get_and_save_data(data, filename):
     print(filename+' is saved.')
 
 
-get_and_save_data(data_train, 'train')
-get_and_save_data(data_cb513, 'cb513')
-get_and_save_data(data_ts115, 'ts115')
-get_and_save_data(data_casp12, 'casp12')
+get_and_save_data(data_train, 'train_602')
+get_and_save_data(data_cb513, 'cb513_602')
+get_and_save_data(data_ts115, 'ts115_602')
+get_and_save_data(data_casp12, 'casp12_602')
 
 
