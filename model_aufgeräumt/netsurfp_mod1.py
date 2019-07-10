@@ -66,6 +66,7 @@ print("y train shape: ", y_train.shape)
 
 time_data = time.time() - start_time
 
+'''
 p = {'activation1':[relu, softmax],
      'activation2':[relu, softmax],
      'optimizer': ['Nadam', "RMSprop"],
@@ -74,6 +75,8 @@ p = {'activation1':[relu, softmax],
      'second_hidden_layer': [2, 4, 6],
      'batch_size': [64, 128, 10000],
      'epochs': [50, 75]}
+'''
+
 
 def train_model (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     """
