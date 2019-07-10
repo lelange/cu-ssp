@@ -130,11 +130,15 @@ def super_conv_block(x):
 
 
 def CNN_BIGRU():
-
-    input = Input(shape=(maxlen_seq,))
-    embed_out = Embedding(input_dim=n_words, output_dim=128, input_length=maxlen_seq)(input)
-    profile_input = Input(shape=(maxlen_seq, 22))
-    x = concatenate([embed_out, profile_input])  # 5600, 700, 150
+    if hmm:
+        input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
+        profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
+        x = concatenate([input, profiles_input])
+        inp = [input, profiles_input]
+    else:
+        input = Input(shape=(X_train_aug.shape[1], X_train_aug.shape[2],))
+        x = input
+        inp = input
 
     x = super_conv_block(x)
     x = conv_block(x)
@@ -150,7 +154,7 @@ def CNN_BIGRU():
 
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(x)
 
-    model = Model([input, profile_input], y)
+    model = Model(inp, y)
     model.summary()
 
     model.compile(
