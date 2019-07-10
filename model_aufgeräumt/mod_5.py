@@ -18,7 +18,7 @@ from keras.metrics import categorical_accuracy
 from keras import backend as K
 import tensorflow as tf
 import keras
-from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
+from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 
 import sys
 import os
