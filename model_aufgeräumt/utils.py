@@ -249,7 +249,8 @@ def train_val_split(hmm, X_train_aug, y_train):
     else:
         n_samples = len(X_train_aug)
     np.random.seed(0)
-    validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+    size = int(n_samples*0.8)
+    validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
 
     y_val = y_train[validation_idx]
