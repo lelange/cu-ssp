@@ -110,6 +110,7 @@ def build_model():
     conv1 = conv_block(merged_input, 128, droprate)
     pool1 = MaxPooling1D(pool_size=2)(conv1)
 
+
     conv2 = conv_block(pool1, 150, droprate)
     pool2 = MaxPooling1D(pool_size=2)(conv2)
 
@@ -120,6 +121,16 @@ def build_model():
     pool4 = MaxPooling1D(pool_size=1)(conv4)
 
     conv5 = conv_block(pool4, 1200, droprate)
+
+    print('Conv1: ', conv1.shape)
+    print('pool1: ', pool1.shape)
+    print('Conv2: ', conv2.shape)
+    print('pool2: ', pool2.shape)
+    print('Conv3: ', conv3.shape)
+    print('pool3: ', pool3.shape)
+    print('Conv4: ', conv4.shape)
+    print('pool4: ', pool4.shape)
+    print('Conv5: ', conv5.shape)
 
     up4 = up_block(conv5, 600)
     up4 = concatenate([conv4, up4])
