@@ -56,6 +56,8 @@ time_data = time.time() - start_time
 Model
 
 '''
+len_seq = 600
+
 def build_model():
     model = None
     if hmm:
@@ -71,14 +73,14 @@ def build_model():
     # one dense layer to remove sparsity
     x = Dense(128, activation='relu', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')(x)
 
-    x = Reshape([600, 128, 1])(x)
+    x = Reshape([len_seq, 128, 1])(x)
 
     # Defining 3 convolutional layers with different kernel sizes
     # kernel size = 3
     conv1 = ZeroPadding2D((3 // 2, 0), data_format='channels_last')(x)
     conv1 = Conv2D(filters=64,
                    kernel_size=(3, 128),
-                   input_shape=(1, maxlen_seq, 128),
+                   input_shape=(1, len_seq, 128),
                    data_format='channels_last',
                    strides=(1, 1),
                    dilation_rate=(1, 1),
@@ -92,7 +94,7 @@ def build_model():
     conv2 = ZeroPadding2D((7 // 2, 0), data_format='channels_last')(x)
     conv2 = Conv2D(filters=64,
                    kernel_size=(7, 128),
-                   input_shape=(1, maxlen_seq, 128),
+                   input_shape=(1, len_seq, 128),
                    data_format='channels_last',
                    strides=(1, 1),
                    padding='valid',
@@ -107,7 +109,7 @@ def build_model():
     conv3 = ZeroPadding2D((11 // 2, 0), data_format='channels_last')(x)
     conv3 = Conv2D(filters=64,
                    kernel_size=(11, 128),
-                   input_shape=(1, maxlen_seq, 128),
+                   input_shape=(1, len_seq, 128),
                    data_format='channels_last',
                    strides=(1, 1),
                    padding='valid',
@@ -118,7 +120,7 @@ def build_model():
                    bias_initializer='zeros')(conv3)
     conv3 = BatchNormalization(axis=-1)(conv3)
     conv = concatenate([conv1, conv2, conv3])
-    conv = Reshape([maxlen_seq, 3 * 64])(conv)
+    conv = Reshape([len_seq, 3 * 64])(conv)
 
     # Defining 3 bidirectional GRU layers; taking the concatenation of outputs
     gru1 = Bidirectional(GRU(32,
