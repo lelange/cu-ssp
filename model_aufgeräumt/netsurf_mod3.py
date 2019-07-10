@@ -35,7 +35,6 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-import fbchat
 from fbchat.models import *
 from utils import *
 
