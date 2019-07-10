@@ -66,8 +66,6 @@ print("y train shape: ", y_train.shape)
 
 time_data = time.time() - start_time
 
-
-
 p = {'activation1':[relu, softmax],
      'activation2':[relu, softmax],
      'optimizer': ['Nadam', "RMSprop"],
@@ -109,7 +107,6 @@ def conv_block(x, activation=True, batch_norm=True, drop_out=True, res=True):
     if res:        cnn = Concatenate(axis=-1)([x, cnn])
 
     return cnn
-
 
 def super_conv_block(x):
     c3 = Conv1D(32, 1, padding="same")(x)
