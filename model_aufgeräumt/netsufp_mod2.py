@@ -42,8 +42,8 @@ n_tags = 8
 n_words = 20
 data_root = '../data/netsurfp/'
 
-file_train = 'train_602'
-file_test = ['cb513_602', 'ts115_602', 'casp12_602']
+file_train = 'train_608'
+file_test = ['cb513_608', 'ts115_608', 'casp12_608']
 
 #load data
 X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
