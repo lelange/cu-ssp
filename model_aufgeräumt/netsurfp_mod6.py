@@ -40,6 +40,7 @@ plot = args.plot
 no_input = args.no_input
 optimize = args.optimize
 cross_validate = args.cv
+tv_perc = args.tv_perc
 batch_size = 128
 
 n_tags = 8
@@ -118,7 +119,7 @@ if cross_validate :
     test_acc = np.mean(cv_scores)
     print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
 else:
-    X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train)
+    X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
     model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
     test_acc = evaluate_model(model, load_file)
 
