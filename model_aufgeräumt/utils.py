@@ -4,6 +4,7 @@ import pandas as pd
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
+from sklearn.model_selection import KFold
 from keras import backend as K
 import tensorflow as tf
 import argparse
@@ -43,6 +44,37 @@ def standard(data):
     data_ = (data - mean) / std
     return data_
 
+# for netsurf (hmm) data
+def get_data(filename, hmm, normalize, standardize):
+
+    print('Load ' + filename + ' data...')
+    if embedding:
+        input_seq = np.load(data_root + filename + '_netsurfp_input_embedding_residue.npy')
+    else:
+        if no_input:
+            input_seq = np.load(data_root + filename + '_hmm.npy')
+            if normalize:
+                input_seq = normal(input_seq)
+            if standardize:
+                input_seq = standard(input_seq)
+
+        else:
+            input_seq =  np.load(data_root+filename+'_input.npy')
+    q8 = np.load(data_root + filename + '_q8.npy')
+    if hmm:
+        profiles = np.load(data_root+filename+'_hmm.npy')
+        if normalize:
+            print('Normalize...')
+            profiles = normal(profiles)
+        if standardize:
+            print('Standardize...')
+            profiles = standard(profiles)
+        input_aug = [input_seq, profiles]
+    else:
+        input_aug = input_seq
+    return  input_aug, q8
+
+# for pssm+hmm data
 def prepare_profiles(pssm, hmm, normalize, standardize):
     # profiles
     if pssm == True:

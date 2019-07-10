@@ -1,9 +1,9 @@
 import sys
 import os
-import argparse
 import time
-import numpy as np
 import dill as pickle
+
+import numpy as np
 import pandas as pd
 import tensorflow as tf
 sys.path.append('keras-tcn')
@@ -37,7 +37,6 @@ from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
 import fbchat
 from fbchat.models import *
-import telegram
 from utils import *
 
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
@@ -56,6 +55,7 @@ epochs = args.epochs
 plot = args.plot
 no_input = args.no_input
 optimize = args.optimize
+cross_validate = args.cv
 
 batch_size = 16
 
@@ -65,35 +65,6 @@ data_root = '../data/netsurfp/'
 
 file_train = 'train'
 file_test = ['cb513', 'ts115', 'casp12']
-
-def get_data(filename, hmm, normalize, standardize):
-
-    print('Load ' + filename + ' data...')
-    if embedding:
-        input_seq = np.load(data_root + filename + '_netsurfp_input_embedding_residue.npy')
-    else:
-        if no_input:
-            input_seq = np.load(data_root + filename + '_hmm.npy')
-            if normalize:
-                input_seq = normal(input_seq)
-            if standardize:
-                input_seq = standard(input_seq)
-
-        else:
-            input_seq =  np.load(data_root+filename+'_input.npy')
-    q8 = np.load(data_root + filename + '_q8.npy')
-    if hmm:
-        profiles = np.load(data_root+filename+'_hmm.npy')
-        if normalize:
-            print('Normalize...')
-            profiles = normal(profiles)
-        if standardize:
-            print('Standardize...')
-            profiles = standard(profiles)
-        input_aug = [input_seq, profiles]
-    else:
-        input_aug = input_seq
-    return  input_aug, q8
 
 #load data
 X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
@@ -273,11 +244,7 @@ def evaluate_model(model, load_file, test_ind = None):
         print(file_test[i] +' test accuracy:', score[2])
     return score[2]
 
-if args.cv :
-    cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
-    test_acc = np.mean(cv_scores)
-    print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
-else:
+def train_val_split(hmm, X_train_aug, y_train):
     if hmm:
         n_samples = len(X_train_aug[0])
     else:
@@ -295,6 +262,15 @@ else:
     else:
         X_val_aug = X_train_aug[validation_idx]
         X_train_aug = X_train_aug[training_idx]
+
+    return X_train_aug, y_train, X_val_aug, y_val
+
+if cross_validate :
+    cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
+    test_acc = np.mean(cv_scores)
+    print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
+else:
+    X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train)
 
     if optimize:
         '''
