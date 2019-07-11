@@ -41,18 +41,59 @@ from utils import *
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
-data_root = '../data/netsurfp/'
+normalize = False
+standardize = True
+hmm = True
+embedding = False
+epochs = 20
+plot = False
+no_input = False
+
+batch_size = 16
+
 n_tags = 8
 n_words = 20
-batch_size = 16
+data_root = '../data/netsurfp/'
 
 file_train = 'train'
 file_test = ['cb513', 'ts115', 'casp12']
 
-X_train_aug, y_train = get_data('train', True, False, True)
+#load data
+X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
 
-def build_model_ho_3(params, epochs = 20, verbose=2, hmm=True):
-    load_file = "./model/mod_3-CB513-test.h5"
+if hmm:
+    print("X train shape: ", X_train_aug[0].shape)
+    print("X aug train shape: ", X_train_aug[1].shape)
+else:
+    print("X train shape: ", X_train_aug.shape)
+print("y train shape: ", y_train.shape)
+
+DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
+UNIT_CHOICES = [100, 200, 500, 800, 1000, 1200]
+GRU_CHOICES = [100, 200, 300, 400, 500, 600]
+BATCH_CHOICES = [16, 32]
+LR_CHOICES = [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01]
+space = {
+    'dense1': hp.choice('dense1', UNIT_CHOICES),
+    'dropout1': hp.choice('dropout1', DROPOUT_CHOICES),
+    'gru1': hp.choice('gru1', GRU_CHOICES),
+    # nesting the layers ensures they're only un-rolled sequentially
+    'gru2': hp.choice('gru2', [False, {
+        'gru2_units': hp.choice('gru2_units', GRU_CHOICES),
+        # only make the 3rd layer availabile if the 2nd one is
+        'gru3': hp.choice('gru3', [False, {
+            'gru3_units': hp.choice('gru3_units', GRU_CHOICES)
+        }]),
+    }]),
+    'dense2': hp.choice('dense2', UNIT_CHOICES),
+    'dropout2': hp.choice('dropout2', DROPOUT_CHOICES),
+    'lr': hp.choice('lr', LR_CHOICES),
+    'decay': hp.choice('decay', LR_CHOICES),
+    'batch_size': hp.choice('batch_size', BATCH_CHOICES)
+}
+#load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/mod_3-CB513-test.h5"
+def build_model_ho_3(params, epochs = epochs, verbose=2, hmm=hmm):
     model = None
     print('----------------------')
     print('----------------------')
@@ -61,13 +102,13 @@ def build_model_ho_3(params, epochs = 20, verbose=2, hmm=True):
         print('\n ')
 
     if hmm:
-        input = Input(shape=(600, 20,))
-        profiles_input = Input(shape=(600, 30,))
+        input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
+        profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
-        input = Input(shape=(600, 20,))
+        input = Input(shape=(X_train_aug.shape[1], X_train_aug.shape[2],))
         x1 = input
         x2 = input
         inp = input
@@ -116,3 +157,4 @@ def build_model_ho_3(params, epochs = 20, verbose=2, hmm=True):
     result = {'loss': -score[2], 'status': STATUS_OK, 'space': params}
 
     return result
+
