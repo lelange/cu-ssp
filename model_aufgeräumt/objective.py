@@ -90,7 +90,7 @@ space = {
     'batch_size': hp.choice('batch_size', BATCH_CHOICES)
 }
 #load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
-load_file = "./model/mod_3-CB513-test.h5"
+load_file = "/nosave/lange/cu-ssp/model_aufgeräumt/model/mod_3-CB513-test.h5"
 
 X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
 
