@@ -146,7 +146,7 @@ space = {
 }
 #load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/mod_3-CB513-test.h5"
-def build_model_ho(params, epochs = epochs, verbose=2, hmm=hmm):
+def build_model_ho_3(params, epochs = epochs, verbose=2, hmm=hmm):
     model = None
     print('----------------------')
     print('----------------------')
