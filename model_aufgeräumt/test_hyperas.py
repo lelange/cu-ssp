@@ -23,7 +23,7 @@ from keras.datasets import mnist
 import tempfile
 
 def data():
-    data_root = '~/../../nosave/lange/cu-ssp/data/netsurfp/'
+    data_root = '/home/lange/nosave/lange/cu-ssp/data/netsurfp/'
     file_train = 'train'
     file_test = ['cb513', 'ts115', 'casp12']
 
