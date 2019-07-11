@@ -46,7 +46,7 @@ batch_size = 128
 n_tags = 8
 n_words = 20
 
-file_train = 'train'
+file_train = 'train_700'
 file_test = ['cb513_700', 'ts115_700', 'casp12_700']
 
 #load data
