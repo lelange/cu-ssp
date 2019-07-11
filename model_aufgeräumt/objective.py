@@ -92,10 +92,9 @@ space = {
 #load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/mod_3-CB513-test.h5"
 
-
+X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
 
 def build_model_ho_3(params):
-    X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
     input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
     profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
     x1 = concatenate([input, profiles_input])

@@ -41,7 +41,7 @@ from utils import *
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
-from objective import build_model_ho_3, data
+from objective import build_model_ho_3
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 start_time = time.time()
@@ -173,7 +173,7 @@ def data():
     return X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test
 
 def build_model_ho_3(params):
-    X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
+    #X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
     input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
     profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
     x1 = concatenate([input, profiles_input])
