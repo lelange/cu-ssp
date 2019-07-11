@@ -187,12 +187,12 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     #                             patience=8, min_lr=0.0005, verbose=1)
 
 
-    # earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
+    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=15, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
                                    mode='max')
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, reduce_lr],
+                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, reduce_lr, earlyStopping],
                         verbose=1, shuffle=True)
 
 
