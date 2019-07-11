@@ -35,6 +35,7 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
+from keras.models import Model, Input, Sequential
 from utils import *
 
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
@@ -94,7 +95,6 @@ load_file = "./model/mod_3-CB513-test.h5"
 X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
 
 def build_model_ho_3(params):
-    from keras.models import Model, Input, Sequential
 
     input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
     profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
