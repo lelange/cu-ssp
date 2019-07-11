@@ -42,6 +42,9 @@ from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
 data_root = '../data/netsurfp/'
+n_tags = 8
+n_words = 20
+batch_size = 16
 
 file_train = 'train'
 file_test = ['cb513', 'ts115', 'casp12']
