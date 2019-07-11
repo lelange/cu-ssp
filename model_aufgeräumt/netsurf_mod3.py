@@ -41,7 +41,7 @@ from utils import *
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
-from objective import build_model_ho_3
+import objective
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 start_time = time.time()
@@ -173,7 +173,7 @@ def data():
     return X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test
 
 def build_model_ho_3(params):
-    #X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
+    X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
     input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
     profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
     x1 = concatenate([input, profiles_input])
@@ -260,7 +260,7 @@ else:
         #---- create a Trials database to store experiment results
         trials = MongoTrials('mongo://localhost:27017/jobs/jobs', exp_key='exp1')
         #---- use that Trials database for fmin
-        best = fmin(build_model_ho_3, space, algo=tpe.suggest, trials=trials, max_evals=10)
+        best = fmin(objective.build_model_ho_3, space, algo=tpe.suggest, trials=trials, max_evals=10)
         #---- save trials
         pickle.dump(trials, open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "wb"))
         #trials = pickle.load(open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "rb"))
