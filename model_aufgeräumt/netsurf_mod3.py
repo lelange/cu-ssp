@@ -2,6 +2,7 @@ import sys
 import os
 import time
 import dill as pickle
+import pprint
 
 import numpy as np
 import pandas as pd
@@ -38,6 +39,7 @@ from keras.utils import to_categorical
 from utils import *
 
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
+from hyperopt.mongoexp import MongoTrials
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -200,10 +202,12 @@ def build_model_ho(params, epochs = epochs, verbose=2):
     print('\n----------------------')
     print('----------------------')
     print("evaluate " + file_test[0] + ":")
-    score = model.evaluate(X_test_aug, y_test, verbose=0, batch_size=1)
+    score = model.evaluate(X_test_aug, y_test)
     print(file_test[0] + ' test accuracy:', score[2])
 
-    return {'loss': -score[2], 'status': STATUS_OK}
+    result = {'loss': -score[2], 'status': STATUS_OK, 'space': params}
+
+    return result
 
 load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
@@ -278,14 +282,23 @@ else:
                        epochs=epochs, verbose=2)
         '''
         #---- create a Trials database to store experiment results
-        trials = Trials()
+        trials = MongoTrials('mongo://localhost:1234/foo_db/jobs', exp_key='exp1')
         #---- use that Trials database for fmin
         best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
         #---- save trials
         pickle.dump(trials, open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "wb"))
         #trials = pickle.load(open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "rb"))
-        print('Space evaluation: ')
-        space_eval(space, best)
+        print("Found minimum:")
+        print(best)
+        pp = pprint.PrettyPrinter(indent=4)
+        print("Here are the space and results of the 3 first trials (out of a total of 1000):")
+        pp.pprint(trials.trials[0])
+        pp.pprint(trials.trials[1])
+        pp.pprint(trials.trials[2])
+        print("What interests us most is the 'result' key of each trial:")
+        pp.pprint(trials.trials[0]["result"])
+        pp.pprint(trials.trials[1]["result"])
+
         data = list(map(_flatten, extract_params(trials)))
         df = pd.DataFrame(list(data))
         df = df.fillna(0)  # missing values occur when the object is not populated

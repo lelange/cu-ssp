@@ -47,7 +47,7 @@ n_tags = 8
 n_words = 20
 
 file_train = 'train'
-file_test = ['cb513', 'ts115', 'casp12']
+file_test = ['cb513_700', 'ts115_700', 'casp12_700']
 
 #load data
 X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
