@@ -41,6 +41,7 @@ from utils import *
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
+from objective import build_model_ho_3
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 start_time = time.time()
@@ -284,7 +285,7 @@ else:
         #---- create a Trials database to store experiment results
         trials = MongoTrials('mongo://localhost:1235/foo_db/jobs')
         #---- use that Trials database for fmin
-        best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
+        best = fmin(build_model_ho_3, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
         #---- save trials
         pickle.dump(trials, open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "wb"))
         #trials = pickle.load(open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "rb"))
