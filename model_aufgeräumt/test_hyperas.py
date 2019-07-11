@@ -76,6 +76,8 @@ def create_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
 
     input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
     profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
+    x1 = concatenate([input, profiles_input])
+    x2 = concatenate([input, profiles_input])
     x1 = Dense(params['dense1'], activation="relu")(x1)
     x1 = Dropout(params['dropout1'])(x1)
     x2 = Bidirectional(CuDNNGRU(units=params['gru1'], return_sequences=True))(x2)
@@ -84,7 +86,7 @@ def create_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
     if params['gru2'] and params['gru2']['gru3']:
         x2 = Bidirectional(CuDNNGRU(units=params['gru2']['gru3']['gru3_units'], return_sequences=True))(x2)
     COMBO_MOVE = concatenate([x1, x2])
-    w = Dense(params['dense2'], activation="relu")(COMBO_MOVE)  
+    w = Dense(params['dense2'], activation="relu")(COMBO_MOVE)
     w = Dropout(params['dropout2'])(w)
     w = tcn.TCN(return_sequences=True)(w)
     y = TimeDistributed(Dense(8, activation="softmax"))(w)
