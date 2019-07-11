@@ -128,16 +128,6 @@ def build_model():
 
     conv5 = conv_block(pool4, 1212, droprate)
 
-    print('Conv1: ', conv1.shape)
-    print('pool1: ', pool1.shape)
-    print('Conv2: ', conv2.shape)
-    print('pool2: ', pool2.shape)
-    print('Conv3: ', conv3.shape)
-    print('pool3: ', pool3.shape)
-    print('Conv4: ', conv4.shape)
-    print('pool4: ', pool4.shape)
-    print('Conv5: ', conv5.shape)
-
     up4 = up_block(conv5, 608)
     up4 = concatenate([conv4, up4])
     up4 = conv_block(up4, 608, droprate)
