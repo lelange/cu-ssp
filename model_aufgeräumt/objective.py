@@ -41,6 +41,19 @@ from utils import *
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
+args = parse_arguments(default_epochs=10)
+
+normalize = args.normalize
+standardize = args.standardize
+hmm = args.hmm
+embedding = args.embedding
+epochs = args.epochs
+plot = args.plot
+no_input = args.no_input
+optimize = args.optimize
+tv_perc = args.tv_perc
+cross_validate = args.cv
+
 def build_model_ho_3(params, epochs = epochs, verbose=2, hmm=hmm):
     model = None
     print('----------------------')
