@@ -49,9 +49,7 @@ def data():
 
 
 def create_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
-    """
-    Create your model...
-    """
+
     DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
     UNIT_CHOICES = [100, 200, 500, 800, 1000, 1200]
     GRU_CHOICES = [100, 200, 300, 400, 500, 600]
@@ -80,17 +78,13 @@ def create_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
     profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
     x1 = Dense(params['dense1'], activation="relu")(x1)
     x1 = Dropout(params['dropout1'])(x1)
-    # x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
-    # Defining a bidirectional LSTM using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=params['gru1'], return_sequences=True))(x2)
-    # x2 = Dropout(0.5)(x2)
     if params['gru2']:
         x2 = Bidirectional(CuDNNGRU(units=params['gru2']['gru2_units'], return_sequences=True))(x2)
     if params['gru2'] and params['gru2']['gru3']:
         x2 = Bidirectional(CuDNNGRU(units=params['gru2']['gru3']['gru3_units'], return_sequences=True))(x2)
-    # x2 = Dropout(0.5)(x2)
     COMBO_MOVE = concatenate([x1, x2])
-    w = Dense(params['dense2'], activation="relu")(COMBO_MOVE)  # try 500
+    w = Dense(params['dense2'], activation="relu")(COMBO_MOVE)  
     w = Dropout(params['dropout2'])(w)
     w = tcn.TCN(return_sequences=True)(w)
     y = TimeDistributed(Dense(8, activation="softmax"))(w)
@@ -99,10 +93,7 @@ def create_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test):
     adamOptimizer = Adam(lr=params['lr'], beta_1=0.8, beta_2=0.8, epsilon=None, decay=params['decay'], amsgrad=False)
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
 
-    #earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=verbose, mode='max')
-    #checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
-
-    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
+    model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
                         epochs=20, batch_size=params['batch_size'],
                         verbose=1, shuffle=True)
 
