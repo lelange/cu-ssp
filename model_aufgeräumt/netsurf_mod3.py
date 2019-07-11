@@ -299,11 +299,6 @@ else:
         pp.pprint(trials.trials[0]["result"])
         pp.pprint(trials.trials[1]["result"])
 
-        data = list(map(_flatten, extract_params(trials)))
-        df = pd.DataFrame(list(data))
-        df = df.fillna(0)  # missing values occur when the object is not populated
-        corr = df.corr()
-        print(corr)
 
     else:
         model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
