@@ -1,6 +1,6 @@
 from hyperas import optim
 from hyperas.distributions import quniform, uniform
-from hyperopt import STATUS_OK, tpe, mongoexp
+from hyperopt import STATUS_OK, tpe, mongoexp, hp
 
 import numpy as np
 
