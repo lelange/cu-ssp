@@ -52,6 +52,7 @@ file_test = ['cb513', 'ts115', 'casp12']
 X_train_aug, y_train = get_data('train', True, False, True)
 
 def build_model_ho_3(params, epochs = 20, verbose=2, hmm=True):
+    load_file = "./model/mod_3-CB513-test.h5"
     model = None
     print('----------------------')
     print('----------------------')

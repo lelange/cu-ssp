@@ -144,7 +144,8 @@ space = {
     'decay': hp.choice('decay', LR_CHOICES),
     'batch_size': hp.choice('batch_size', BATCH_CHOICES)
 }
-
+#load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/mod_3-CB513-test.h5"
 def build_model_ho(params, epochs = epochs, verbose=2, hmm=hmm):
     model = None
     print('----------------------')
@@ -210,7 +211,7 @@ def build_model_ho(params, epochs = epochs, verbose=2, hmm=hmm):
 
     return result
 
-load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+
 
 def train_model(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     model = build_model()
