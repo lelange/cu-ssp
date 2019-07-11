@@ -1,7 +1,7 @@
 import sys
 import os
 import time
-import pickle
+import dill as pickle
 import pprint
 
 import numpy as np
