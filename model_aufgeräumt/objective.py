@@ -49,6 +49,7 @@ epochs = 20
 plot = False
 no_input = False
 
+
 batch_size = 16
 
 n_tags = 8
@@ -60,7 +61,7 @@ file_test = ['cb513', 'ts115', 'casp12']
 
 #load data
 X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
-X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train)
 
 
 
