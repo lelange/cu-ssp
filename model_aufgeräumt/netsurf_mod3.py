@@ -282,7 +282,7 @@ else:
                        epochs=epochs, verbose=2)
         '''
         #---- create a Trials database to store experiment results
-        trials = MongoTrials('mongo://localhost:1234/foo_db/jobs', exp_key='exp1')
+        trials = MongoTrials('mongo://localhost:1235/foo_db/jobs')
         #---- use that Trials database for fmin
         best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
         #---- save trials
