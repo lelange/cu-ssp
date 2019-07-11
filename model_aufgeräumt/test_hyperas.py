@@ -59,7 +59,7 @@ def create_model(x_train, y_train, x_test, y_test):
 
 
 if __name__ == "__main__":
-    trials = mongoexp.MongoTrials('mongo://username:pass@mongodb.host:27017/jobs/jobs', exp_key='mnist_test')
+    trials = mongoexp.MongoTrials('mongo://localhost:27017/jobs/jobs', exp_key='mnist_test')
     best_run, best_model = optim.minimize(model=create_model,
                                           data=data,
                                           algo=tpe.suggest,
