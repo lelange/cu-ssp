@@ -41,7 +41,7 @@ from utils import *
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
-from objective import build_model_ho_3
+from objective import build_model_ho_3, data
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 start_time = time.time()
