@@ -146,72 +146,67 @@ space = {
 }
 #load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/mod_3-CB513-test.h5"
-def build_model_ho_3(params, epochs = epochs, verbose=2, hmm=hmm):
-    model = None
-    print('----------------------')
-    print('----------------------')
-    if verbose > 0:
-        print('Params testing: ', params)
-        print('\n ')
 
-    if hmm:
-        input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
-        profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
-        x1 = concatenate([input, profiles_input])
-        x2 = concatenate([input, profiles_input])
-        inp = [input, profiles_input]
-    else:
-        input = Input(shape=(X_train_aug.shape[1], X_train_aug.shape[2],))
-        x1 = input
-        x2 = input
-        inp = input
+def data():
+    data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
+    file_train = 'train'
+    file_test = ['cb513', 'ts115', 'casp12']
 
+    X_test = np.load(data_root + file_test[0] + '_input.npy')
+    profiles = np.load(data_root + file_test[0] + '_hmm.npy')
+    mean = np.mean(profiles)
+    std = np.std(profiles)
+    X_aug_test = (profiles - mean) / std
+    X_test_aug = [X_test, X_aug_test]
+    y_test = np.load(data_root + file_test[0] + '_q8.npy')
+
+    X_train = np.load(data_root + file_train + '_input.npy')
+    profiles = np.load(data_root + file_train + '_hmm.npy')
+    mean = np.mean(profiles)
+    std = np.std(profiles)
+    X_aug_train = (profiles - mean) / std
+    X_train_aug = [X_train, X_aug_train]
+    y_train = np.load(data_root + file_train + '_q8.npy')
+
+    X_train_aug, y_train, X_val_aug, y_val = train_val_split(True, X_train_aug, y_train)
+
+    return X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test
+
+def build_model_ho_3(params):
+    X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
+    input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
+    profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
+    x1 = concatenate([input, profiles_input])
+    x2 = concatenate([input, profiles_input])
     x1 = Dense(params['dense1'], activation="relu")(x1)
     x1 = Dropout(params['dropout1'])(x1)
-    # x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
-    # Defining a bidirectional LSTM using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=params['gru1'], return_sequences=True))(x2)
-    # x2 = Dropout(0.5)(x2)
     if params['gru2']:
         x2 = Bidirectional(CuDNNGRU(units=params['gru2']['gru2_units'], return_sequences=True))(x2)
     if params['gru2'] and params['gru2']['gru3']:
         x2 = Bidirectional(CuDNNGRU(units=params['gru2']['gru3']['gru3_units'], return_sequences=True))(x2)
-    # x2 = Dropout(0.5)(x2)
     COMBO_MOVE = concatenate([x1, x2])
-    w = Dense(params['dense2'], activation="relu")(COMBO_MOVE)  # try 500
+    w = Dense(params['dense2'], activation="relu")(COMBO_MOVE)
     w = Dropout(params['dropout2'])(w)
     w = tcn.TCN(return_sequences=True)(w)
+    y = TimeDistributed(Dense(8, activation="softmax"))(w)
+    model = Model([input, profiles_input], y)
 
-    y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
-
-    # Defining the model as a whole and printing the summary
-    model = Model(inp, y)
-
-    # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
     adamOptimizer = Adam(lr=params['lr'], beta_1=0.8, beta_2=0.8, epsilon=None, decay=params['decay'], amsgrad=False)
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
-
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=verbose, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
                                    mode='max')
-    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-                        epochs=epochs, batch_size=params['batch_size'], callbacks=[checkpointer, earlyStopping],
-                        verbose=verbose, shuffle=True)
 
-    #test and evaluate performance
-    X_test_aug, y_test = get_data(file_test[0], hmm, normalize, standardize)
-    model.load_weights(load_file)
-    print('\n----------------------')
-    print('----------------------')
-    print("evaluate " + file_test[0] + ":")
+    model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
+              epochs=20, batch_size=params['batch_size'], callbacks=[checkpointer, earlyStopping],
+              verbose=1, shuffle=True)
+
     score = model.evaluate(X_test_aug, y_test)
-    print(file_test[0] + ' test accuracy:', score[2])
 
     result = {'loss': -score[2], 'status': STATUS_OK, 'space': params}
 
     return result
-
-
 
 def train_model(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     model = build_model()
@@ -262,45 +257,15 @@ else:
     X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
 
     if optimize:
-        '''
-        todo: morgen ausprobieren
-        test_params = {
-            'dense1': 1200,
-            'dropout1': 0.5,
-            'gru1': 500,
-            'gru2': {
-                'gru2_units': 100,
-                'gru3':  {
-                    'gru3_units': 100
-                },
-            },
-            'dense2': 500,
-            'dropout2': 0.4,
-            'lr': 0.001,
-            'decay': 0.0001,
-            'batch_size': 16,
-        }
-        build_model_ho(params=test_params,
-                       epochs=epochs, verbose=2)
-        '''
         #---- create a Trials database to store experiment results
-        trials = MongoTrials('mongo://localhost:1235/foo_db/jobs')
+        trials = MongoTrials('mongo://localhost:27017/jobs/jobs', exp_key='exp1')
         #---- use that Trials database for fmin
-        best = fmin(build_model_ho_3, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
+        best = fmin(build_model_ho_3, space, algo=tpe.suggest, trials=trials, max_evals=10)
         #---- save trials
         pickle.dump(trials, open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "wb"))
         #trials = pickle.load(open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "rb"))
         print("Found minimum:")
         print(best)
-        pp = pprint.PrettyPrinter(indent=4)
-        print("Here are the space and results of the 3 first trials (out of a total of 1000):")
-        pp.pprint(trials.trials[0])
-        pp.pprint(trials.trials[1])
-        pp.pprint(trials.trials[2])
-        print("What interests us most is the 'result' key of each trial:")
-        pp.pprint(trials.trials[0]["result"])
-        pp.pprint(trials.trials[1]["result"])
-
 
     else:
         model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
