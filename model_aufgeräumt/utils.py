@@ -251,7 +251,7 @@ def train_val_split(hmm, X_train_aug, y_train, perc = None):
         n_samples = len(X_train_aug)
     np.random.seed(0)
     if perc is None:
-        perc = 0.2
+        perc = 0.1
     print(type(n_samples), type(perc))
     size = int(n_samples*perc)
     validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
