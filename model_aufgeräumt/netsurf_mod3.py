@@ -144,7 +144,7 @@ space = {
     'batch_size': hp.choice('batch_size', BATCH_CHOICES)
 }
 
-def build_model_ho(params, epochs = epochs, verbose=2):
+def build_model_ho(params, epochs = epochs, verbose=2, hmm=hmm):
     model = None
     print('----------------------')
     print('----------------------')
