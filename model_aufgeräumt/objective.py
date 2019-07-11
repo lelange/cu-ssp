@@ -116,7 +116,7 @@ def build_model_ho_3(params):
 
     adamOptimizer = Adam(lr=params['lr'], beta_1=0.8, beta_2=0.8, epsilon=None, decay=params['decay'], amsgrad=False)
     model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
-    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=verbose, mode='max')
+    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
                                    mode='max')
 
