@@ -60,13 +60,9 @@ file_test = ['cb513', 'ts115', 'casp12']
 
 #load data
 X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
+X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
 
-if hmm:
-    print("X train shape: ", X_train_aug[0].shape)
-    print("X aug train shape: ", X_train_aug[1].shape)
-else:
-    print("X train shape: ", X_train_aug.shape)
-print("y train shape: ", y_train.shape)
+
 
 DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
 UNIT_CHOICES = [100, 200, 500, 800, 1000, 1200]
