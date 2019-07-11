@@ -41,6 +41,12 @@ from utils import *
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
+data_root = '../data/netsurfp/'
+
+file_train = 'train'
+file_test = ['cb513', 'ts115', 'casp12']
+
+X_train_aug, y_train = get_data('train', True, False, True)
 
 def build_model_ho_3(params, epochs = 20, verbose=2, hmm=True):
     model = None
@@ -51,13 +57,13 @@ def build_model_ho_3(params, epochs = 20, verbose=2, hmm=True):
         print('\n ')
 
     if hmm:
-        input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
-        profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
+        input = Input(shape=(600, 20,))
+        profiles_input = Input(shape=(600, 30,))
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
-        input = Input(shape=(X_train_aug.shape[1], X_train_aug.shape[2],))
+        input = Input(shape=(600, 20,))
         x1 = input
         x2 = input
         inp = input
