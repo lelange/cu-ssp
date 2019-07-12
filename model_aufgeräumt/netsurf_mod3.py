@@ -261,7 +261,7 @@ else:
 
     if optimize:
         #---- create a Trials database to store experiment results
-        trials = MongoTrials('mongo://localhost:27017/jobs/jobs', exp_key='exp1')
+        trials = MongoTrials('mongo://localhost:27017/jobs/jobs', exp_key='exp2')
         #---- use that Trials database for fmin
         best = fmin(objective.build_model_ho_3, space, algo=tpe.suggest, trials=trials, max_evals=10)
         #---- save trials
