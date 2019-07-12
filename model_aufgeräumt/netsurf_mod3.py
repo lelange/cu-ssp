@@ -203,10 +203,9 @@ def build_model_ho_3(params):
               epochs=20, batch_size=params['batch_size'], callbacks=[checkpointer, earlyStopping],
               verbose=1, shuffle=True)
 
-    K.clear_session()
     model.load_weights(load_file)
     score = model.evaluate(X_test_aug, y_test)
-
+    K.clear_session()
     result = {'loss': -score[2], 'status': STATUS_OK}
 
     return result
