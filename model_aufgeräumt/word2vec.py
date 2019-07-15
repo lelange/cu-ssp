@@ -24,7 +24,7 @@ file_test = ['cb513_700', 'ts115_700', 'casp12_700']
 X_train, y_train = get_data(file_train, False, False, False)
 
 def seq2ngrams(seqs, n = 3):
-    return np.array([seq[i : i + n] for i in range(len(seq))] for seq in seqs)
+    return np.array( ((seq[i : i + n] for i in range(len(seq))) for seq in seqs) )
 
 n_grams = seq2ngrams(X_train)
 print(n_grams.shape)
