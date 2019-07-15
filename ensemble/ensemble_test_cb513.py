@@ -13,6 +13,8 @@ print (m1.shape, m2.shape, m3.shape, m4.shape, m5.shape, m6.shape)
 # warped_order_1 = ['NoSeq', 'H', 'E', 'L','T', 'S', 'G', 'B',  'I']
 #                    0        1    2    3   4    5    6    7     8
 #                  ['L',     'B', 'E', 'G','I', 'H', 'S', 'T', 'NoSeq'] # new order
+
+# for decoding one-hot-encoding
 order_list = [8,5,2,0,7,6,3,1,4]
 labels = ['L', 'B', 'E', 'G','I', 'H', 'S', 'T', 'NoSeq']
 
@@ -22,6 +24,8 @@ m3p = np.zeros_like(m4)
 m4p = np.zeros_like(m4)
 m5p = np.zeros_like(m4)
 m6p = np.zeros_like(m4)
+
+#change one-hot encoding order st. it corresponds to list of labels and ensure same length
 for count, i in enumerate(order_list):
     m1p[:,:,i] = m1[:,:700,count]
     m2p[:,:,i] = m2[:,:700,count]
@@ -30,6 +34,7 @@ for count, i in enumerate(order_list):
     m5p[:,:,i] = m5[:,:700,count]
     m6p[:,:,i] = m6[:,:700,count]
 
+#check that prediction is prob distribution
 def check_softmax(T):
     for i in range(T.shape[0]):
         for j in range(T.shape[1]):
@@ -47,6 +52,7 @@ summed_probs = m1p + m2p + m3p + m4p + m5# + m6p
 length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
 print ('max protein seq length is', np.max(length_list))
 
+#create new prediciton as highest scorer in sum of all other predictions
 ensemble_predictions = []
 for protein_idx, i in enumerate(length_list):
     new_pred = ''

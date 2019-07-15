@@ -174,6 +174,7 @@ def data():
 
 
 def build_model_ho_3(params):
+    print(params)
     input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
     profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
     x1 = concatenate([input, profiles_input])
