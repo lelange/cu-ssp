@@ -186,7 +186,7 @@ def build_model(hype_space):
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
 
-    x = Bidirectional(CuDNNLSTM(units=int(750*hype_space['LSTM_units_mult']), return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(units=int(128*hype_space['LSTM_units_mult']), return_sequences=True))(x)
 
     # Two heads as outputs:
     q8_output = TimeDistributed(Dense(
