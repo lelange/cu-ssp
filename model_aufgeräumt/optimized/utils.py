@@ -58,7 +58,7 @@ def accuracy(y_true, y_predicted):
     mask = tf.greater(y, 0)
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
-def train_val_split(hmm, X_train_aug, y_train, perc = None):
+def train_val_split(X_train_aug, y_train, hmm=None, perc = None):
 
     n_samples = len(y_train)
     np.random.seed(0)
@@ -75,8 +75,8 @@ def train_val_split(hmm, X_train_aug, y_train, perc = None):
     #x = concatenate([input, profiles_input])
 
     if hmm:
-        X_val_aug = np.concatenate([X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]])
-        X_train_aug = np.concatenate([X_train_aug[0][training_idx], X_train_aug[1][training_idx]])
+        X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]))[validation_idx]
+        X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]))[training_idx]
     else:
         X_val_aug = X_train_aug[validation_idx]
         X_train_aug = X_train_aug[training_idx]
