@@ -73,7 +73,7 @@ def evaluate_model(model, load_file, test_ind = None):
     for i in test_ind:
         X_test_aug, y_test = get_test_data(file_test[i])
         model.load_weights(load_file)
-        print("####evaluate" + file_test[i] +":")
+        print("evaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
         print(file_test[i] +' test accuracy:', score[2])
         test_accs.append(score[2])
