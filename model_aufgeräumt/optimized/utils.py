@@ -2,7 +2,7 @@ from bson import json_util
 import json
 import os
 import numpy as np
-
+import tensorflow as tf
 RESULTS_DIR = "results/"
 
 """Json utils to print, save and load training results."""
