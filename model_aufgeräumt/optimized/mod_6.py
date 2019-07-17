@@ -55,7 +55,7 @@ X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
 
 
 # You may want to reduce this considerably if you don't have a killer GPU:
-EPOCHS = 10
+EPOCHS = 35
 STARTING_L2_REG = 0.0007
 
 OPTIMIZER_STR_TO_CLASS = {
