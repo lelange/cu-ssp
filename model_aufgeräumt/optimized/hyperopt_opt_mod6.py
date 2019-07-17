@@ -31,6 +31,8 @@ from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
 from mod_6 import build_and_train, build_model
 
+os.environ["PATH"] += os.pathsep + '/nosave/lange/cu-ssp/model_aufgeräumt/optimized/graphviz-2.40.1/bin'
+
 def plot(hyperspace, file_name_prefix):
     """Plot a model from it's hyperspace."""
     model = build_model(hyperspace)
