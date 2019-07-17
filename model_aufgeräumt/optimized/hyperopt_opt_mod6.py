@@ -64,9 +64,9 @@ space = {
     # Choice of optimizer:
     'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
     # Kernel size for convolutions:
-    'conv_filter_size': np.quniform('conv_filter_size', 32, 128 ,32),
+    'conv_filter_size': hp.quniform('conv_filter_size', 32, 128, 32),
     # LSTM units:
-    'LSTM_units_mult':np.loguniform('LSTM_units_mult', -0.6, 0.6)
+    'LSTM_units_mult':hp.loguniform('LSTM_units_mult', -0.6, 0.6)
 }
 
 def optimize_model(hyperspace):
