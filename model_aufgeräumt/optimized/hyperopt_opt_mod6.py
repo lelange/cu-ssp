@@ -19,6 +19,7 @@ from keras.callbacks import TensorBoard, LearningRateScheduler, ReduceLROnPlatea
 
 import sys
 import os
+import traceback
 import time
 import dill as pickle
 
@@ -67,11 +68,11 @@ space = {
     'activation': hp.choice('activation', ['relu', 'elu'])
 }
 
-def optimize_model():
+def optimize_model(hyperspace):
     """Build model 6 and train it."""
 
     try:
-        model, model_name, result, _ = build_and_train(hype_space)
+        model, model_name, result, _ = build_and_train(hyperspace)
 
         # Save training results to disks with unique filenames
         save_json_result(model_name, result)
@@ -114,7 +115,7 @@ def run_a_trial():
         print("Starting from scratch: new trials.")
 
     best = fmin(
-        optimize_cnn,
+        optimize_model,
         space,
         algo=tpe.suggest,
         trials=trials,
