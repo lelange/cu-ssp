@@ -1,6 +1,6 @@
 """Convolutional neural network built with Keras."""
 
-from utils import print_json, train_val_split, accuracy
+from utils import print_json, train_val_split, accuracy, get_test_data
 import numpy as np
 import keras
 from keras.layers.core import K  # import keras.backend as K
@@ -93,7 +93,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
 
     # K.set_learning_phase(1)
     time_str = datetime.now().strftime("%Y_%m_%d-%H_%M")
-    model_weight_name = "mod_6-" + time_str + ".h5"
+    model_weight_name = "mod_6-" + time_str
 
     callbacks = []
 
