@@ -176,13 +176,13 @@ def build_model(hype_space):
 
     x = input_layer
 
-    z = Conv1D(hype_space['conv_filter_size'], 11, strides=1, padding='same')(x)
-    w = Conv1D(hype_space['conv_filter_size'], 7, strides=1, padding='same')(x)
+    z = Conv1D(int(hype_space['conv_filter_size']), 11, strides=1, padding='same')(x)
+    w = Conv1D(int(hype_space['conv_filter_size']), 7, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
 
-    z = Conv1D(hype_space['conv_filter_size'], 5, strides=1, padding='same')(x)
-    w = Conv1D(hype_space['conv_filter_size'], 3, strides=1, padding='same')(x)
+    z = Conv1D(int(hype_space['conv_filter_size']), 5, strides=1, padding='same')(x)
+    w = Conv1D(int(hype_space['conv_filter_size']), 3, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
 
