@@ -54,7 +54,6 @@ def plot_best_model():
     print_json(space_best_model)
     plot(space_best_model, "model_best")
 
-print('----------\nTest: this is the right version.')
 space = {
     # This loguniform scale will multiply the learning rate, so as to make
     # it vary exponentially, in a multiplicative fashion rather than in
@@ -135,7 +134,7 @@ if __name__ == "__main__":
           "Note that hyperopt has support for cloud "
           "distributed training using MongoDB.")
 
-    print("\nYour results will be saved in the folder named 'results/'. "
+    print("\nThe results will be saved in the folder named 'results/'. "
           "You can sort that alphabetically and take the greatest one. "
           "As you run the optimization, results are consinuously saved into a "
           "'results.pkl' file, too. Re-running optimize.py will resume "

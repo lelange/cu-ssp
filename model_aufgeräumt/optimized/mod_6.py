@@ -65,7 +65,7 @@ OPTIMIZER_STR_TO_CLASS = {
 }
 
 
-def build_and_train(hype_space, save_best_weights=False, log_for_tensorboard=False):
+def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=False):
     """Build the model and train it."""
     K.set_learning_phase(1)
 
@@ -78,7 +78,7 @@ def build_and_train(hype_space, save_best_weights=False, log_for_tensorboard=Fal
 
     # K.set_learning_phase(1)
     time_str = datetime.now().strftime("%Y_%m_%d-%H_%M")
-    model_weight_name = "mod_6-" + time_str + ".h5"
+    model_weight_name = "./weights/mod_6-" + time_str + ".h5"
 
     callbacks = []
 
@@ -149,7 +149,7 @@ def build_and_train(hype_space, save_best_weights=False, log_for_tensorboard=Fal
     # saved.
     print(history.keys())
     print(history)
-    print(score)
+    print('Score: ', score)
     result = {
         # We plug "-val_accuracy" as a
         # minimizing metric named 'loss' by Hyperopt.
