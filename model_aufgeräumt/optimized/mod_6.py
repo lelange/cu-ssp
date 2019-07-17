@@ -176,28 +176,30 @@ def build_model(hype_space):
 
     x = input_layer
 
-    z = Conv1D(64, 11, strides=1, padding='same')(x)
-    w = Conv1D(64, 7, strides=1, padding='same')(x)
+    z = Conv1D(hype_space['conv_filter_size'], 11, strides=1, padding='same')(x)
+    w = Conv1D(hype_space['conv_filter_size'], 7, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
-    z = Conv1D(64, 5, strides=1, padding='same')(x)
-    w = Conv1D(64, 3, strides=1, padding='same')(x)
+
+    z = Conv1D(hype_space['conv_filter_size'], 5, strides=1, padding='same')(x)
+    w = Conv1D(hype_space['conv_filter_size'], 3, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
-    x = Bidirectional(CuDNNLSTM(units=128, return_sequences=True))(x)
+
+    x = Bidirectional(CuDNNLSTM(units=int(750*hype_space['LSTM_units_mult']), return_sequences=True))(x)
 
     # Two heads as outputs:
-    q8_outputs = TimeDistributed(Dense(
+    q8_output = TimeDistributed(Dense(
         units=NB_CLASSES_FINE,
         activation="softmax",
-        name='q8_outputs'
+        name='q8_output'
     ))(x)
 
     '''
-      q3_outputs = TimeDistributed(Dense(
+      q3_output = TimeDistributed(Dense(
         units=NB_CLASSES_COARSE,
         activation="softmax",
-        name='q3_outputs'
+        name='q3_output'
     ))(x)
 
     '''
@@ -205,7 +207,7 @@ def build_model(hype_space):
     # Finalize model:
     model = keras.models.Model(
         inputs=[input_layer],
-        outputs=[q8_outputs]
+        outputs=[q8_output]
     )
     model.compile(
         optimizer=OPTIMIZER_STR_TO_CLASS[hype_space['optimizer']](

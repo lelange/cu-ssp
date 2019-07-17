@@ -31,8 +31,6 @@ from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
 from mod_6 import build_and_train, build_model
 
-os.environ["PATH"] += os.pathsep + '/nosave/lange/cu-ssp/model_aufgeräumt/optimized/graphviz-2.40.1/bin'
-
 def plot(hyperspace, file_name_prefix):
     """Plot a model from it's hyperspace."""
     model = build_model(hyperspace)
@@ -65,10 +63,10 @@ space = {
     'batch_size': hp.quniform('batch_size', 100, 450, 5),
     # Choice of optimizer:
     'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
-    # Use batch normalisation at more places?
-    'use_BN': hp.choice('use_BN', [False, True]),
-    # Activations that are used everywhere
-    'activation': hp.choice('activation', ['relu', 'elu'])
+    # Kernel size for convolutions:
+    'conv_filter_size': np.quniform('conv_filter_size', 32, 128 ,32),
+    # LSTM units:
+    'LSTM_units_mult':np.loguniform('LSTM_units_mult', -0.6, 0.6)
 }
 
 def optimize_model(hyperspace):
@@ -99,6 +97,7 @@ def optimize_model(hyperspace):
             'err': err_str,
             'traceback': traceback_str
         }
+    print("\n\n")
 
 def run_a_trial():
     """Run one TPE meta optimisation step and save its results."""
@@ -130,10 +129,6 @@ def run_a_trial():
 
 if __name__ == "__main__":
     """Plot the model and run the optimisation forever (and saves results)."""
-
-    print("Plotting a demo model that would represent "
-          "a quite normal model (or a bit more huge), "
-          "and then the best model...")
 
     print("Now, we train many models, one after the other. "
           "Note that hyperopt has support for cloud "

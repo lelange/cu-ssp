@@ -127,9 +127,9 @@ GRU_CHOICES = [100, 200, 300, 400, 500, 600]
 BATCH_CHOICES = [16, 32]
 LR_CHOICES = [0.0001, 0.0005, 0.001, 0.0025, 0.005, 0.01]
 space = {
-    'dense1': hp.choice('dense1', UNIT_CHOICES),
-    'dropout1': hp.choice('dropout1', DROPOUT_CHOICES),
-    'gru1': hp.choice('gru1', GRU_CHOICES),
+    'dense1': hp.quniform('dense1', UNIT_CHOICES),
+    'dropout1': hp.uniform('dropout1', 0.0, 0.9),
+    'gru1': hp.quniform('gru1', 100, 700, 100),
     # nesting the layers ensures they're only un-rolled sequentially
     'gru2': hp.choice('gru2', [False, {
         'gru2_units': hp.choice('gru2_units', GRU_CHOICES),
@@ -138,7 +138,7 @@ space = {
             'gru3_units': hp.choice('gru3_units', GRU_CHOICES)
         }]),
     }]),
-    'dense2': hp.choice('dense2', UNIT_CHOICES),
+    'dense2': hp.uniform('dense2', 0.0, 0.9),
     'dropout2': hp.choice('dropout2', DROPOUT_CHOICES),
     'lr': hp.choice('lr', LR_CHOICES),
     'decay': hp.choice('decay', LR_CHOICES),
