@@ -55,7 +55,7 @@ X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
 
 
 # You may want to reduce this considerably if you don't have a killer GPU:
-EPOCHS = 2
+EPOCHS = 1
 STARTING_L2_REG = 0.0007
 
 OPTIMIZER_STR_TO_CLASS = {
@@ -75,8 +75,8 @@ def evaluate_model(model, load_file, test_ind = None):
         model.load_weights(load_file)
         print("evaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-        print(file_test[i] +' test accuracy:', score[2])
-        test_accs.append(score[2])
+        print(file_test[i] +' test accuracy:', score[1])
+        test_accs.append(score[1])
         names.append(file_test[i])
     return dict(zip(names, test_accs))
 
