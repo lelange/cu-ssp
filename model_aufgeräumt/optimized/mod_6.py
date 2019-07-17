@@ -93,7 +93,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
 
     # K.set_learning_phase(1)
     time_str = datetime.now().strftime("%Y_%m_%d-%H_%M")
-    model_weight_name = "./weights/mod_6-" + time_str + ".h5"
+    model_weight_name = "mod_6-" + time_str + ".h5"
 
     callbacks = []
 
