@@ -73,9 +73,8 @@ def evaluate_model(model, load_file, test_ind = None):
     for i in test_ind:
         X_test_aug, y_test = get_test_data(file_test[i])
         model.load_weights(load_file)
-        print("evaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-        print(file_test[i] +' test accuracy:', score[1])
+        print(file_test[i] +' test accuracy: ' + str(score[1]))
         test_accs.append(score[1])
         names.append(file_test[i])
     return dict(zip(names, test_accs))
@@ -154,6 +153,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
     # Test net:
     K.set_learning_phase(0)
     score = evaluate_model(model, weights_save_path)
+    print("\n\n")
     max_acc = max(history['val_accuracy'])
 
     model_name = "model_{}_{}".format(str(max_acc), time_str)
