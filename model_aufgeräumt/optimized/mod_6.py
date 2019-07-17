@@ -3,7 +3,7 @@
 from utils import print_json, train_val_split, accuracy
 import numpy as np
 import keras
-import keras.backend as K
+from keras.layers.core import K  # import keras.backend as K
 from keras.models import Model, Input
 from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, GRU, Conv1D, CuDNNLSTM, concatenate
 from keras.optimizers import Adam, Nadam, RMSprop

@@ -3,6 +3,7 @@ import json
 import os
 import numpy as np
 import tensorflow as tf
+import keras.backend as K
 RESULTS_DIR = "results/"
 
 """Json utils to print, save and load training results."""
