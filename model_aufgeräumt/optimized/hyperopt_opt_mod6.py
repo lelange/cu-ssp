@@ -107,7 +107,7 @@ def run_a_trial():
 
     try:
         # https://github.com/hyperopt/hyperopt/issues/267
-        trials = pickle.load(open("results.pkl", "rb"))
+        trials = pickle.load(open("results1.pkl", "rb"))
         print("Found saved Trials! Loading...")
         max_evals = len(trials.trials) + nb_evals
         print("Rerunning from {} trials to add another one.".format(
@@ -123,7 +123,7 @@ def run_a_trial():
         trials=trials,
         max_evals=max_evals
     )
-    pickle.dump(trials, open("results.pkl", "wb"))
+    pickle.dump(trials, open("results1.pkl", "wb"))
 
     print("\nOPTIMIZATION STEP COMPLETE.\n")
 
