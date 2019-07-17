@@ -76,8 +76,8 @@ def train_val_split(X_train_aug, y_train, hmm=True, perc = None):
 
     if hmm:
         print(X_train_aug[0].shape, X_train_aug[1].shape)
-        X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]))[validation_idx]
-        X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]))[training_idx]
+        X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[validation_idx]
+        X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis = 2)[training_idx]
     else:
         X_val_aug = X_train_aug[validation_idx]
         X_train_aug = X_train_aug[training_idx]
