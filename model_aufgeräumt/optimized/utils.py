@@ -58,7 +58,7 @@ def accuracy(y_true, y_predicted):
     mask = tf.greater(y, 0)
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
-def train_val_split(X_train_aug, y_train, hmm=None, perc = None):
+def train_val_split(X_train_aug, y_train, hmm=True, perc = None):
 
     n_samples = len(y_train)
     np.random.seed(0)
