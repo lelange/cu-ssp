@@ -45,7 +45,7 @@ def data():
     X_train_aug = [X_train, X_aug_train]
     y_train = np.load(data_root + file_train + '_q8.npy')
 
-    X_train_aug, y_train, X_val_aug, y_val = train_val_split(True, X_train_aug, y_train)
+    X_train_aug, y_train, X_val_aug, y_val = train_val_split(X_train_aug, y_train)
 
     return X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test
 
