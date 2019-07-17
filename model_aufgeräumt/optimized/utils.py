@@ -4,7 +4,6 @@ import os
 import numpy as np
 import tensorflow as tf
 import keras.backend as K
-from keras.layers import concatenate
 RESULTS_DIR = "results/"
 
 """Json utils to print, save and load training results."""
@@ -76,8 +75,8 @@ def train_val_split(hmm, X_train_aug, y_train, perc = None):
     #x = concatenate([input, profiles_input])
 
     if hmm:
-        X_val_aug = concatenate([X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]])
-        X_train_aug = concatenate([X_train_aug[0][training_idx], X_train_aug[1][training_idx]])
+        X_val_aug = np.concatenate([X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]])
+        X_train_aug = np.concatenate([X_train_aug[0][training_idx], X_train_aug[1][training_idx]])
     else:
         X_val_aug = X_train_aug[validation_idx]
         X_train_aug = X_train_aug[training_idx]
