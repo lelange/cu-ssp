@@ -26,8 +26,8 @@ NB_FEATURES = 50
 
 def data():
     data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
-    file_train = 'train'
-    file_test = ['cb513', 'ts115', 'casp12']
+    file_train = 'train_700'
+    file_test = ['cb513_700', 'ts115_700', 'casp12_700']
 
     X_test = np.load(data_root + file_test[0] + '_input.npy')
     profiles = np.load(data_root + file_test[0] + '_hmm.npy')
