@@ -64,15 +64,12 @@ def train_val_split(X_train_aug, y_train, hmm=True, perc = None):
     np.random.seed(0)
     if perc is None:
         perc = 0.1
-    print(type(n_samples), type(perc))
     size = int(n_samples*perc)
     validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
 
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
-
-    #x = concatenate([input, profiles_input])
 
     if hmm:
         print(X_train_aug[0].shape, X_train_aug[1].shape)

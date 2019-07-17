@@ -55,7 +55,7 @@ X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
 
 
 # You may want to reduce this considerably if you don't have a killer GPU:
-EPOCHS = 35
+EPOCHS = 40
 STARTING_L2_REG = 0.0007
 
 OPTIMIZER_STR_TO_CLASS = {
@@ -175,19 +175,27 @@ def build_model(hype_space):
         (MAXLEN_SEQ, NB_FEATURES))
 
     x = input_layer
-
+    print(x._keras_shape)
     z = Conv1D(int(hype_space['conv_filter_size']), 11, strides=1, padding='same')(x)
+    print(z._keras_shape)
     w = Conv1D(int(hype_space['conv_filter_size']), 7, strides=1, padding='same')(x)
+    print(w._keras_shape)
     x = concatenate([x, z], axis=2)
+    print(x._keras_shape)
     x = concatenate([x, w], axis=2)
+    print(x._keras_shape)
 
     z = Conv1D(int(hype_space['conv_filter_size']), 5, strides=1, padding='same')(x)
+    print(z._keras_shape)
     w = Conv1D(int(hype_space['conv_filter_size']), 3, strides=1, padding='same')(x)
+    print(w._keras_shape)
     x = concatenate([x, z], axis=2)
+    print(x._keras_shape)
     x = concatenate([x, w], axis=2)
-
+    print(x._keras_shape)
     x = Bidirectional(CuDNNLSTM(units=int(128*hype_space['LSTM_units_mult']), return_sequences=True))(x)
-
+    print('units = ', int(128*hype_space['LSTM_units_mult']))
+    print(x._keras_shape)
     # Two heads as outputs:
     q8_output = TimeDistributed(Dense(
         units=NB_CLASSES_FINE,
