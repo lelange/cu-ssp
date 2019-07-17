@@ -47,7 +47,7 @@ def standard(data):
     return data_
 
 # for netsurf (hmm) data
-def get_data(filename, hmm, normalize, standardize, embedding = False, no_input=False):
+def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False):
 
     print('Load ' + filename + ' data...')
     if embedding:

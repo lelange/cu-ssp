@@ -79,3 +79,17 @@ def train_val_split(X_train_aug, y_train, hmm=True, perc = None):
         X_train_aug = X_train_aug[training_idx]
 
     return X_train_aug, y_train, X_val_aug, y_val
+
+
+def get_test_data(filename):
+    data_root = '../data/netsurfp/'
+
+    X_test = np.load(data_root + filename + '_input.npy')
+    profiles = np.load(data_root + filename + '_hmm.npy')
+    mean = np.mean(profiles)
+    std = np.std(profiles)
+    X_aug_test = (profiles - mean) / std
+    X_test_aug = np.concatenate((X_test, X_aug_test), axis=2)
+    y_test = np.load(data_root + filename + '_q8.npy')
+
+    return  X_test_aug, y_test

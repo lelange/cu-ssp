@@ -55,7 +55,7 @@ X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
 
 
 # You may want to reduce this considerably if you don't have a killer GPU:
-EPOCHS = 40
+EPOCHS = 2
 STARTING_L2_REG = 0.0007
 
 OPTIMIZER_STR_TO_CLASS = {
@@ -64,6 +64,21 @@ OPTIMIZER_STR_TO_CLASS = {
     'RMSprop': RMSprop
 }
 
+def evaluate_model(model, load_file, test_ind = None):
+    file_test = ['cb513_700', 'ts115_700', 'casp12_700']
+    if test_ind is None:
+        test_ind = range(len(file_test))
+    test_accs = []
+    names = []
+    for i in test_ind:
+        X_test_aug, y_test = get_test_data(file_test[i])
+        model.load_weights(load_file)
+        print("####evaluate" + file_test[i] +":")
+        score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
+        print(file_test[i] +' test accuracy:', score[2])
+        test_accs.append(score[2])
+        names.append(file_test[i])
+    return dict(zip(names, test_accs))
 
 def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=False):
     """Build the model and train it."""
@@ -138,7 +153,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
 
     # Test net:
     K.set_learning_phase(0)
-    score = model.evaluate(X_test_aug, y_test, verbose=0)
+    score = evaluate_model(model, weights_save_path)
     max_acc = max(history['val_accuracy'])
 
     model_name = "model_{}_{}".format(str(max_acc), time_str)
