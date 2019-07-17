@@ -34,7 +34,7 @@ def data():
     mean = np.mean(profiles)
     std = np.std(profiles)
     X_aug_test = (profiles - mean) / std
-    X_test_aug = [X_test, X_aug_test]
+    X_test_aug = np.concatenate((X_test, X_aug_test), axis = 2)
     y_test = np.load(data_root + file_test[0] + '_q8.npy')
 
     X_train = np.load(data_root + file_train + '_input.npy')
@@ -129,7 +129,7 @@ def build_and_train(hype_space, save_best_weights=False, log_for_tensorboard=Fal
         batch_size=int(hype_space['batch_size']),
         epochs=EPOCHS,
         shuffle=True,
-        verbose=1,
+        verbose=2,
         callbacks=callbacks,
         validation_data=(X_val_aug, y_val)
     ).history
