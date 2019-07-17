@@ -1,6 +1,7 @@
 from bson import json_util
 import json
 import os
+import numpy as np
 
 RESULTS_DIR = "results/"
 
