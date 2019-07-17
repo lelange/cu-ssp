@@ -27,6 +27,8 @@ from utils import *
 from keras.utils import plot_model
 from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
+from mod_6 import build_and_train, build_model
+
 def plot(hyperspace, file_name_prefix):
     """Plot a model from it's hyperspace."""
     model = build_model(hyperspace)
@@ -153,7 +155,7 @@ if __name__ == "__main__":
 
         print("PLOTTING BEST MODEL:")
         plot_best_model()
-        
+
 
 
 
