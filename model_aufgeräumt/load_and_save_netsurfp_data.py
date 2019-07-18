@@ -1,5 +1,7 @@
 import numpy as np
-import pandas as pd
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing import sequence
+
 
 maxlen_seq = 700 ###! change back!
 minlen_seq= 100
@@ -20,10 +22,26 @@ minlen_seq= 100
 
 data_root = '../data/netsurfp/'
 
-data_train = np.load(data_root+'Train_HHblits.npz')
+#data_train = np.load(data_root+'Train_HHblits.npz')
 data_cb513 = np.load(data_root+'CB513_HHblits.npz')
 data_ts115 = np.load(data_root+'TS115_HHblits.npz')
 data_casp12 = np.load(data_root+'CASP12_HHblits.npz')
+
+def onehot_to_seq(oh_seq, index):
+    s = ''
+    for o in oh_seq:
+        i = np.argmax(o)
+        s += index[i]
+    return s
+
+def seq2onehot(seqs, n):
+    out = np.zeros((len(seqs), maxlen_seq, n))
+    for i, seq in enumerate(seqs):
+        for j in range(len(seq)):
+            out[i, j, seq[j]] = 1
+    return out
+
+q3_list = list('HHHEECCC')
 
 def get_mask(data):
     return data[:,:,50]
@@ -37,6 +55,7 @@ def get_hmm(data, seq_range):
 def get_q8(data, seq_range):
     return data[:,:maxlen_seq,57:65][seq_range]
 
+'''
 def get_and_save_data(data, filename):
     database = data['data']
     mask = get_mask(database)
@@ -59,3 +78,30 @@ get_and_save_data(data_ts115, 'ts115_700')
 get_and_save_data(data_casp12, 'casp12_700')
 
 
+
+'''
+def get_and_save_data(data, filename):
+
+    database = data['data']
+    train_q8 = database[:, :, 57:65]
+    mask = database[:, :, 50]
+    seq_range = [minlen_seq <= mask[i].sum() <= maxlen_seq for i in range(len(mask))]
+    mask_seq = mask[seq_range]
+
+    q3_seq = []
+    for i, q3 in enumerate(train_q8[seq_range]):
+        seq = onehot_to_seq(q3[mask_seq[i] > 0], q3_list)
+        q3_seq.append(seq)
+
+    tokenizer = Tokenizer(char_level=True)
+    tokenizer.fit_on_texts(q3_seq[0])
+    q3 = tokenizer.texts_to_sequences(q3_seq)
+    q3 = np.array([np.array(q) - 1 for q in q3])
+    q3_arr = seq2onehot(q3, 3)
+    print(q3_arr.shape)
+    np.save(data_root + filename + '_q3.npy', q3_arr)
+    print(filename + ' is saved.')
+
+get_and_save_data(data_cb513, 'cb513_700')
+get_and_save_data(data_ts115, 'ts115_700')
+get_and_save_data(data_casp12, 'casp12_700')
