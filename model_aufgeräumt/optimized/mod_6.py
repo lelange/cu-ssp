@@ -19,7 +19,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 TENSORBOARD_DIR = "TensorBoard/"
 WEIGHTS_DIR = "weights/"
 
-NB_SAMPLES = 3
 MAXLEN_SEQ = 700
 # NB_CLASSES = 10
 NB_CLASSES_FINE = 8
@@ -182,7 +181,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
     res = ""
     for k, v in score.items():
         res += str(k)+": "+str(v)+"\t"
-    f.write(str(model_weight_name)+"\t"+ res)
+    f.write(str(model_weight_name)+"\t"+ res +"\n")
     f.close()
 
     return model, model_name, result, log_path
