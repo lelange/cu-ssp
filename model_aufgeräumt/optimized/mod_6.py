@@ -184,7 +184,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
         res += str(k)+": "+str(v)+"\t"
     f.write(str(model_weight_name)+"\t"+ res)
     f.close()
-    
+
     return model, model_name, result, log_path
 
 
