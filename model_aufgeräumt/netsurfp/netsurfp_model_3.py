@@ -61,7 +61,7 @@ cross_validate = args.cv
 
 batch_size = 16
 
-n_tags = 8
+n_tags = 3
 n_words = 20
 data_root = '../data/netsurfp/'
 
