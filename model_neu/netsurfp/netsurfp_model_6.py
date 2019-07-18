@@ -28,7 +28,7 @@ start_time = time.time()
 
 args = parse_arguments(default_epochs=80)
 
-data_root = '../data/netsurfp/'
+data_root = 'nosave/lange/cu-ssp/data/netsurfp/'
 load_file = "./model/mod_6-CB513-" + datetime.now().strftime("%Y_%m_%d-%H_%M") + ".h5"
 
 normalize = args.normalize
