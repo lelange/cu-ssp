@@ -20,7 +20,7 @@ minlen_seq= 100
 # [65:67] Phi+Psi
 # [67] ASA_max
 
-data_root = '../data/netsurfp/'
+data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
 
 #data_train = np.load(data_root+'Train_HHblits.npz')
 data_cb513 = np.load(data_root+'CB513_HHblits.npz')
@@ -99,7 +99,8 @@ def get_and_save_data(data, filename):
     q3 = np.array([np.array(q) - 1 for q in q3])
     q3_arr = seq2onehot(q3, 3)
     print(q3_arr.shape)
-    np.save(data_root + filename + '_q3.npy', q3_arr)
+    print(q3_arr[0])
+    #np.save(data_root + filename + '_q3.npy', q3_arr)
     print(filename + ' is saved.')
 
 get_and_save_data(data_cb513, 'cb513_700')
