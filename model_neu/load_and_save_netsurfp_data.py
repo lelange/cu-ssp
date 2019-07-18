@@ -22,10 +22,10 @@ minlen_seq= 100
 
 data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
 
-#data_train = np.load(data_root+'Train_HHblits.npz')
-data_cb513 = np.load(data_root+'CB513_HHblits.npz')
-data_ts115 = np.load(data_root+'TS115_HHblits.npz')
-data_casp12 = np.load(data_root+'CASP12_HHblits.npz')
+data_train = np.load(data_root+'Train_HHblits.npz')
+#data_cb513 = np.load(data_root+'CB513_HHblits.npz')
+#data_ts115 = np.load(data_root+'TS115_HHblits.npz')
+#data_casp12 = np.load(data_root+'CASP12_HHblits.npz')
 
 def onehot_to_seq(oh_seq, index):
     s = ''
@@ -100,9 +100,7 @@ def get_and_save_data(data, filename):
     q3_arr = seq2onehot(q3, 3)
     print(q3_arr.shape)
     print(q3_arr[0])
-    #np.save(data_root + filename + '_q3.npy', q3_arr)
+    np.save(data_root + filename + '_q3.npy', q3_arr)
     print(filename + ' is saved.')
 
-get_and_save_data(data_cb513, 'cb513_700')
-get_and_save_data(data_ts115, 'ts115_700')
-get_and_save_data(data_casp12, 'casp12_700')
+get_and_save_data(data_train, 'train_700')
