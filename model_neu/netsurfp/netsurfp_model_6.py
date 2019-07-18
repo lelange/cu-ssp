@@ -50,7 +50,7 @@ file_train = 'train_700'
 file_test = ['cb513_700', 'ts115_700', 'casp12_700']
 
 #load data
-X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
+X_train_aug, y_q8, y_q3 = get_data(file_train, hmm, normalize, standardize)
 
 time_data = time.time() - start_time
 
@@ -77,9 +77,10 @@ def build_model():
     x = concatenate([x, w], axis=2)
     x = Bidirectional(CuDNNLSTM(units=128, return_sequences=True))(x)
 
-    y = TimeDistributed(Dense(n_tags, activation="softmax"))(x)
+    y_q8 = TimeDistributed(Dense(8, activation="softmax", name="y_q8"))(x)
+    y_q3 = TimeDistributed(Dense(3, activation="softmax", name="y_q3"))(x)
 
-    model = Model(inp, y)
+    model = Model(inp, [y_q8, y_q3])
     model.compile(optimizer='RMSprop', loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     model.summary()
 
@@ -119,6 +120,7 @@ if cross_validate :
     test_acc = np.mean(cv_scores)
     print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
 else:
+    y_train = [y_q8, y_q3]
     X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
     model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
     test_acc = evaluate_model(model, load_file)

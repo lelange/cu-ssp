@@ -62,7 +62,8 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
 
         else:
             input_seq =  np.load(data_root+filename+'_input.npy')
-    q8 = np.load(data_root + filename + '_q3.npy')
+    q8 = np.load(data_root + filename + '_q8.npy')
+    q3 = np.load(data_root + filename + '_q3.npy')
     if hmm:
         profiles = np.load(data_root+filename+'_hmm.npy')
         if normalize:
@@ -74,7 +75,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         input_aug = [input_seq, profiles]
     else:
         input_aug = input_seq
-    return  input_aug, q8
+    return input_aug, q8, q3
 
 # for pssm+hmm data
 def prepare_profiles(pssm, hmm, normalize, standardize):
@@ -257,8 +258,8 @@ def train_val_split(hmm, X_train_aug, y_train, perc = None):
     validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
 
-    y_val = y_train[validation_idx]
-    y_train = y_train[training_idx]
+    y_val = [y_train[0][validation_idx], y_train[1][validation_idx]]
+    y_train = [y_train[0][training_idx], y_train[1][training_idx]]
 
     if hmm:
         X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
