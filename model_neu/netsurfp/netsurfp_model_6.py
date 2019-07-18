@@ -43,7 +43,7 @@ cross_validate = args.cv
 tv_perc = args.tv_perc
 batch_size = 128
 
-n_tags = 8
+n_tags = 3
 n_words = 20
 
 file_train = 'train_700'
