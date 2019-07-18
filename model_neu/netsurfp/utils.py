@@ -14,7 +14,7 @@ import os, pickle
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
-data_root = 'nosave/lange/cu-ssp/data/netsurfp/'
+data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
 
 def parse_arguments(default_epochs):
     """
