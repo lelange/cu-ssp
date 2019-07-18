@@ -179,8 +179,12 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
     print_json(result)
 
     f = open("/nosave/lange/cu-ssp/model_aufgeräumt/optimized/logs/test_results_mod6.txt", "a+")
-    f.write("Weights: " + str(model_weight_name)+"\tScore: "+ score)
-
+    res = ""
+    for k, v in score.items():
+        res += str(k)+": "+str(v)+"\t"
+    f.write(str(model_weight_name)+"\t"+ res)
+    f.close()
+    
     return model, model_name, result, log_path
 
 
