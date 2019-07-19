@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 import keras.backend as K
 
-RESULTS_DIR = "results_mod1/"
+RESULTS_DIR = "results/"
 
 """Json utils to print, save and load training results."""
 
@@ -42,9 +42,9 @@ def load_json_result(best_result_name):
         )
 
 
-def load_best_hyperspace():
+def load_best_hyperspace(name = 'json'):
     results = [
-        f for f in list(sorted(os.listdir(RESULTS_DIR))) if 'json' in f
+        f for f in list(sorted(os.listdir(RESULTS_DIR))) if name in f
     ]
     if len(results) == 0:
         return None

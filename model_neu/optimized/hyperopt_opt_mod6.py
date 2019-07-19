@@ -31,6 +31,8 @@ from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
 from mod_6 import build_and_train, build_model
 
+MODEL_NAME = "mod_6" #f or identifing the results and load the best for this model
+
 
 def plot(hyperspace, file_name_prefix):
     """Plot a model from it's hyperspace."""
@@ -46,7 +48,7 @@ def plot(hyperspace, file_name_prefix):
 
 def plot_best_model():
     """Plot the best model found yet."""
-    space_best_model = load_best_hyperspace()
+    space_best_model = load_best_hyperspace(name=MODEL_NAME)
     if space_best_model is None:
         print("No best model to plot. Continuing...")
         return
@@ -67,7 +69,9 @@ space = {
     # Kernel size for convolutions:
     'conv_filter_size': hp.quniform('conv_filter_size', 32, 128, 32),
     # LSTM units:
-    'LSTM_units_mult': hp.loguniform('LSTM_units_mult', -0.6, 0.6)
+    'LSTM_units_mult': hp.loguniform('LSTM_units_mult', -0.6, 0.6),
+    # Use batch normalisation at more places?
+    'use_BN': hp.choice('use_BN', [False, True]),
 }
 
 def optimize_model(hyperspace):
@@ -154,7 +158,7 @@ if __name__ == "__main__":
             print(traceback_str)
 
         print("PLOTTING BEST MODEL:")
-        plot_best_model()
+        #plot_best_model()
 
 
 

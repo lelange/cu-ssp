@@ -202,6 +202,8 @@ def build_model(hype_space):
     z = Conv1D(int(hype_space['conv_filter_size']), 11, strides=1, padding='same')(x)
     #print(z._keras_shape)
     w = Conv1D(int(hype_space['conv_filter_size']), 7, strides=1, padding='same')(x)
+    if hype_space['use_BN']:
+        w = bn(w)
     #print(w._keras_shape)
     x = concatenate([x, z], axis=2)
     #print(x._keras_shape)
@@ -211,6 +213,8 @@ def build_model(hype_space):
     z = Conv1D(int(hype_space['conv_filter_size']), 5, strides=1, padding='same')(x)
     #print(z._keras_shape)
     w = Conv1D(int(hype_space['conv_filter_size']), 3, strides=1, padding='same')(x)
+    if hype_space['use_BN']:
+        w = bn(w)
     #print(w._keras_shape)
     x = concatenate([x, z], axis=2)
     #print(x._keras_shape)
@@ -247,3 +251,7 @@ def build_model(hype_space):
         metrics=[accuracy]
     )
     return model
+
+def bn(prev_layer):
+    """Perform batch normalisation."""
+    return keras.layers.normalization.BatchNormalization()(prev_layer)

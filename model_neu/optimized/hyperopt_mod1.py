@@ -29,10 +29,10 @@ from utils import *
 from keras.utils import plot_model
 from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
-from mod_1 import build_and_train, build_model
+from mod_1 import build_and_train, build_model, MODEL_NAME
 
-SAVE_RESULTS = "results_mod1.pkl"
-SAVE_BEST_PLOT = "model_1_best"
+SAVE_RESULTS = "results_mod1.pkl" # save trials of optimization
+SAVE_BEST_PLOT = "model_1_best" # save best NN graph
 
 space = {
     # This loguniform scale will multiply the learning rate, so as to make
@@ -44,18 +44,24 @@ space = {
     # Choice of optimizer:
     'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
     # Kernel size for convolutions:
-    'super_conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
+    'super_conv_filter_size': hp.quniform('super_conv_filter_size', 8, 128, 8),
     # LSTM units:
-    'LSTM_units_mult': hp.loguniform('LSTM_units_mult', -0.6, 0.6),
+    'GRU_units_mult': hp.loguniform('GRU_units_mult', -0.6, 0.6),
     # Use batch normalisation at more places?
     'use_BN': hp.choice('use_BN', [False, True]),
     # Number of super_conv+conv layers stacked:
-    'nb_conv_pool_layers': hp.choice('nb_conv_pool_layers', [2, 3]),
+    'nb_conv_super_layers': hp.choice('nb_conv_super_layers', [2, 3]),
+    # Uniform distribution in finding appropriate dropout values, conv layers
+    'dropout': hp.uniform('dropout', 0.0, 0.7),
+
+}
+
+'''
     # Uniform distribution in finding appropriate dropout values, conv layers
     'conv_dropout_drop_proba': hp.uniform('conv_dropout_proba', 0.0, 0.35),
     # Uniform distribution in finding appropriate dropout values, FC layers
     'fc_dropout_drop_proba': hp.uniform('fc_dropout_proba', 0.0, 0.6),
-}
+    '''
 
 def plot(hyperspace, file_name_prefix):
     """Plot a model from it's hyperspace."""
@@ -71,7 +77,7 @@ def plot(hyperspace, file_name_prefix):
 
 def plot_best_model():
     """Plot the best model found yet."""
-    space_best_model = load_best_hyperspace()
+    space_best_model = load_best_hyperspace(name=MODEL_NAME)
     if space_best_model is None:
         print("No best model to plot. Continuing...")
         return

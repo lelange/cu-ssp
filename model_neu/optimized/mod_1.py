@@ -53,6 +53,7 @@ MAXLEN_SEQ = 700
 NB_CLASSES_FINE = 8
 NB_CLASSES_COARSE = 3
 NB_FEATURES = 50
+MODEL_NAME = "mod_1"
 
 def data():
     data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
@@ -115,7 +116,7 @@ def build_and_train(hype_space, save_best_weights=True):
     model = build_model(hype_space)
 
     time_str = datetime.now().strftime("%Y_%m_%d-%H_%M")
-    model_weight_name = "mod_1-" + time_str
+    model_weight_name = MODEL_NAME+"-" + time_str
 
     callbacks = []
 
@@ -238,17 +239,14 @@ def build_model(hype_space):
 
     input_layer = keras.layers.Input((MAXLEN_SEQ, NB_FEATURES))
 
-    x = super_conv_block(input_layer)
-    x = conv_block(x)
-    x = super_conv_block(x)
-    x = conv_block(x)
-    x = super_conv_block(x)
-    x = conv_block(x)
+    for i in range(hype_space['nb_conv_super_layers']):
+        x = super_conv_block(input_layer)
+        x = conv_block(x)
 
-    x = Bidirectional(CuDNNGRU(units=256, return_sequences=True, recurrent_regularizer=l2(0.2)))(x)
-    x = TimeDistributed(Dropout(0.5))(x)
-    x = TimeDistributed(Dense(256, activation="relu"))(x)
-    x = TimeDistributed(Dropout(0.5))(x)
+    x = Bidirectional(CuDNNGRU(units=int(256*hype_space['GRU_units_mult']), return_sequences=True, recurrent_regularizer=l2(0.2)))(x)
+    x = TimeDistributed(Dropout(hype_space['dropout']))(x)
+    x = TimeDistributed(Dense(units=int(256*hype_space['GRU_units_mult']), activation="relu"))(x)
+    x = TimeDistributed(Dropout(hype_space['dropout']))(x)
 
     q8_output = TimeDistributed(Dense(NB_CLASSES_FINE, activation="softmax"))(x)
 
