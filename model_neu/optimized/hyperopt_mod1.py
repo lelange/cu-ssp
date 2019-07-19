@@ -31,6 +31,8 @@ from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
 from mod_1 import build_and_train, build_model
 
+SAVE_RESULTS = "results_mod1.pkl"
+
 def plot(hyperspace, file_name_prefix):
     """Plot a model from it's hyperspace."""
     model = build_model(hyperspace)
@@ -116,7 +118,7 @@ def run_a_trial():
 
     try:
         # https://github.com/hyperopt/hyperopt/issues/267
-        trials = pickle.load(open("results.pkl", "rb"))
+        trials = pickle.load(open(SAVE_RESULTS, "rb"))
         print("Found saved Trials! Loading...")
         max_evals = len(trials.trials) + nb_evals
         print("Rerunning from {} trials to add another one.".format(
@@ -132,22 +134,12 @@ def run_a_trial():
         trials=trials,
         max_evals=max_evals
     )
-    pickle.dump(trials, open("results.pkl", "wb"))
+    pickle.dump(trials, open(SAVE_RESULTS, "wb"))
 
     print("\nOPTIMIZATION STEP COMPLETE.\n")
 
 if __name__ == "__main__":
     """Plot the model and run the optimisation forever (and saves results)."""
-
-    print("Now, we train many models, one after the other. "
-          "Note that hyperopt has support for cloud "
-          "distributed training using MongoDB.")
-
-    print("\nThe results will be saved in the folder named 'results/'. "
-          "You can sort that alphabetically and take the greatest one. "
-          "As you run the optimization, results are consinuously saved into a "
-          "'results.pkl' file, too. Re-running optimize.py will resume "
-          "the meta-optimization.\n")
 
     while True:
 
