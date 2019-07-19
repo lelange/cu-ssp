@@ -32,29 +32,7 @@ from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 from mod_1 import build_and_train, build_model
 
 SAVE_RESULTS = "results_mod1.pkl"
-
-def plot(hyperspace, file_name_prefix):
-    """Plot a model from it's hyperspace."""
-    model = build_model(hyperspace)
-    plot_model(
-        model,
-        to_file='{}.png'.format(file_name_prefix),
-        show_shapes=True
-    )
-    print("Saved model visualization to {}.png.".format(file_name_prefix))
-    K.clear_session()
-    del model
-
-def plot_best_model():
-    """Plot the best model found yet."""
-    space_best_model = load_best_hyperspace()
-    if space_best_model is None:
-        print("No best model to plot. Continuing...")
-        return
-
-    print("Best hyperspace yet:")
-    print_json(space_best_model)
-    plot(space_best_model, "model_best")
+SAVE_BEST_PLOT = "model_1_best"
 
 space = {
     # This loguniform scale will multiply the learning rate, so as to make
@@ -79,8 +57,31 @@ space = {
     'fc_dropout_drop_proba': hp.uniform('fc_dropout_proba', 0.0, 0.6),
 }
 
+def plot(hyperspace, file_name_prefix):
+    """Plot a model from it's hyperspace."""
+    model = build_model(hyperspace)
+    plot_model(
+        model,
+        to_file='{}.png'.format(file_name_prefix),
+        show_shapes=True
+    )
+    print("Saved model visualization to {}.png.".format(file_name_prefix))
+    K.clear_session()
+    del model
+
+def plot_best_model():
+    """Plot the best model found yet."""
+    space_best_model = load_best_hyperspace()
+    if space_best_model is None:
+        print("No best model to plot. Continuing...")
+        return
+
+    print("Best hyperspace yet:")
+    print_json(space_best_model)
+    plot(space_best_model, SAVE_BEST_PLOT)
+
 def optimize_model(hyperspace):
-    """Build model 6 and train it."""
+    """Build model 1 and train it."""
 
     try:
         model, model_name, result, _ = build_and_train(hyperspace)
