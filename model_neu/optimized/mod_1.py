@@ -206,6 +206,10 @@ p = {'activation1':[relu, softmax],
 
 
 def build_model(hype_space):
+    """Create model according to the hyperparameter space given."""
+    print("Hyperspace:")
+    print(hype_space)
+
     def super_conv_block(x):
         # kennt er den hype_space?
         conv = int(hype_space['super_conv_filter_size'])
