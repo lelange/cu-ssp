@@ -133,3 +133,34 @@ def run_a_trial():
         max_evals=max_evals
     )
     pickle.dump(trials, open("results.pkl", "wb"))
+
+    print("\nOPTIMIZATION STEP COMPLETE.\n")
+
+if __name__ == "__main__":
+    """Plot the model and run the optimisation forever (and saves results)."""
+
+    print("Now, we train many models, one after the other. "
+          "Note that hyperopt has support for cloud "
+          "distributed training using MongoDB.")
+
+    print("\nThe results will be saved in the folder named 'results/'. "
+          "You can sort that alphabetically and take the greatest one. "
+          "As you run the optimization, results are consinuously saved into a "
+          "'results.pkl' file, too. Re-running optimize.py will resume "
+          "the meta-optimization.\n")
+
+    while True:
+
+        # Optimize a new model with the TPE Algorithm:
+        print("OPTIMIZING NEW MODEL:")
+        try:
+            run_a_trial()
+        except Exception as err:
+            err_str = str(err)
+            print(err_str)
+            traceback_str = str(traceback.format_exc())
+            print(traceback_str)
+
+        print("PLOTTING BEST MODEL:")
+        plot_best_model()
+
