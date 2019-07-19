@@ -4,7 +4,8 @@ import os
 import numpy as np
 import tensorflow as tf
 import keras.backend as K
-RESULTS_DIR = "results/"
+
+RESULTS_DIR = "results_mod1/"
 
 """Json utils to print, save and load training results."""
 
