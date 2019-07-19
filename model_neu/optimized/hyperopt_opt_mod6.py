@@ -29,7 +29,7 @@ from utils import *
 from keras.utils import plot_model
 from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
-from mod_1 import build_and_train, build_model
+from mod_6 import build_and_train, build_model
 
 def plot(hyperspace, file_name_prefix):
     """Plot a model from it's hyperspace."""
