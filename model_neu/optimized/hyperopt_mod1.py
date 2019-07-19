@@ -47,8 +47,6 @@ space = {
     'super_conv_filter_size': hp.quniform('super_conv_filter_size', 8, 128, 8),
     # LSTM units:
     'GRU_units_mult': hp.loguniform('GRU_units_mult', -0.6, 0.6),
-    # Use batch normalisation at more places?
-    'use_BN': hp.choice('use_BN', [False, True]),
     # Number of super_conv+conv layers stacked:
     'nb_conv_super_layers': hp.choice('nb_conv_super_layers', [2, 3]),
     # Uniform distribution in finding appropriate dropout values, conv layers
@@ -57,6 +55,8 @@ space = {
 }
 
 '''
+     # Use batch normalisation at more places?
+    'use_BN': hp.choice('use_BN', [False, True]),
     # Uniform distribution in finding appropriate dropout values, conv layers
     'conv_dropout_drop_proba': hp.uniform('conv_dropout_proba', 0.0, 0.35),
     # Uniform distribution in finding appropriate dropout values, FC layers
