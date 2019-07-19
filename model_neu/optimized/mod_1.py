@@ -202,39 +202,40 @@ p = {'activation1':[relu, softmax],
 
 """ Build model """
 
-def conv_block(x, activation=True, batch_norm=True, drop_out=True, res=True):
-    conv = int(hype_space['super_conv_filter_size'])
-
-    cnn = Conv1D(conv*2, 11, padding="same")(x)
-    if activation: cnn = TimeDistributed(Activation("relu"))(cnn)
-    if batch_norm: cnn = TimeDistributed(BatchNormalization())(cnn)
-    if drop_out:   cnn = TimeDistributed(Dropout(0.5))(cnn)
-    if res:        cnn = Concatenate(axis=-1)([x, cnn])
-
-    return cnn
-
-def super_conv_block(x):
-    # kennt er den hype_space?
-    conv = int(hype_space['super_conv_filter_size'])
-
-    c3 = Conv1D(conv, 1, padding="same")(x)
-    c3 = TimeDistributed(Activation("relu"))(c3)
-    c3 = TimeDistributed(BatchNormalization())(c3)
-
-    c7 = Conv1D(conv*2, 3, padding="same")(x)
-    c7 = TimeDistributed(Activation("relu"))(c7)
-    c7 = TimeDistributed(BatchNormalization())(c7)
-
-    c11 = Conv1D(conv*4, 5, padding="same")(x)
-    c11 = TimeDistributed(Activation("relu"))(c11)
-    c11 = TimeDistributed(BatchNormalization())(c11)
-
-    x = Concatenate(axis=-1)([x, c3, c7, c11])
-    x = TimeDistributed(Dropout(0.5))(x)
-    return x
 
 
 def build_model(hype_space):
+    def super_conv_block(x):
+        # kennt er den hype_space?
+        conv = int(hype_space['super_conv_filter_size'])
+
+        c3 = Conv1D(conv, 1, padding="same")(x)
+        c3 = TimeDistributed(Activation("relu"))(c3)
+        c3 = TimeDistributed(BatchNormalization())(c3)
+
+        c7 = Conv1D(conv * 2, 3, padding="same")(x)
+        c7 = TimeDistributed(Activation("relu"))(c7)
+        c7 = TimeDistributed(BatchNormalization())(c7)
+
+        c11 = Conv1D(conv * 4, 5, padding="same")(x)
+        c11 = TimeDistributed(Activation("relu"))(c11)
+        c11 = TimeDistributed(BatchNormalization())(c11)
+
+        x = Concatenate(axis=-1)([x, c3, c7, c11])
+        x = TimeDistributed(Dropout(0.5))(x)
+        return x
+
+    def conv_block(x, activation=True, batch_norm=True, drop_out=True, res=True):
+        conv = int(hype_space['super_conv_filter_size'])
+
+        cnn = Conv1D(conv * 2, 11, padding="same")(x)
+        if activation: cnn = TimeDistributed(Activation("relu"))(cnn)
+        if batch_norm: cnn = TimeDistributed(BatchNormalization())(cnn)
+        if drop_out:   cnn = TimeDistributed(Dropout(0.5))(cnn)
+        if res:        cnn = Concatenate(axis=-1)([x, cnn])
+
+        return cnn
+
     input_layer = keras.layers.Input((MAXLEN_SEQ, NB_FEATURES))
 
     x = super_conv_block(input_layer)
