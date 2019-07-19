@@ -10,7 +10,6 @@ from keras.optimizers import Adam, Nadam, RMSprop
 import tensorflow as tf
 from hyperopt import STATUS_OK, STATUS_FAIL
 from datetime import datetime
-import uuid
 import traceback
 import os
 
@@ -20,10 +19,19 @@ TENSORBOARD_DIR = "TensorBoard/"
 WEIGHTS_DIR = "weights/"
 
 MAXLEN_SEQ = 700
-# NB_CLASSES = 10
 NB_CLASSES_FINE = 8
 NB_CLASSES_COARSE = 3
 NB_FEATURES = 50
+
+# You may want to reduce this considerably if you don't have a killer GPU:
+EPOCHS = 70
+STARTING_L2_REG = 0.0007
+
+OPTIMIZER_STR_TO_CLASS = {
+    'Adam': Adam,
+    'Nadam': Nadam,
+    'RMSprop': RMSprop
+}
 
 def data():
     data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
@@ -52,16 +60,6 @@ def data():
 
 X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test = data()
 
-
-# You may want to reduce this considerably if you don't have a killer GPU:
-EPOCHS = 40
-STARTING_L2_REG = 0.0007
-
-OPTIMIZER_STR_TO_CLASS = {
-    'Adam': Adam,
-    'Nadam': Nadam,
-    'RMSprop': RMSprop
-}
 
 def evaluate_model(model, load_file, test_ind = None):
     file_test = ['cb513_700', 'ts115_700', 'casp12_700']
@@ -177,7 +175,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
     print("RESULT:")
     print_json(result)
 
-    f = open("/nosave/lange/cu-ssp/model_aufgeräumt/optimized/logs/test_results_mod6.txt", "a+")
+    f = open("/nosave/lange/cu-ssp/model_neu/optimized/logs/test_results_mod6.txt", "a+")
     res = ""
     for k, v in score.items():
         res += str(k)+": "+str(v)+"\t"
@@ -196,32 +194,31 @@ def build_model(hype_space):
         (MAXLEN_SEQ, NB_FEATURES))
 
     x = input_layer
-    print(x._keras_shape)
+    #print(x._keras_shape)
     z = Conv1D(int(hype_space['conv_filter_size']), 11, strides=1, padding='same')(x)
-    print(z._keras_shape)
+    #print(z._keras_shape)
     w = Conv1D(int(hype_space['conv_filter_size']), 7, strides=1, padding='same')(x)
-    print(w._keras_shape)
+    #print(w._keras_shape)
     x = concatenate([x, z], axis=2)
-    print(x._keras_shape)
+    #print(x._keras_shape)
     x = concatenate([x, w], axis=2)
-    print(x._keras_shape)
+    #print(x._keras_shape)
 
     z = Conv1D(int(hype_space['conv_filter_size']), 5, strides=1, padding='same')(x)
-    print(z._keras_shape)
+    #print(z._keras_shape)
     w = Conv1D(int(hype_space['conv_filter_size']), 3, strides=1, padding='same')(x)
-    print(w._keras_shape)
+    #print(w._keras_shape)
     x = concatenate([x, z], axis=2)
-    print(x._keras_shape)
+    #print(x._keras_shape)
     x = concatenate([x, w], axis=2)
-    print(x._keras_shape)
+    #print(x._keras_shape)
     x = Bidirectional(CuDNNLSTM(units=int(128*hype_space['LSTM_units_mult']), return_sequences=True))(x)
-    print('units = ', int(128*hype_space['LSTM_units_mult']))
-    print(x._keras_shape)
+    #print('units = ', int(128*hype_space['LSTM_units_mult']))
+    #print(x._keras_shape)
     # Two heads as outputs:
     q8_output = TimeDistributed(Dense(
         units=NB_CLASSES_FINE,
         activation="softmax",
-        name='q8_output'
     ))(x)
 
     '''

@@ -54,20 +54,6 @@ def plot_best_model():
     print_json(space_best_model)
     plot(space_best_model, "model_best")
 
-space = {
-    # This loguniform scale will multiply the learning rate, so as to make
-    # it vary exponentially, in a multiplicative fashion rather than in
-    # a linear fashion, to handle his exponentialy varying nature:
-    'lr_rate_mult': hp.loguniform('lr_rate_mult', -0.5, 0.5),
-    # L2 weight decay:
-    'batch_size': hp.quniform('batch_size', 100, 450, 5),
-    # Choice of optimizer:
-    'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
-    # Kernel size for convolutions:
-    'conv_filter_size': hp.quniform('conv_filter_size', 32, 128, 32),
-    # LSTM units:
-    'LSTM_units_mult': hp.loguniform('LSTM_units_mult', -0.6, 0.6)
-}
 
 def optimize_model(hyperspace):
     """Build model 6 and train it."""
@@ -99,6 +85,7 @@ def optimize_model(hyperspace):
         }
     print("\n\n")
 
+
 def run_a_trial():
     """Run one TPE meta optimisation step and save its results."""
     max_evals = nb_evals = 1
@@ -124,38 +111,3 @@ def run_a_trial():
         max_evals=max_evals
     )
     pickle.dump(trials, open("results.pkl", "wb"))
-
-    print("\nOPTIMIZATION STEP COMPLETE.\n")
-
-if __name__ == "__main__":
-    """Plot the model and run the optimisation forever (and saves results)."""
-
-    print("Now, we train many models, one after the other. "
-          "Note that hyperopt has support for cloud "
-          "distributed training using MongoDB.")
-
-    print("\nThe results will be saved in the folder named 'results/'. "
-          "You can sort that alphabetically and take the greatest one. "
-          "As you run the optimization, results are consinuously saved into a "
-          "'results.pkl' file, too. Re-running optimize.py will resume "
-          "the meta-optimization.\n")
-
-    while True:
-
-        # Optimize a new model with the TPE Algorithm:
-        print("OPTIMIZING NEW MODEL:")
-        try:
-            run_a_trial()
-        except Exception as err:
-            err_str = str(err)
-            print(err_str)
-            traceback_str = str(traceback.format_exc())
-            print(traceback_str)
-
-        print("PLOTTING BEST MODEL:")
-        plot_best_model()
-
-
-
-
-
