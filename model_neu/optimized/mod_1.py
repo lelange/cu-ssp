@@ -132,6 +132,10 @@ def build_and_train(hype_space, save_best_weights=True):
             monitor='val_accuracy',
             save_best_only=True, mode='max'))
 
+        callbacks.append(keras.callbacks.EarlyStopping(
+            monitor='val_accuracy',
+            patience=10, verbose=1, mode='max'))
+
     # TensorBoard logging callback (see model 6):
     log_path = None
 
@@ -195,52 +199,8 @@ p = {'activation1':[relu, softmax],
 
 
 
-def build_model (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
-    """
-    Main Training function with the following properties:
-        Optimizer - Nadam
-        Loss function - Categorical Crossentropy
-        Batch Size - 128 (any more will exceed Collab GPU RAM)
-        Epochs - 50
-    """
-    model = CNN_BIGRU()
-
-    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
-    checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
-                                   mode='max')
-    # Training the model on the training data and validating using the validation set
-    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping],
-                        verbose=1, shuffle=True)
-
-    return model
-
 
 """ Build model """
-
-space = {
-    # This loguniform scale will multiply the learning rate, so as to make
-    # it vary exponentially, in a multiplicative fashion rather than in
-    # a linear fashion, to handle his exponentialy varying nature:
-    'lr_rate_mult': hp.loguniform('lr_rate_mult', -0.5, 0.5),
-    # L2 weight decay:
-    'batch_size': hp.quniform('batch_size', 100, 450, 5),
-    # Choice of optimizer:
-    'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
-    # Kernel size for convolutions:
-    'super_conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
-    # LSTM units:
-    'LSTM_units_mult': hp.loguniform('LSTM_units_mult', -0.6, 0.6),
-    # Use batch normalisation at more places?
-    'use_BN': hp.choice('use_BN', [False, True]),
-    # Number of super_conv+conv layers stacked:
-    'nb_conv_pool_layers': hp.choice('nb_conv_pool_layers', [2, 3]),
-    # Uniform distribution in finding appropriate dropout values, conv layers
-    'conv_dropout_drop_proba': hp.uniform('conv_dropout_proba', 0.0, 0.35),
-    # Uniform distribution in finding appropriate dropout values, FC layers
-    'fc_dropout_drop_proba': hp.uniform('fc_dropout_proba', 0.0, 0.6),
-}
-
 
 def conv_block(x, activation=True, batch_norm=True, drop_out=True, res=True):
     conv = int(hype_space['super_conv_filter_size'])

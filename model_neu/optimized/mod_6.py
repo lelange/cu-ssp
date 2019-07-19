@@ -106,6 +106,10 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
             monitor='val_accuracy',
             save_best_only=True, mode='max'))
 
+        callbacks.append(keras.callbacks.EarlyStopping(
+            monitor='val_accuracy',
+            patience=10, verbose=1, mode='max'))
+
     # TensorBoard logging callback:
     log_path = None
     if log_for_tensorboard:

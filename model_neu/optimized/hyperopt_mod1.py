@@ -54,6 +54,28 @@ def plot_best_model():
     print_json(space_best_model)
     plot(space_best_model, "model_best")
 
+space = {
+    # This loguniform scale will multiply the learning rate, so as to make
+    # it vary exponentially, in a multiplicative fashion rather than in
+    # a linear fashion, to handle his exponentialy varying nature:
+    'lr_rate_mult': hp.loguniform('lr_rate_mult', -0.5, 0.5),
+    # L2 weight decay:
+    'batch_size': hp.quniform('batch_size', 100, 450, 5),
+    # Choice of optimizer:
+    'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
+    # Kernel size for convolutions:
+    'super_conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
+    # LSTM units:
+    'LSTM_units_mult': hp.loguniform('LSTM_units_mult', -0.6, 0.6),
+    # Use batch normalisation at more places?
+    'use_BN': hp.choice('use_BN', [False, True]),
+    # Number of super_conv+conv layers stacked:
+    'nb_conv_pool_layers': hp.choice('nb_conv_pool_layers', [2, 3]),
+    # Uniform distribution in finding appropriate dropout values, conv layers
+    'conv_dropout_drop_proba': hp.uniform('conv_dropout_proba', 0.0, 0.35),
+    # Uniform distribution in finding appropriate dropout values, FC layers
+    'fc_dropout_drop_proba': hp.uniform('fc_dropout_proba', 0.0, 0.6),
+}
 
 def optimize_model(hyperspace):
     """Build model 6 and train it."""
