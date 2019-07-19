@@ -158,7 +158,7 @@ def build_and_train(hype_space, save_best_weights=True):
     print("\n\n")
     max_acc = max(history['val_accuracy'])
 
-    model_name = "model_{}_{}".format(str(max_acc), time_str)
+    model_name = MODEL_NAME+"_{}_{}".format(str(max_acc), time_str)
     print("Model name: {}".format(model_name))
 
     print(history.keys())

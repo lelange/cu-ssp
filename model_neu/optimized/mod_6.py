@@ -22,6 +22,8 @@ MAXLEN_SEQ = 700
 NB_CLASSES_FINE = 8
 NB_CLASSES_COARSE = 3
 NB_FEATURES = 50
+MODEL_NAME = "mod_6"
+
 
 # You may want to reduce this considerably if you don't have a killer GPU:
 EPOCHS = 70
@@ -89,7 +91,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
 
     # K.set_learning_phase(1)
     time_str = datetime.now().strftime("%Y_%m_%d-%H_%M")
-    model_weight_name = "mod_6-" + time_str
+    model_weight_name = MODEL_NAME + "-" + time_str
 
     callbacks = []
 
@@ -157,7 +159,7 @@ def build_and_train(hype_space, save_best_weights=True, log_for_tensorboard=Fals
     print("\n\n")
     max_acc = max(history['val_accuracy'])
 
-    model_name = "model_{}_{}".format(str(max_acc), time_str)
+    model_name = MODEL_NAME+"_{}_{}".format(str(max_acc), time_str)
     print("Model name: {}".format(model_name))
 
     # Note: to restore the model, you'll need to have a keras callback to
