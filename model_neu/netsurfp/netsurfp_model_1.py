@@ -100,7 +100,7 @@ def train_model (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
                         epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping],
                         verbose=1, shuffle=True)
 
-    return model
+    return model, history
 
 
 """ Build model """
@@ -207,7 +207,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=7):
         print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
             X_val_fold.shape[0]) + " validation samples...")
 
-        model = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
+        model, history = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
                                   [X_val_fold, X_aug_val_fold], y_val_fold)
 
 
@@ -221,10 +221,13 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=7):
         #cv_scores['val_accuracy'].append(val_accuracy)
         for k, v in test_acc.items():
             cv_scores[k].append(v)
+        for k, v in test_acc.items():
+            cv_scores[k].append(v)
 
         print(cv_scores)
-        print('model:')
-        print(model['val_accuracy'])
+        print('history:')
+        print(history)
+        print(history['val_accuracy'])
 
         model_history.append(model)
 
@@ -248,7 +251,7 @@ if cross_validate :
 else:
     X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
 
-    model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
+    model, history = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
     test_acc = evaluate_model(model, load_file)
 
 time_end = time.time() - start_time
