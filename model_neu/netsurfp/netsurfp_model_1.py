@@ -158,7 +158,6 @@ def CNN_BIGRU():
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(x)
 
     model = Model(inp, y)
-    model.summary()
 
     model.compile(
         optimizer="Nadam",
@@ -211,6 +210,8 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
                                   [X_val_fold, X_aug_val_fold], y_val_fold)
 
         test_acc = evaluate_model(model, load_file, test_ind = [0])
+        print(test_acc.keys())
+        print(test_acc.values())
 
         print('>%.3f' % test_acc)
         cv_scores.append(test_acc)
