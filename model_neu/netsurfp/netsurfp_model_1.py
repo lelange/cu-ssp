@@ -36,6 +36,7 @@ from collections import defaultdict
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 MODEL_NAME = 'mod_1'
+N_FOLDS = 2
 start_time = time.time()
 
 args = parse_arguments(default_epochs=75)
@@ -187,7 +188,7 @@ def evaluate_model(model, load_file, test_ind = None):
         names.append(file_test[i])
     return dict(zip(names, test_accs))
 
-def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
+def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     X_train, X_aug_train = X_train_aug
     # Instantiate the cross validator
     kfold_splits = n_folds
@@ -247,12 +248,12 @@ if cross_validate :
 
     i = 0
     for k, v in test_acc.items():
-        f.write(str(k) + ": "+"%.5f\t"%v)
-        i += 1
         if i % 2 == 0:
-            f.write('\n')
+            f.write(str(k) + " estimated accuracy: " + "%.3f " % v)
         else:
-            f.write("\t")
+            f.write("(%.3f)\n" %v)
+
+        i += 1
     f.write('\n')
     f.write("Weights are saved to: " + weights_file + "\n")
     f.write('-----------------------\n\n')
@@ -269,6 +270,7 @@ if cross_validate :
 
     for k, v in cv_scores.items():
         f.write(str(k) + ": " + str(v))
+        f.write("\n")
     f.write("\n")
     f.write("Weights are saved to: " + weights_file + "\n")
     f.write('-----------------------\n\n')
