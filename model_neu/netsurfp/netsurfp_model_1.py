@@ -179,7 +179,7 @@ def evaluate_model(model, load_file, test_ind = None):
     for i in test_ind:
         X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
         model.load_weights(load_file)
-        print("####evaluate" + file_test[i] +":")
+        print("\nevaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
         print(file_test[i] +' test loss:', score[0])
         print(file_test[i] +' test accuracy:', score[2])
@@ -220,8 +220,11 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
         for k, v in test_acc.items():
             print(k+ ' >%.3f' % v)
 
+        try:
+            cv_scores['val_accuracy'].append(history.history['val_accuracy'][0])
+        except:
+            cv_scores['val_accuracy'].append(history.history['val_accuracy'])
 
-        cv_scores['val_accuracy'].append(history.history['val_accuracy'])
         for k, v in test_acc.items():
             cv_scores[k].append(v)
 
@@ -264,7 +267,7 @@ if cross_validate :
 
     f = open("logs/cv_results_mean.txt", "a")
     for v in test_acc.values():
-        f.write(str(v)+"\t")
+        f.write("%.4f\t"%v)
     f.write('\n')
     f.close()
 
