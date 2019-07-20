@@ -274,7 +274,7 @@ if cross_validate :
 
     #save all history of scores used to calculate cross validation score
     if not os.path.exists("logs/cv_results.txt"):
-        f = open("logs/cv_results_mean.txt", "a+")
+        f = open("logs/cv_results.txt", "a+")
         f.write('### Log file for tests on ' +sys.argv[0]+ ' with standardized hmm profiles. \n\n')
         f.close()
 
