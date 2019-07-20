@@ -252,13 +252,17 @@ if cross_validate :
     print(json.dumps(
         test_acc,
         default=json_util.default, sort_keys=True,
-        indent=4, separators=(',', ': ')
+        indent=1, separators=(',', ': ')
     ))
     # save test results to logfile
-    print("Saved in json stype mean")
+    f.write('\n')
     f = open("logs/cv_results_mean.txt", "a+")
+    f.write('\n')
+    f.write('\n')
     f.write(json.dumps(test_acc))
+    f.write('\n')
     print("SAved in normal way mean ")
+    f.write('\n')
     f = open("logs/cv_results.txt", "a+")
     f.write(json.dumps(cv_scores))
     print("Saved in normal way cv ")
@@ -266,6 +270,25 @@ if cross_validate :
         json.dump(
             cv_scores, f,
             default=json_util.default, sort_keys=True,
+            indent=1,
+            separators=(',', ': ')
+        )
+        json.dump(
+            cv_scores, f,
+            default=json_util.default, sort_keys=True,
+            indent=2,
+            separators=(',', ': ')
+        )
+        json.dump(
+            cv_scores, f,
+            default=json_util.default, sort_keys=True,
+            indent=3,
+            separators=(',', ': ')
+        )
+        json.dump(
+            cv_scores, f,
+            default=json_util.default, sort_keys=True,
+            indent=4,
             separators=(',', ': ')
         )
     print('Saved in json style cv')
