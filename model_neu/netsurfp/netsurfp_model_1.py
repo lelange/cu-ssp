@@ -233,9 +233,15 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
 
 if cross_validate :
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
-    test_acc = np.mean(cv_scores)
-    print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
+    for k, v in cv_scores.items():
+        print(k)
+        print(type(v))
+        test_acc = np.mean(v)
+        cv_scores['mean'].append(test_acc)
+        cv_scores['std'].append(np.std(v))
+        print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(v)))
 
+    print(cv_scores)
     # save test results to logfile
     f = open("logs/cv_results_mean.txt", "a+")
     f.write('%.3f (%.3f)\t'+ weights_file + "\n" % (test_acc, np.std(cv_scores)))
