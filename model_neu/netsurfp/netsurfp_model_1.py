@@ -30,6 +30,7 @@ from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 
 from utils import *
 
+MODEL_NAME = 'mod_1'
 start_time = time.time()
 
 args = parse_arguments(default_epochs=75)
@@ -50,7 +51,8 @@ batch_size = 128
 n_tags = 8
 n_words = 20
 data_root = '../data/netsurfp/'
-load_file = "./model/mod_1-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+weights_file = "mod_1-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/"+weights_file
 
 file_train = 'train_608'
 file_test = ['cb513_608', 'ts115_608', 'casp12_608']
@@ -182,34 +184,25 @@ def evaluate_model(model, load_file, test_ind = None):
     return dict(zip(names, test_accs))
 
 if cross_validate :
-    cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
+    cv_scores, model_history = crossValidation(MODEL_NAME, load_file, X_train_aug, y_train)
     test_acc = np.mean(cv_scores)
     print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
+
+    # save test results to logfile
+    f = open("logs/cv_results_mean.txt", "a+")
+    f.write('%.3f (%.3f)\t'+ weights_file + "\n" % (test_acc, np.std(cv_scores)))
+    f = open("logs/cv_results.txt", "a+")
+    score_text = ""
+    for score in cv_scores:
+        score_text += score+"\t"
+    f.write(weights_file+"\t"+score_text+"\n")
+    f.close()
+
 else:
     X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
 
-    if optimize:
-
-        '''
-        #---- create a Trials database to store experiment results
-        trials = Trials()
-        #---- use that Trials database for fmin
-        best = fmin(build_model_ho, space, algo=tpe.suggest, trials=trials, max_evals=100, rstate=np.random.RandomState(99))
-        #---- save trials
-        pickle.dump(trials, open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "wb"))
-        #trials = pickle.load(open("./trials/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+"-hyperopt.p", "rb"))
-        print('Space evaluation: ')
-        space_eval(space, best)
-        data = list(map(_flatten, extract_params(trials)))
-        df = pd.DataFrame(list(data))
-        df = df.fillna(0)  # missing values occur when the object is not populated
-        corr = df.corr()
-        print(corr)
-        '''
-
-    else:
-        model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
-        test_acc = evaluate_model(model, load_file)
+    model = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
+    test_acc = evaluate_model(model, load_file)
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)

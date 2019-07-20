@@ -9,6 +9,7 @@ from keras import backend as K
 import tensorflow as tf
 import argparse
 import telegram
+import sys
 from datetime import datetime
 import os, pickle
 
@@ -305,6 +306,7 @@ def message_me(model_name, m, s):
     client.logout()
 
 def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
+    print(sys.argv[0])
     X_train, X_aug_train = X_train_aug
     # Instantiate the cross validator
     kfold_splits = n_folds
@@ -338,3 +340,6 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
         model_history.append(model)
 
     return cv_scores, model_history
+
+
+
