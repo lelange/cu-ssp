@@ -198,10 +198,9 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
 
     # Loop through the indices the split() method returns
     for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
-        print('\n\n----------------------')
-        print('----------------------')
+        print('\n\n-----------------------')
         print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
-        print('----------------------\n')
+        print('-----------------------\n')
 
         # Generate batches from indices
         X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
@@ -238,12 +237,12 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
 
 if cross_validate :
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
-    test_acc = defaultdict(list)
+    test_acc = {}
     for k, v in cv_scores.items():
         print(k)
         print(type(v))
-        test_acc[k+'_mean'].append(np.mean(v))
-        test_acc[k+'_std'].append(np.std(v))
+        test_acc[k+'_mean']=np.mean(v)
+        test_acc[k+'_std']=np.std(v)
         print('Estimated accuracy %.3f (%.3f)' % (np.mean(v)*100, np.std(v)*100))
         print('Estimated accuracy %.3f (%.3f)' % (np.mean(v), np.std(v)))
 
@@ -257,41 +256,24 @@ if cross_validate :
     ))
     # save test results to logfile
     f = open("logs/cv_results_mean.txt", "a+")
-    f.write(json.dumps(test_acc))
+    f.write(json.dumps(test_acc.keys()))
+    f.write('\n')
+    f.write(json.dumps(test_acc.values()))
     f.write('\n')
     f.close()
-    print("SAved in normal way mean ")
+
+
     f = open("logs/cv_results.txt", "a+")
     f.write(json.dumps(cv_scores))
     f.write('\n')
-    print("Saved in normal way cv ")
+    f.write(json.dumps(cv_scores.keys()))
+    f.write('\n')
+    f.write(json.dumps(cv_scores.values()))
+    f.write('\n')
+    f.write(json.dumps(cv_scores.items()))
+    f.write('\n')
     f.close()
-    with open("logs/cv_results.txt", 'a+') as f:
-        json.dump(
-            cv_scores, f,
-            default=json_util.default, sort_keys=True,
-            indent=1,
-            separators=(',', ': ')
-        )
-        json.dump(
-            cv_scores, f,
-            default=json_util.default, sort_keys=True,
-            indent=2,
-            separators=(',', ': ')
-        )
-        json.dump(
-            cv_scores, f,
-            default=json_util.default, sort_keys=True,
-            indent=3,
-            separators=(',', ': ')
-        )
-        json.dump(
-            cv_scores, f,
-            default=json_util.default, sort_keys=True,
-            indent=4,
-            separators=(',', ': ')
-        )
-    print('Saved in json style cv')
+
     '''
         for k, v in test_acc:
         print(k, v)
