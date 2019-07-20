@@ -183,7 +183,7 @@ def evaluate_model(model, load_file, test_ind = None):
         names.append(file_test[i])
     return dict(zip(names, test_accs))
 
-def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
+def crossValidation(load_file, X_train_aug, y_train, n_folds=7):
     X_train, X_aug_train = X_train_aug
     # Instantiate the cross validator
     kfold_splits = n_folds
