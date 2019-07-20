@@ -228,6 +228,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
 
 if cross_validate :
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
+
     test_acc = {}
     for k, v in cv_scores.items():
         print(k)
@@ -259,8 +260,10 @@ if cross_validate :
 
     f = open("logs/cv_results.txt", "a+")
 
-    for i, k, v in enumerate(cv_scores.items()):
+    i=0
+    for k, v in cv_scores.items():
         f.write(str(k) + ": " + str(v))
+        i+=1
         if i%2==0:
             f.write('\n')
     f.write("\n")
