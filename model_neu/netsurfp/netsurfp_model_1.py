@@ -187,7 +187,7 @@ def evaluate_model(model, load_file, test_ind = None):
         names.append(file_test[i])
     return dict(zip(names, test_accs))
 
-def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
+def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
     X_train, X_aug_train = X_train_aug
     # Instantiate the cross validator
     kfold_splits = n_folds
@@ -279,5 +279,5 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-#telegram_me(m, s, sys.argv[0], test_acc, hmm, standardize, normalize, no_input)
+telegram_me(m, s, sys.argv[0], hmm=True, standardize=True)
 
