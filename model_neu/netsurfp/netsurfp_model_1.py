@@ -221,13 +221,11 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=7):
         #cv_scores['val_accuracy'].append(val_accuracy)
         for k, v in test_acc.items():
             cv_scores[k].append(v)
-        for k, v in test_acc.items():
-            cv_scores[k].append(v)
 
         print(cv_scores)
         print('history:')
-        print(history)
-        print(history['val_accuracy'])
+        print(history.history)
+        print(history.history['val_accuracy'])
 
         model_history.append(model)
 
