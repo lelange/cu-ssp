@@ -280,9 +280,10 @@ if cross_validate :
 
     f = open("logs/cv_results.txt", "a+")
 
-    for k, v in cv_scores.items():
+    for i, k, v in enumerate(cv_scores.items()):
         f.write(str(k) + ": " + str(v))
-        f.write('\n')
+        if i%2==0:
+            f.write('\n')
     f.write("\n")
     f.write("Weights are saved to: " + weights_file + "\n")
     f.write('-----------------------\n\n')
