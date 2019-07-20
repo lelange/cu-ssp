@@ -36,7 +36,7 @@ from collections import defaultdict
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 MODEL_NAME = 'mod_1'
-N_FOLDS = 2
+N_FOLDS = 10
 start_time = time.time()
 
 args = parse_arguments(default_epochs=75)
@@ -255,6 +255,7 @@ if cross_validate :
 
         i += 1
     f.write('\n')
+    f.write('Calculation on '+str(N_FOLDS)+ ' folds.\n')
     f.write("Weights are saved to: " + weights_file + "\n")
     f.write('-----------------------\n\n')
     f.close()
@@ -272,6 +273,7 @@ if cross_validate :
         f.write(str(k) + ": " + str(v))
         f.write("\n")
     f.write("\n")
+    f.write('Calculation on ' + str(N_FOLDS) + ' folds.\n')
     f.write("Weights are saved to: " + weights_file + "\n")
     f.write('-----------------------\n\n')
 
