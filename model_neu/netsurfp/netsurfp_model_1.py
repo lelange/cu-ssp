@@ -183,13 +183,13 @@ def evaluate_model(model, load_file, test_ind = None):
         names.append(file_test[i])
     return dict(zip(names, test_accs))
 
-def crossValidation(load_file, X_train_aug, y_train, n_folds=7):
+def crossValidation(load_file, X_train_aug, y_train, n_folds=1):
     X_train, X_aug_train = X_train_aug
     # Instantiate the cross validator
     kfold_splits = n_folds
     kf = KFold(n_splits=kfold_splits, shuffle=True)
 
-    cv_scores = []
+    cv_scores = defaultdict(list)
     model_history = []
 
     # Loop through the indices the split() method returns
@@ -217,8 +217,8 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=7):
         for k, v in test_acc.items():
             print(k+ ' >%.3f' % v)
 
-        cv_scores = defaultdict(list)
-        #cv_scores['val_accuracy'].append(val_accuracy)
+
+        cv_scores['val_accuracy'].append(history.history['val_accuracy'])
         for k, v in test_acc.items():
             cv_scores[k].append(v)
 
