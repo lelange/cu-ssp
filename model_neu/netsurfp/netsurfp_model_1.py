@@ -254,31 +254,26 @@ if cross_validate :
         default=json_util.default, sort_keys=True,
         indent=1, separators=(',', ': ')
     ))
-    # save test results to logfile
+    # save mean of cross validation results in a tabel like file
     if not os.path.exists("logs/cv_results_mean.txt"):
         f = open("logs/cv_results_mean.txt", "a+")
-        for k, v in test_acc.items():
-            f.write(k)
-            f.write("\t")
+        for k in test_acc.keys():
+            f.write(str(k)+"\t")
         f.write('\n')
         f.close()
+
     f = open("logs/cv_results_mean.txt", "a")
-    for k, v in test_acc.items():
-        f.write(v)
-        f.write("\t")
+    for v in test_acc.values():
+        f.write(str(v)+"\t")
     f.write('\n')
     f.close()
 
-
+    #save all history of scores used to calculate cross validation score
     f = open("logs/cv_results.txt", "a+")
-    f.write(json.dumps(cv_scores))
-    f.write('\n')
-    f.write(json.dumps(cv_scores.keys()))
-    f.write('\n')
-    f.write(json.dumps(cv_scores.values()))
-    f.write('\n')
-    f.write(json.dumps(cv_scores.items()))
-    f.write('\n')
+    for k, v in cv_scores.items():
+        f.write(str(k) + ": " + str(v))
+        f.write('\n')
+    f.write("\n")
     f.close()
 
     '''
