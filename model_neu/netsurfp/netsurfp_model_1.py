@@ -207,17 +207,20 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
         print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
             X_val_fold.shape[0]) + " validation samples...")
 
-        model= train_model([X_train_fold, X_aug_train_fold], y_train_fold,
+        model = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
                                   [X_val_fold, X_aug_val_fold], y_val_fold)
 
-        test_acc = evaluate_model(model, load_file, test_ind = [0])
+        print('model:')
+        print(model)
+
+        test_acc = evaluate_model(model, load_file, test_ind = [0, 1, 2])
         print(test_acc.keys())
         print(test_acc.values())
         for k, v in test_acc.items():
             print(k+ ' >%.3f' % v)
 
-
         cv_scores = defaultdict(list)
+        #cv_scores['val_accuracy'].append(val_accuracy)
         for k, v in test_acc:
             cv_scores[k].append(v)
 
