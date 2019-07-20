@@ -187,7 +187,7 @@ def evaluate_model(model, load_file, test_ind = None):
         names.append(file_test[i])
     return dict(zip(names, test_accs))
 
-def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
+def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
     X_train, X_aug_train = X_train_aug
     # Instantiate the cross validator
     kfold_splits = n_folds
@@ -215,23 +215,11 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
 
 
         test_acc = evaluate_model(model, load_file, test_ind = [0, 1, 2])
-        print(test_acc.keys())
-        print(test_acc.values())
-        for k, v in test_acc.items():
-            print(k+ ' >%.3f' % v)
 
-        try:
-            cv_scores['val_accuracy'].append(history.history['val_accuracy'][0])
-        except:
-            cv_scores['val_accuracy'].append(history.history['val_accuracy'])
+        cv_scores['val_accuracy'].append(history.history['val_accuracy'][0])
 
         for k, v in test_acc.items():
             cv_scores[k].append(v)
-
-        print(cv_scores)
-        print('history:')
-        print(history.history)
-        print(history.history['val_accuracy'])
 
         model_history.append(model)
 
@@ -247,23 +235,14 @@ if cross_validate :
         test_acc[k+'_mean']=np.mean(v)
         test_acc[k+'_std']=np.std(v)
         print('Estimated accuracy %.3f (%.3f)' % (np.mean(v)*100, np.std(v)*100))
-        print('Estimated accuracy %.3f (%.3f)' % (np.mean(v), np.std(v)))
 
-    print('print normal:')
-    print(test_acc)
-    print('json dumps:')
-    print(json.dumps(
-        test_acc,
-        default=json_util.default, sort_keys=True,
-        indent=1, separators=(',', ': ')
-    ))
     # save mean of cross validation results
     if not os.path.exists("logs/cv_results_mean.txt"):
         f = open("logs/cv_results_mean.txt", "a+")
         f.write('### Log file for tests on ' +sys.argv[0]+ ' with standardized hmm profiles. \n\n')
         f.close()
 
-    f = open("logs/cv_results_mean.txt", "a")
+    f = open("logs/cv_results_mean.txt", "a+")
 
     for k, v in test_acc.items():
         f.write(str(k) + ": "+"%.5f\t"%v)
@@ -289,18 +268,6 @@ if cross_validate :
     f.write('-----------------------\n\n')
 
     f.close()
-
-    '''
-        for k, v in test_acc:
-        print(k, v)
-
-        f.write('%.3f (%.3f)\t'+ weights_file + "\n" % (test_acc, np.std(cv_scores)))
-        f = open("logs/cv_results.txt", "a+")
-        score_text = ""
-        for score in cv_scores:
-            score_text += score+"\t"
-        f.write(weights_file+"\t"+score_text+"\n")
-    '''
 
 else:
     X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
