@@ -305,7 +305,57 @@ def message_me(model_name, m, s):
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
 
+from __main__ import train_model, evaluate_model
+from collections import defaultdict
 
+
+def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
+    X_train, X_aug_train = X_train_aug
+    # Instantiate the cross validator
+    kfold_splits = n_folds
+    kf = KFold(n_splits=kfold_splits, shuffle=True)
+
+    cv_scores = defaultdict(list)
+    model_history = []
+
+    # Loop through the indices the split() method returns
+    for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
+        print('\n\n----------------------')
+        print('----------------------')
+        print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
+        print('----------------------\n')
+
+        # Generate batches from indices
+        X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
+        X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
+        y_train_fold, y_val_fold = y_train[train_indices], y_train[val_indices]
+
+        print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
+            X_val_fold.shape[0]) + " validation samples...")
+
+        model, history = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
+                                  [X_val_fold, X_aug_val_fold], y_val_fold)
+
+
+        test_acc = evaluate_model(model, load_file, test_ind = [0, 1, 2])
+        print(test_acc.keys())
+        print(test_acc.values())
+        for k, v in test_acc.items():
+            print(k+ ' >%.3f' % v)
+
+
+        cv_scores['val_accuracy'].append(history.history['val_accuracy'])
+        for k, v in test_acc.items():
+            cv_scores[k].append(v)
+
+        print(cv_scores)
+        print('history:')
+        print(history.history)
+        print(history.history['val_accuracy'])
+
+        model_history.append(model)
+
+    return cv_scores, model_history
 
 
 
