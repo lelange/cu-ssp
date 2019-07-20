@@ -29,6 +29,7 @@ import dill as pickle
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 
 from utils import *
+from collections import defaultdict
 
 MODEL_NAME = 'mod_1'
 start_time = time.time()
@@ -212,9 +213,15 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
         test_acc = evaluate_model(model, load_file, test_ind = [0])
         print(test_acc.keys())
         print(test_acc.values())
+        for k, v in test_acc.items():
+            print(k+ ' >%.3f' % v)
 
-        print('>%.3f' % test_acc)
-        cv_scores.append(test_acc)
+
+        cv_scores = defaultdict(list)
+        for k, v in test_acc:
+            cv_scores[k].append(v)
+
+        print(cv_scores)
         model_history.append(model)
 
     return cv_scores, model_history
