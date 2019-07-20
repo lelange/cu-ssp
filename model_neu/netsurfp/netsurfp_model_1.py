@@ -201,7 +201,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
         print('\n\n----------------------')
         print('----------------------')
         print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
-        print('----------------------')
+        print('----------------------\n')
 
         # Generate batches from indices
         X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
@@ -255,12 +255,6 @@ if cross_validate :
         indent=4, separators=(',', ': ')
     ))
     # save test results to logfile
-    with open("logs/cv_results_mean.txt", 'w') as f:
-        json.dump(
-            test_acc, f,
-            default=json_util.default, sort_keys=True,
-            indent=4, separators=(',', ': ')
-        )
     print("Saved in json stype mean")
     f = open("logs/cv_results_mean.txt", "a+")
     f.write(json.dumps(test_acc))
@@ -268,11 +262,11 @@ if cross_validate :
     f = open("logs/cv_results.txt", "a+")
     f.write(json.dumps(cv_scores))
     print("Saved in normal way cv ")
-    with open("logs/cv_results.txt", 'w') as f:
+    with open("logs/cv_results.txt", 'a+') as f:
         json.dump(
             cv_scores, f,
             default=json_util.default, sort_keys=True,
-            indent=4, separators=(',', ': ')
+            separators=(',', ': ')
         )
     print('Saved in json style cv')
     '''
@@ -298,5 +292,5 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-telegram_me(m, s, sys.argv[0], test_acc, hmm, standardize, normalize, no_input)
+#telegram_me(m, s, sys.argv[0], test_acc, hmm, standardize, normalize, no_input)
 
