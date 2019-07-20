@@ -1,11 +1,7 @@
 from keras.models import *
 from keras.layers import *
-from sklearn.model_selection import train_test_split, KFold
-from keras.metrics import categorical_accuracy
 from keras import backend as K
 from keras.regularizers import l1, l2
-import tensorflow as tf
-import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
 
 import time
@@ -21,7 +17,6 @@ from keras.layers.core import K  # import keras.backend as K
 from keras.models import Model, Input
 from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, GRU, Conv1D, CuDNNLSTM, concatenate
 from keras.optimizers import Adam, Nadam, RMSprop
-import tensorflow as tf
 from hyperopt import STATUS_OK, STATUS_FAIL
 from datetime import datetime
 import traceback
