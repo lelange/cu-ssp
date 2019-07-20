@@ -184,7 +184,7 @@ def evaluate_model(model, load_file, test_ind = None):
     return dict(zip(names, test_accs))
 
 if cross_validate :
-    cv_scores, model_history = crossValidation(MODEL_NAME, load_file, X_train_aug, y_train)
+    cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
     test_acc = np.mean(cv_scores)
     print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(cv_scores)))
 
