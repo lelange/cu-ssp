@@ -306,7 +306,7 @@ def message_me(model_name, m, s):
     client.logout()
 
 def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
-    print(sys.argv[0])
+    from sys.argv[0] import train_model, evaluate_model
     X_train, X_aug_train = X_train_aug
     # Instantiate the cross validator
     kfold_splits = n_folds
