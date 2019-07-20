@@ -23,13 +23,17 @@ from keras.regularizers import l1, l2
 import tensorflow as tf
 import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
-
+import os
 import time
 import dill as pickle
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
+import json
+from bson import json_util
 
 from utils import *
 from collections import defaultdict
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 MODEL_NAME = 'mod_1'
 start_time = time.time()
@@ -233,23 +237,55 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=2):
 
 if cross_validate :
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
+    test_acc = defaultdict(list)
     for k, v in cv_scores.items():
         print(k)
         print(type(v))
-        test_acc = np.mean(v)
-        cv_scores['mean'].append(test_acc)
-        cv_scores['std'].append(np.std(v))
-        print('Estimated accuracy %.3f (%.3f)' % (test_acc, np.std(v)))
+        test_acc[k+'_mean'].append(np.mean(v))
+        test_acc[k+'_std'].append(np.std(v))
+        print('Estimated accuracy %.3f (%.3f)' % (np.mean(v)*100, np.std(v)*100))
+        print('Estimated accuracy %.3f (%.3f)' % (np.mean(v), np.std(v)))
 
-    print(cv_scores)
+    print('print normal:')
+    print(test_acc)
+    print('json dumps:')
+    print(json.dumps(
+        test_acc,
+        default=json_util.default, sort_keys=True,
+        indent=4, separators=(',', ': ')
+    ))
     # save test results to logfile
+    with open("logs/cv_results_mean.txt", 'w') as f:
+        json.dump(
+            test_acc, f,
+            default=json_util.default, sort_keys=True,
+            indent=4, separators=(',', ': ')
+        )
+    print("Saved in json stype mean")
     f = open("logs/cv_results_mean.txt", "a+")
-    f.write('%.3f (%.3f)\t'+ weights_file + "\n" % (test_acc, np.std(cv_scores)))
+    f.write(json.dumps(test_acc))
+    print("SAved in normal way mean ")
     f = open("logs/cv_results.txt", "a+")
-    score_text = ""
-    for score in cv_scores:
-        score_text += score+"\t"
-    f.write(weights_file+"\t"+score_text+"\n")
+    f.write(json.dumps(cv_scores))
+    print("Saved in normal way cv ")
+    with open("logs/cv_results.txt", 'w') as f:
+        json.dump(
+            cv_scores, f,
+            default=json_util.default, sort_keys=True,
+            indent=4, separators=(',', ': ')
+        )
+    print('Saved in json style cv')
+    '''
+        for k, v in test_acc:
+        print(k, v)
+
+        f.write('%.3f (%.3f)\t'+ weights_file + "\n" % (test_acc, np.std(cv_scores)))
+        f = open("logs/cv_results.txt", "a+")
+        score_text = ""
+        for score in cv_scores:
+            score_text += score+"\t"
+        f.write(weights_file+"\t"+score_text+"\n")
+    '''
     f.close()
 
 else:
