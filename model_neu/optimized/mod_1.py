@@ -128,14 +128,14 @@ def build_and_train(hype_space, save_best_weights=True):
         if not os.path.exists(WEIGHTS_DIR):
             os.makedirs(WEIGHTS_DIR)
 
-        callbacks.append(keras.callbacks.ModelCheckpoint(
+        callbacks.append(ModelCheckpoint(
             weights_save_path,
             monitor='val_accuracy',
             save_best_only=True, mode='max'))
 
-        callbacks.append(keras.callbacks.EarlyStopping(
-            monitor='val_accuracy',
-            patience=10, verbose=1, mode='max'))
+    callbacks.append(EarlyStopping(
+        monitor='val_accuracy',
+        patience=10, verbose=1, mode='max'))
 
     # TensorBoard logging callback (see model 6):
     log_path = None

@@ -131,6 +131,7 @@ def run_a_trial():
         print("Rerunning from {} trials to add another one.".format(
             len(trials.trials)))
     except:
+        # empty results.pkl
         trials = Trials()
         print("Starting from scratch: new trials.")
 
