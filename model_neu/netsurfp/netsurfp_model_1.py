@@ -54,8 +54,8 @@ data_root = '../data/netsurfp/'
 weights_file = "mod_1-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
 
-file_train = 'train_608'
-file_test = ['cb513_608', 'ts115_608', 'casp12_608']
+file_train = 'train_700'
+file_test = ['cb513_700', 'ts115_700', 'casp12_700']
 
 #load data
 X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
