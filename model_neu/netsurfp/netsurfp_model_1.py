@@ -257,31 +257,36 @@ if cross_validate :
         default=json_util.default, sort_keys=True,
         indent=1, separators=(',', ': ')
     ))
-    # save mean of cross validation results in a tabel like file
+    # save mean of cross validation results
     if not os.path.exists("logs/cv_results_mean.txt"):
         f = open("logs/cv_results_mean.txt", "a+")
-        f.write('\# Log file for tests on ' +sys.argv[0]+ 'with standardized hmm profiles. \n\n')
-        for k in test_acc.keys():
-            f.write(str(k)+"\t")
-        f.write('\n')
+        f.write('### Log file for tests on ' +sys.argv[0]+ ' with standardized hmm profiles. \n\n')
         f.close()
 
     f = open("logs/cv_results_mean.txt", "a")
-    f.write("Weights are saved to: " + weights_file + "\n")
 
-    for v in test_acc.values():
-        f.write("%.4f\t"%v)
+    for k, v in test_acc.items():
+        f.write(str(k) + ": "+"%.5f\t"%v)
     f.write('\n')
-    f.write('-----------------------\n')
+    f.write("Weights are saved to: " + weights_file + "\n")
+    f.write('-----------------------\n\n')
     f.close()
 
     #save all history of scores used to calculate cross validation score
+    if not os.path.exists("logs/cv_results.txt"):
+        f = open("logs/cv_results_mean.txt", "a+")
+        f.write('### Log file for tests on ' +sys.argv[0]+ ' with standardized hmm profiles. \n\n')
+        f.close()
+
     f = open("logs/cv_results.txt", "a+")
+
     for k, v in cv_scores.items():
         f.write(str(k) + ": " + str(v))
         f.write('\n')
     f.write("\n")
-    f.write('-----------------------\n')
+    f.write("Weights are saved to: " + weights_file + "\n")
+    f.write('-----------------------\n\n')
+
     f.close()
 
     '''
