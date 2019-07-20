@@ -210,8 +210,6 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=7):
         model = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
                                   [X_val_fold, X_aug_val_fold], y_val_fold)
 
-        print('model:')
-        print(model)
 
         test_acc = evaluate_model(model, load_file, test_ind = [0, 1, 2])
         print(test_acc.keys())
@@ -221,10 +219,13 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=7):
 
         cv_scores = defaultdict(list)
         #cv_scores['val_accuracy'].append(val_accuracy)
-        for k, v in test_acc:
+        for k, v in test_acc.items():
             cv_scores[k].append(v)
 
         print(cv_scores)
+        print('model:')
+        print(model['val_accuracy'])
+
         model_history.append(model)
 
     return cv_scores, model_history
