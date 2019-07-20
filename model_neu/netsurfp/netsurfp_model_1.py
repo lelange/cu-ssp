@@ -245,8 +245,14 @@ if cross_validate :
 
     f = open("logs/cv_results_mean.txt", "a+")
 
+    i = 0
     for k, v in test_acc.items():
         f.write(str(k) + ": "+"%.5f\t"%v)
+        i += 1
+        if i % 2 == 0:
+            f.write('\n')
+        else:
+            f.write("\t")
     f.write('\n')
     f.write("Weights are saved to: " + weights_file + "\n")
     f.write('-----------------------\n\n')
@@ -260,12 +266,9 @@ if cross_validate :
 
     f = open("logs/cv_results.txt", "a+")
 
-    i=0
+
     for k, v in cv_scores.items():
         f.write(str(k) + ": " + str(v))
-        i+=1
-        if i%2==0:
-            f.write('\n')
     f.write("\n")
     f.write("Weights are saved to: " + weights_file + "\n")
     f.write('-----------------------\n\n')
