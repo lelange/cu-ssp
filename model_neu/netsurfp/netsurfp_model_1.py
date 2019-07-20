@@ -255,10 +255,17 @@ if cross_validate :
         indent=1, separators=(',', ': ')
     ))
     # save test results to logfile
-    f = open("logs/cv_results_mean.txt", "a+")
-    f.write(json.dumps(test_acc.keys()))
-    f.write('\n')
-    f.write(json.dumps(test_acc.values()))
+    if not os.path.exists("logs/cv_results_mean.txt"):
+        f = open("logs/cv_results_mean.txt", "a+")
+        for k, v in test_acc.items():
+            f.write(k)
+            f.write("\t")
+        f.write('\n')
+        f.close()
+    f = open("logs/cv_results_mean.txt", "a")
+    for k, v in test_acc.items():
+        f.write(v)
+        f.write("\t")
     f.write('\n')
     f.close()
 
