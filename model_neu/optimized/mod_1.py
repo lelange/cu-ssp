@@ -1,19 +1,3 @@
-"""
-Cascaded Convolution Model
-
-- Pranav Shrestha (ps2958)
-- Jeffrey Wan (jw3468)
-
-"""
-import sys
-import pickle
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-from keras.preprocessing import text, sequence
-from keras.preprocessing.text import Tokenizer
-from keras.utils import to_categorical
 from keras.models import *
 from keras.layers import *
 from sklearn.model_selection import train_test_split, KFold
@@ -40,7 +24,6 @@ from keras.optimizers import Adam, Nadam, RMSprop
 import tensorflow as tf
 from hyperopt import STATUS_OK, STATUS_FAIL
 from datetime import datetime
-import uuid
 import traceback
 import os
 

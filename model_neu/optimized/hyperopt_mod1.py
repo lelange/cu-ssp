@@ -40,7 +40,7 @@ space = {
     # a linear fashion, to handle his exponentialy varying nature:
     'lr_rate_mult': hp.loguniform('lr_rate_mult', -0.5, 0.5),
     # L2 weight decay:
-    'batch_size': hp.quniform('batch_size', 100, 450, 5),
+    'batch_size': hp.quniform('batch_size', 100, 450, 2),
     # Choice of optimizer:
     'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
     # Kernel size for convolutions:
@@ -48,7 +48,7 @@ space = {
     # LSTM units:
     'GRU_units_mult': hp.loguniform('GRU_units_mult', -0.6, 0.6),
     # Number of super_conv+conv layers stacked:
-    'nb_conv_super_layers': hp.choice('nb_conv_super_layers', [2, 3]),
+    'nb_conv_super_layers': hp.choice('nb_conv_super_layers', [2, 3, 4]),
     # Uniform distribution in finding appropriate dropout values, conv layers
     'dropout': hp.uniform('dropout', 0.0, 0.7),
 
