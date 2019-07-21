@@ -242,12 +242,12 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         print("\nPredict " + test +"...")
 
         y_test_pred = model.predict(X_test_aug)
-        np.save(PRED_DIR+test+save_pred_file, y_test_pred)
+        #np.save(PRED_DIR+test+save_pred_file, y_test_pred)
 
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
 
         f = open(PRED_DIR+"pred_mod_1.txt", "a+")
-        f.write(y_test_pred)
+        f.write(json.dumps(y_test_pred))
         f.close()
 
 
