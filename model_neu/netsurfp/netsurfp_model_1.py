@@ -256,11 +256,12 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
 
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q8_pred = []
-        f = open(PRED_DIR+"q8_pred_mod_1.txt", "a+")
+        f = open(PRED_DIR+"q3_pred_mod_1.txt", "a+")
         for pred in y_test_pred:
-            seq = onehot_to_seq(pred, q8_list)
+            seq = onehot_to_seq(pred, q3_list)
             try:
                 f.write(seq)
+                print("yes")
             except:
                 f.write(str(seq))
             f.write("\n")
