@@ -214,6 +214,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
         model, history = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
                                   [X_val_fold, X_aug_val_fold], y_val_fold)
 
+        print(history.history)
 
         test_acc = evaluate_model(model, load_file, test_ind = [0, 1, 2])
 
