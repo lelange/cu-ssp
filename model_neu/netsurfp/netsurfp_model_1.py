@@ -250,13 +250,13 @@ def accuracy2(y_true, y_predicted):
     print("understand metric:")
     y = tf.argmax(y_true, axis =- 1)
     print("y:")
-    print(y)
+    tf.Print(y)
     y_ = tf.argmax(y_predicted, axis =- 1)
     mask = tf.greater(y, 0)
     print('mask:')
-    print(mask)
+    tf.Print(mask)
     print("tf boolean mask")
-    print(tf.boolean_mask(y, mask))
+    tf.Print(tf.boolean_mask(y, mask))
 
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
@@ -277,7 +277,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         print("Accuracy from model evaluate: "+str(score[2]))
         #np.save(PRED_DIR+test+save_pred_file, y_test_pred)
         acc = accuracy2(y_test, y_test_pred)
-        print("Accuracy2: "+str(acc))
+        tf.Print("Accuracy2: "+str(acc))
 
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q3_pred = []
@@ -329,7 +329,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file, file_test)
+    build_and_predict(build_model(), best_weights, save_pred_file)
     test_acc = None
     time_data = time.time() - start_time
 else:
