@@ -31,7 +31,7 @@ import json
 from bson import json_util
 from datetime import datetime
 
-from utils import parse_arguments, get_data, train_val_split, save_cv, telegram_me, accuracy
+from utils import parse_arguments, get_data, train_val_split, save_cv, telegram_me, accuracy, get_acc
 from collections import defaultdict
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -245,6 +245,7 @@ def onehot_to_seq(oh_seq, index):
 def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700']):
     if model is None:
         model = build_model()
+
     for test in file_test:
         X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
         model.load_weights(best_weights)
@@ -255,28 +256,50 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         #np.save(PRED_DIR+test+save_pred_file, y_test_pred)
 
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
+        q3_pred = []
         q8_pred = []
+
         f = open(PRED_DIR+"q3_pred_mod_1.txt", "a+")
+        g = open(PRED_DIR+"q8_pred_mod_1.txt", "a+")
         for pred in y_test_pred:
-            seq = onehot_to_seq(pred, q3_list)
-            try:
-                f.write(seq)
-                print("yes")
-            except:
-                f.write(str(seq))
+            seq3 = onehot_to_seq(pred, q3_list)
+            seq8 = onehot_to_seq(pred, q8_list)
+            seq_true_3 = onehot_to_seq(y_test, q3_list)
+            seq_true_8 = onehot_to_seq(y_test, q8_list)
+
+            '''
+            f.write(seq3)
+            g.write(seq8)
             f.write("\n")
-            q8_pred.append(seq)
+            g.write("\n")
+            '''
 
-        #np.savetxt(PRED_DIR+"q8_pred_mod_1.txt", q8_pred)
-        print(np.array(q8_pred).shape)
+            q3_pred.append(get_acc(seq_true_3, seq3))
+            q8_pred.append(get_acc(seq_true_8, seq8))
+        f.close()
+        g.close()
 
+        print("Q3 " +test+ " test accuracy: "+str(np.mean(q3_pred)))
+        print("Q8 " +test+ " test accuracy: "+str(np.mean(q8_pred)))
 
+        f = open(PRED_DIR+"prediction_accuracy.txt", "a+")
+        f.write("Results for "+MODEL_NAME+" and weights "+best_weights)
+        f.write("\n")
+        f.write("Netsurf data were used with standardized hhblits profiles.")
+        f.write("\n")
+        f.write("Q3 " +test+ " test accuracy: "+str(np.mean(q3_pred)))
+        f.write("\n")
+        f.write("Q8 " +test+ " test accuracy: "+str(np.mean(q8_pred)))
+        f.write("\n")
+        f.write("Predictions are saved to: "+PRED_DIR+test+save_pred_file)
+        f.write("----------------------------\n")
+        f.close()
 
 
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file)
+    build_and_predict(build_model(), best_weights, save_pred_file, file_test)
     test_acc = None
     time_data = time.time() - start_time
 else:
