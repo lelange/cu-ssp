@@ -201,7 +201,7 @@ def get_acc(gt, pred):
     for i in range(len(gt)):
         if gt[i] == pred[i]:
             correct += 1
-    return (1.0 * correct) / len(gt)
+    return (1.0 * correct), len(gt)
 
 def evaluate_acc(y_predicted):
     print('Analyse accuracy')

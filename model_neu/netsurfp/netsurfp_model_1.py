@@ -293,8 +293,10 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             print(len(acc.eval()))
             print(np.sum(acc.eval())/len(acc.eval()))
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
-        q3_pred = []
-        q8_pred = []
+        q3_pred = 0
+        q8_pred = 0
+        q3_len = 0
+        q8_len = 0
 
         f = open(PRED_DIR+"q3_pred_mod_1.txt", "a+")
         g = open(PRED_DIR+"q8_pred_mod_1.txt", "a+")
@@ -316,23 +318,27 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             f.write("\n")
             g.write("\n")
 
-            q3_pred.append(get_acc(seq_true_3, seq3))
-            q8_pred.append(get_acc(seq_true_8, seq8))
+            corr3, len3 = get_acc(seq_true_3, seq3)
+            corr8, len8 = get_acc(seq_true_8, seq8)
+            q3_pred+=corr3
+            q8_pred+=corr8
+            q3_len+= len3
+            q8_len+=len8
         f.close()
         g.close()
 
 
-        print("Q3 " +test+ " test accuracy: "+str(np.mean(q3_pred)))
-        print("Q8 " +test+ " test accuracy: "+str(np.mean(q8_pred)))
+        print("Q3 " +test+ " test accuracy: "+str(q3_pred/q3_len))
+        print("Q8 " +test+ " test accuracy: "+str(q8_pred/q8_len))
 
         f = open(PRED_DIR+"prediction_accuracy.txt", "a+")
         f.write("Results for "+MODEL_NAME+" and weights "+best_weights)
         f.write("\n")
         f.write("Netsurf data were used with standardized hhblits profiles.")
         f.write("\n")
-        f.write("Q3 " +test+ " test accuracy: "+str(np.mean(q3_pred)))
+        f.write("Q3 " +test+ " test accuracy: "+str(q3_pred/q3_len))
         f.write("\n")
-        f.write("Q8 " +test+ " test accuracy: "+str(np.mean(q8_pred)))
+        f.write("Q8 " +test+ " test accuracy: "+str(q8_pred/q8_len))
         f.write("\n")
         f.write("Predictions are saved to: "+PRED_DIR+test+save_pred_file)
         f.write("----------------------------\n")
