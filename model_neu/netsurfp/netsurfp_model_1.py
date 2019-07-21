@@ -232,7 +232,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 best_weights = "mod_1-CB513-2019_07_21-12_15.h5"
 save_pred_file = "_pred_1.npy"
 PRED_DIR = "preds/"
-def build_and_predict(model, best_weights, save_pred_file, file_test='cb513_700'):
+def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700']):
     if model is None:
         model = build_model()
     for test in file_test:
