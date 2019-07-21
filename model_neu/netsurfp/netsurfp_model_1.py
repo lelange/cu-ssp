@@ -232,6 +232,16 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 best_weights = "model/mod_1-CB513-2019_07_21-12_15.h5"
 save_pred_file = "_pred_1.npy"
 PRED_DIR = "preds/"
+q8_list = list('GHIBESTC')
+q3_list = list('HHHEECCC')
+
+def onehot_to_seq(oh_seq, index):
+    s = ''
+    for o in oh_seq:
+        i = np.argmax(o)
+        s += index[i]
+    return s
+
 def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700']):
     if model is None:
         model = build_model()
@@ -245,8 +255,13 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         #np.save(PRED_DIR+test+save_pred_file, y_test_pred)
 
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
-        np.savetxt(PRED_DIR+"pred_mod_1.txt", y_test_pred)
-        
+        q8_pred = []
+        for pred in y_test_pred:
+            seq = onehot_to_seq(pred, q8_list)
+            q8_pred.append(seq)
+        print(q8_pred.shape)
+        np.savetxt(PRED_DIR+"q8_pred_mod_1.txt", q8_pred)
+
 
 
 
