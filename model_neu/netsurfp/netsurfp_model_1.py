@@ -232,8 +232,8 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 best_weights = "model/mod_1-CB513-2019_07_21-12_15.h5"
 save_pred_file = "_pred_1.npy"
 PRED_DIR = "preds/"
-q8_list = list('GHIBESTC-')
-q3_list = list('HHHEECCC-')
+q8_list = list('GHIBESTC')
+q3_list = list('HHHEECCC')
 
 def onehot_to_seq(oh_seq, index):
     s = ''
@@ -258,6 +258,8 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         print("\nPredict " + test +"...")
 
         y_test_pred = model.predict(X_test_aug)
+        score = model.evaluate(X_test_aug, y_test)
+        print("Accuracy from model evaluate: "+str(score[2]))
         #np.save(PRED_DIR+test+save_pred_file, y_test_pred)
 
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
@@ -279,13 +281,10 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
                 print('First true prediction: ' + str(seq_true_8[:30]))
                 i=False
 
-
-
             f.write(seq3)
             g.write(seq8)
             f.write("\n")
             g.write("\n")
-
 
             q3_pred.append(get_acc(seq_true_3, seq3))
             q8_pred.append(get_acc(seq_true_8, seq8))
@@ -344,5 +343,5 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
+#telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
 

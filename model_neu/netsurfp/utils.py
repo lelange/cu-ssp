@@ -193,8 +193,10 @@ def load_augmented_data(npy_path, max_len):
     return train_df, profile_padded
 
 def get_acc(gt, pred):
-    if len(gt)!=len(pred):
+    '''
+         if len(gt)!=len(pred):
         print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
+    '''
     correct = 0
     for i in range(len(gt)):
         if gt[i] == pred[i]:
