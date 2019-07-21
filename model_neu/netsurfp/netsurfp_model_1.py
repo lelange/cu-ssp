@@ -233,58 +233,13 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 
     return cv_scores, model_history
 
+file_scores = "logs/cv_results.txt"
+file_scores_mean = "logs/cv_results_mean.txt"
 
 if cross_validate :
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
-
-    test_acc = {}
-    for k, v in cv_scores.items():
-        print(k)
-        print(type(v))
-        test_acc[k+'_mean']=np.mean(v)
-        test_acc[k+'_std']=np.std(v)
-        print('Estimated accuracy %.3f (%.3f)' % (np.mean(v)*100, np.std(v)*100))
-
-    # save mean of cross validation results
-    if not os.path.exists("logs/cv_results_mean.txt"):
-        f = open("logs/cv_results_mean.txt", "a+")
-        f.write('### Log file for tests on ' +sys.argv[0]+ ' with standardized hmm profiles. \n\n')
-        f.close()
-
-    f = open("logs/cv_results_mean.txt", "a+")
-
-    i = 0
-    for k, v in test_acc.items():
-        if i % 2 == 0:
-            f.write(str(k) + " estimated accuracy: " + "%.3f " % v)
-        else:
-            f.write("(%.3f)\n" %v)
-
-        i += 1
-    f.write('\n')
-    f.write('Calculation on '+str(N_FOLDS)+ ' folds.\n')
-    f.write("Weights are saved to: " + weights_file + "\n")
-    f.write('-----------------------\n\n')
-    f.close()
-
-    #save all history of scores used to calculate cross validation score
-    if not os.path.exists("logs/cv_results.txt"):
-        f = open("logs/cv_results.txt", "a+")
-        f.write('### Log file for tests on ' +sys.argv[0]+ ' with standardized hmm profiles. \n\n')
-        f.close()
-
-    f = open("logs/cv_results.txt", "a+")
-
-
-    for k, v in cv_scores.items():
-        f.write(str(k) + ": " + str(v))
-        f.write("\n")
-    f.write("\n")
-    f.write('Calculation on ' + str(N_FOLDS) + ' folds.\n')
-    f.write("Weights are saved to: " + weights_file + "\n")
-    f.write('-----------------------\n\n')
-
-    f.close()
+    test_accs = save_cv(cv_scores, file_scores, file_scores_mean, N_FOLDS)
+    test_acc = test_accs[file_test[0]+'_mean']
 
 else:
     X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
@@ -296,5 +251,5 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-telegram_me(m, s, sys.argv[0], hmm=True, standardize=True)
+telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
 

@@ -33,6 +33,8 @@ NB_CLASSES_COARSE = 3
 NB_FEATURES = 50
 MODEL_NAME = "mod_1"
 
+
+
 def data():
     data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
     file_train = 'train_700'
@@ -165,23 +167,7 @@ def build_and_train(hype_space, save_best_weights=True):
     return model, model_name, result, log_path
 
 
-'''
-p = {'activation1':[relu, softmax],
-     'activation2':[relu, softmax],
-     'optimizer': ['Nadam', "RMSprop"],
-     'losses': ['categorical_crossentropy', keras.losses.binary_crossentropy],
-     'first_hidden_layer': [10, 8, 6],
-     'second_hidden_layer': [2, 4, 6],
-     'batch_size': [64, 128, 10000],
-     'epochs': [50, 75]}
-'''
-
-
-
-
 """ Build model """
-
-
 
 def build_model(hype_space):
     """Create model according to the hyperparameter space given."""

@@ -165,7 +165,6 @@ def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False,
 def seq2ngrams(seqs, n = 1):
     return np.array([[seq[i : i + n] for i in range(len(seq))] for seq in seqs])
 
-
 def load_augmented_data(npy_path, max_len):
     data = np.load(npy_path)
 
@@ -193,14 +192,12 @@ def load_augmented_data(npy_path, max_len):
     train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'expected': q8_str_list})
     return train_df, profile_padded
 
-
 def get_acc(gt, pred):
     correct = 0
     for i in range(len(gt)):
         if gt[i] == pred[i]:
             correct += 1
     return (1.0 * correct) / len(gt)
-
 
 def evaluate_acc(y_predicted):
     print('Analyse accuracy')
@@ -305,6 +302,55 @@ def message_me(model_name, m, s):
 
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
+
+def save_cv(cv_scores, file_scores, file_scores_mean, n_folds):
+    # print results and save them to logfiles
+
+    #calculate mean and std of cross validation results
+    test_acc = {}
+    for k, v in cv_scores.items():
+        test_acc[k + '_mean'] = np.mean(v)
+        test_acc[k + '_std'] = np.std(v)
+        print('Estimated accuracy %.3f (%.3f)' % (np.mean(v) * 100, np.std(v) * 100))
+
+    # save mean and std of cross validation results
+    if not os.path.exists(file_scores_mean):
+        f = open(file_scores_mean, "a+")
+        f.write('### Log file for tests on ' + sys.argv[0] + ' with standardized hmm profiles. \n\n')
+        f.close()
+
+    f = open(file_scores_mean, "a+")
+    i = 0
+    for k, v in test_acc.items():
+        if i % 2 == 0:
+            f.write(str(k) + " estimated accuracy: " + "%.3f " % v)
+        else:
+            f.write("(%.3f)\n" % v)
+        i += 1
+    f.write('\n')
+    f.write('Calculation on ' + str(n_folds) + ' folds.\n')
+    f.write("Weights are saved to: " + weights_file + "\n")
+    f.write('-----------------------\n\n')
+    f.close()
+
+    # save all history of scores used to calculate cross validation score
+    if not os.path.exists(file_scores):
+        f = open(file_scores, "a+")
+        f.write('### Log file for tests on ' + sys.argv[0] + ' with standardized hmm profiles. \n\n')
+        f.close()
+
+    f = open(file_scores, "a+")
+    for k, v in cv_scores.items():
+        f.write(str(k) + ": " + str(v))
+        f.write("\n")
+    f.write("\n")
+    f.write('Calculation on ' + str(n_folds) + ' folds.\n')
+    f.write("Weights are saved to: " + weights_file + "\n")
+    f.write('-----------------------\n\n')
+
+    f.close()
+    return test_acc
+
 
 
 
