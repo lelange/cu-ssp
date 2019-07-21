@@ -29,14 +29,21 @@ import dill as pickle
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 import json
 from bson import json_util
+from datetime import datetime
 
-from utils import *
+from utils import parse_arguments, get_data, train_val_split, save_cv, telegram_me, accuracy
 from collections import defaultdict
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 MODEL_NAME = 'mod_1'
-N_FOLDS = 10
+N_FOLDS = 10 # for cross validation
+MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
+NB_CLASSES_Q8 = 8 # number Q8 classes, used in final layer for classification
+NB_CLASSES_Q3 = 3 # number Q3 classes
+NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
+NB_FEATURES = 30 # feature dimension
+
 start_time = time.time()
 
 args = parse_arguments(default_epochs=75)
@@ -52,34 +59,22 @@ optimize = args.optimize
 cross_validate = args.cv
 tv_perc = args.tv_perc
 test_mode = args.test_mode
+predict_only = args.predict
 
 if test_mode:
     N_FOLDS = 2
     epochs = 2
 
-
 batch_size = 128
 
-n_tags = 8
-n_words = 20
 data_root = '../data/netsurfp/'
 weights_file = "mod_1-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
+file_scores = "logs/cv_results.txt"
+file_scores_mean = "logs/cv_results_mean.txt"
 
-file_train = 'train_700'
-file_test = ['cb513_700', 'ts115_700', 'casp12_700']
-
-#load data
-X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
-
-if hmm:
-    print("X train shape: ", X_train_aug[0].shape)
-    print("X aug train shape: ", X_train_aug[1].shape)
-else:
-    print("X train shape: ", X_train_aug.shape)
-print("y train shape: ", y_train.shape)
-
-time_data = time.time() - start_time
+file_train = 'train_' + str(MAXLEN_SEQ)
+file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
 
 '''
 p = {'activation1':[relu, softmax],
@@ -93,7 +88,7 @@ p = {'activation1':[relu, softmax],
 '''
 
 
-def train_model (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
+def build_and_train (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     """
     Main Training function with the following properties:
         Optimizer - Nadam
@@ -101,7 +96,7 @@ def train_model (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
         Batch Size - 128 (any more will exceed Collab GPU RAM)
         Epochs - 50
     """
-    model = CNN_BIGRU()
+    model = build_model()
 
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
@@ -143,15 +138,14 @@ def super_conv_block(x):
     x = TimeDistributed(Dropout(0.5))(x)
     return x
 
-
-def CNN_BIGRU():
+def build_model():
     if hmm:
-        input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
-        profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
+        input = Input(shape=(MAXLEN_SEQ, NB_AS,))
+        profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
-        input = Input(shape=(X_train_aug.shape[1], X_train_aug.shape[2],))
+        input = Input(shape=(MAXLEN_SEQ, NB_AS,))
         x = input
         inp = input
 
@@ -167,7 +161,7 @@ def CNN_BIGRU():
     x = TimeDistributed(Dense(256, activation="relu"))(x)
     x = TimeDistributed(Dropout(0.5))(x)
 
-    y = TimeDistributed(Dense(n_tags, activation="softmax"))(x)
+    y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(x)
 
     model = Model(inp, y)
 
@@ -217,7 +211,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
         print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
             X_val_fold.shape[0]) + " validation samples...")
 
-        model, history = train_model([X_train_fold, X_aug_train_fold], y_train_fold,
+        model, history = build_and_train([X_train_fold, X_aug_train_fold], y_train_fold,
                                   [X_val_fold, X_aug_val_fold], y_val_fold)
 
         print(history.history)
@@ -233,19 +227,56 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 
     return cv_scores, model_history
 
-file_scores = "logs/cv_results.txt"
-file_scores_mean = "logs/cv_results_mean.txt"
+
+# write best weight models in file and look for model (eg. mod_1) name in weight name
+best_weights = "mod_1-CB513-2019_07_21-12_15.h5"
+save_pred_file = "_pred_1.npy"
+PRED_DIR = "preds/"
+def build_and_predict(model, best_weights, save_pred_file, file_test='cb513_700'):
+    if model is None:
+        model = build_model()
+    for test in file_test:
+        X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
+        model.load_weights(best_weights)
+
+        print("\nPredict " + test +":")
+
+        y_test_pred = model.predict(X_test_aug, y_test)
+        np.save(PRED_DIR+test+save_pred_file, y_test_pred)
+
+        print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
+
+
+
+#--------------------------------- main ---------------------------------
+
+#load data
+X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
+
+if hmm:
+    print("X train shape: ", X_train_aug[0].shape)
+    print("X aug train shape: ", X_train_aug[1].shape)
+else:
+    print("X train shape: ", X_train_aug.shape)
+print("y train shape: ", y_train.shape)
+
+time_data = time.time() - start_time
 
 if cross_validate :
+
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
-    test_accs = save_cv(cv_scores, file_scores, file_scores_mean, N_FOLDS)
+    test_accs = save_cv(weights_file, cv_scores, file_scores, file_scores_mean, N_FOLDS)
     test_acc = test_accs[file_test[0]+'_mean']
 
 else:
-    X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+    if predict_only:
+        build_and_predict(build_model(), best_weights, save_pred_file)
+        test_acc = None
+    else:
+        X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+        model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
+        test_acc = evaluate_model(model, load_file)
 
-    model, history = train_model(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
-    test_acc = evaluate_model(model, load_file)
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)

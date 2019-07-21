@@ -10,7 +10,6 @@ import tensorflow as tf
 import argparse
 import telegram
 import sys
-from datetime import datetime
 import os, pickle
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
@@ -34,6 +33,7 @@ def parse_arguments(default_epochs):
     parser.add_argument('-epochs',type=int ,required=False, help='number of training epochs', default=default_epochs)
     parser.add_argument('-tv_perc',type=float, required=False, help='ratio train validation split')
     parser.add_argument('-plot', help='plot accuracy', action='store_true')
+    parser.add_argument('-predict', help='predict model', action='store_true')
     return parser.parse_args()
 
 def normal(data):
@@ -245,22 +245,23 @@ def weighted_accuracy(y_true, y_pred):
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
 
 def train_val_split(hmm, X_train_aug, y_train, perc = None):
-    if hmm:
-        n_samples = len(X_train_aug[0])
-    else:
-        n_samples = len(X_train_aug)
+    n_samples = len(y_train)
     np.random.seed(0)
     if perc is None:
         perc = 0.1
-    print(type(n_samples), type(perc))
-    size = int(n_samples*perc)
+    size = int(n_samples * perc)
+
     validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
     training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
 
-    y_val = [y_train[0][validation_idx], y_train[1][validation_idx]]
-    y_train = [y_train[0][training_idx], y_train[1][training_idx]]
+    y_val = y_train[validation_idx]
+    y_train = y_train[training_idx]
 
     if hmm:
+        '''
+        X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[validation_idx]
+        X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[training_idx]
+        '''
         X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
         X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
     else:
@@ -303,7 +304,7 @@ def message_me(model_name, m, s):
     sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
     client.logout()
 
-def save_cv(cv_scores, file_scores, file_scores_mean, n_folds):
+def save_cv(weights_file, cv_scores, file_scores, file_scores_mean, n_folds):
     # print results and save them to logfiles
 
     #calculate mean and std of cross validation results
