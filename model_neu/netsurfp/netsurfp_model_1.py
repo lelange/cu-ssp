@@ -246,6 +246,21 @@ def onehot_to_seq(oh_seq, index):
             return s
     return s
 
+def accuracy2(y_true, y_predicted):
+    print("understand metric:")
+    y = tf.argmax(y_true, axis =- 1)
+    print("y:")
+    print(y)
+    y_ = tf.argmax(y_predicted, axis =- 1)
+    mask = tf.greater(y, 0)
+    print('mask:')
+    print(mask)
+    print("tf boolean mask")
+    print(tf.boolean_mask(y, mask))
+
+    return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
+
+
 def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700']):
     if model is None:
         model = build_model()
@@ -261,6 +276,8 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         score = model.evaluate(X_test_aug, y_test)
         print("Accuracy from model evaluate: "+str(score[2]))
         #np.save(PRED_DIR+test+save_pred_file, y_test_pred)
+        acc = accuracy2(y_test, y_test_pred)
+        print("Accuracy2: "+str(acc))
 
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q3_pred = []
@@ -275,10 +292,10 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             seq_true_8 = onehot_to_seq(true, q8_list)
 
             if i:
-                print('First Q3 prediction: ' + str(seq3[:30]))
-                print('First true prediction: ' + str(seq_true_3[:30]))
-                print('First Q8 prediction: ' + str(seq8[:30]))
-                print('First true prediction: ' + str(seq_true_8[:30]))
+                print('First Q3 prediction: ' + str(seq3[:60]))
+                print('First true prediction: ' + str(seq_true_3[:60]))
+                print('First Q8 prediction: ' + str(seq8[:60]))
+                print('First true prediction: ' + str(seq_true_8[:60]))
                 i=False
 
             f.write(seq3)
