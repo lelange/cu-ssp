@@ -267,12 +267,12 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             seq_true_3 = onehot_to_seq(y_test, q3_list)
             seq_true_8 = onehot_to_seq(y_test, q8_list)
 
-            '''
+
             f.write(seq3)
             g.write(seq8)
             f.write("\n")
             g.write("\n")
-            '''
+
 
             q3_pred.append(get_acc(seq_true_3, seq3))
             q8_pred.append(get_acc(seq_true_8, seq8))
