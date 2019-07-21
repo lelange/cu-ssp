@@ -290,6 +290,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             acc = accuracy2(y_test, y_test_pred)
             print("Accuracy2: ")
             print(acc.eval()[:30])
+            print(np.sum(acc.eval())/len(acc.eval()))
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q3_pred = []
         q8_pred = []
