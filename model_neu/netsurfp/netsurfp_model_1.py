@@ -259,8 +259,9 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         for pred in y_test_pred:
             seq = onehot_to_seq(pred, q8_list)
             q8_pred.append(seq)
-        print(q8_pred.shape)
+
         np.savetxt(PRED_DIR+"q8_pred_mod_1.txt", q8_pred)
+        print(np.array(q8_pred).shape)
 
 
 
