@@ -51,6 +51,12 @@ no_input = args.no_input
 optimize = args.optimize
 cross_validate = args.cv
 tv_perc = args.tv_perc
+test_mode = args.test_mode
+
+if test_mode:
+    N_FOLDS = 2
+    epochs = 1
+
 
 batch_size = 128
 

@@ -22,6 +22,7 @@ def parse_arguments(default_epochs):
     :return: command line arguments
     """
     parser = argparse.ArgumentParser()
+    parser.add_argument('-test_mode', help='test mode: epochs=1 and n_folds = 1', action='store_true')
     parser.add_argument('-no_input', help='do not use input data', action='store_true')
     parser.add_argument('-optimize', help='perform hyperoptimization', action='store_true')
     parser.add_argument('-pssm', help='use pssm profiles', action='store_true')
