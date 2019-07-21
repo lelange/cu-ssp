@@ -229,7 +229,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 
 
 # write best weight models in file and look for model (eg. mod_1) name in weight name
-best_weights = "mod_1-CB513-2019_07_21-12_15.h5"
+best_weights = "model/mod_1-CB513-2019_07_21-12_15.h5"
 save_pred_file = "_pred_1.npy"
 PRED_DIR = "preds/"
 def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700']):
@@ -239,12 +239,16 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
         model.load_weights(best_weights)
 
-        print("\nPredict " + test +":")
+        print("\nPredict " + test +"...")
 
         y_test_pred = model.predict(X_test_aug, y_test)
         np.save(PRED_DIR+test+save_pred_file, y_test_pred)
 
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
+
+        f = open(PRED_DIR+"pred_mod_1.txt", "a+")
+        f.write(y_test_pred)
+        f.close()
 
 
 
