@@ -246,6 +246,17 @@ def onehot_to_seq(oh_seq, index):
             return s
     return s
 
+def onehot_to_seq2(oh_seq, index):
+    s = ''
+    for o in oh_seq:
+        i = np.argmax(o)
+        s += index[i]
+
+        if i ==0:
+            return s
+    return s
+
+
 def accuracy2(y_true, y_predicted):
     print("understand metric:")
     #turn onehot to seq
@@ -306,10 +317,10 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         f = open(PRED_DIR+"q3_pred_mod_1.txt", "a+")
         g = open(PRED_DIR+"q8_pred_mod_1.txt", "a+")
         for true, pred in zip(y_test, y_test_pred):
-            seq3 = onehot_to_seq(pred, q3_list)
-            seq8 = onehot_to_seq(pred, q8_list)
-            seq_true_3 = onehot_to_seq(true, q3_list)
-            seq_true_8 = onehot_to_seq(true, q8_list)
+            seq3 = onehot_to_seq2(pred, q3_list)
+            seq8 = onehot_to_seq2(pred, q8_list)
+            seq_true_3 = onehot_to_seq2(true, q3_list)
+            seq_true_8 = onehot_to_seq2(true, q8_list)
 
             if i:
                 print('First Q3 prediction: ' + str(seq3[:60]))
