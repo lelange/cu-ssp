@@ -295,7 +295,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             print(np.sum(acc.eval()))
             print(len(acc.eval()))
             print(np.sum(acc.eval())/len(acc.eval()))
-            print("Test argmax (len 5, max at 3): "+str(tf.argmax(input=[0,0,1,0,0]).eval()))
+            print("Test argmax (len 5, max at 3): "+str(tf.argmax(input=[2,0,1,0,0]).eval()))
             print("Test argmax (len 2): " + str(tf.argmax(input=[0]).eval()))
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q3_pred = 0
