@@ -273,10 +273,10 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             seq_true_8 = onehot_to_seq(true, q8_list)
 
             if i:
-                print('First Q3 prediction: ' + str(seq3[:10]))
-                print('First true prediction: ' + str(seq_true_3[:10]))
-                print('First Q8 prediction: ' + str(seq8[:10]))
-                print('First true prediction: ' + str(seq_true_8[:10]))
+                print('First Q3 prediction: ' + str(seq3[:30]))
+                print('First true prediction: ' + str(seq_true_3[:30]))
+                print('First Q8 prediction: ' + str(seq8[:30]))
+                print('First true prediction: ' + str(seq_true_8[:30]))
                 i=False
 
 
