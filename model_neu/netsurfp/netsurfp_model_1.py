@@ -55,7 +55,7 @@ test_mode = args.test_mode
 
 if test_mode:
     N_FOLDS = 2
-    epochs = 1
+    epochs = 2
 
 
 batch_size = 128
