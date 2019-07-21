@@ -248,20 +248,22 @@ def onehot_to_seq(oh_seq, index):
 
 def accuracy2(y_true, y_predicted):
     print("understand metric:")
+    #turn onehot to seq
     y = tf.argmax(y_true, axis =- 1)
-    print("y:")
-    print(y.eval()[:30])
+    print("y shape:")
+    print(y.eval().shape)
+    #turn onehot to seq
     y_ = tf.argmax(y_predicted, axis =- 1)
     print("y_:")
-    print(y_.eval()[:30])
+    print(y_.eval().shape)
     mask = tf.greater(y, 0)
-    print('mask:')
-    print(mask.eval()[:30])
-    print("tf boolean mask y")
-    print(tf.boolean_mask(y, mask).eval()[:30])
-    print("tf boolean mask y_")
-    print(tf.boolean_mask(y_, mask).eval()[:30])
-    print(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)).eval()[:30])
+    print('mask len:')
+    print(len(mask.eval()))
+    print("tf boolean mask y len")
+    print(len(tf.boolean_mask(y, mask).eval()))
+    print("tf boolean mask y_ len")
+    print(len(tf.boolean_mask(y_, mask).eval()))
+    print(len(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)).eval()))
 
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
@@ -293,6 +295,8 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             print(np.sum(acc.eval()))
             print(len(acc.eval()))
             print(np.sum(acc.eval())/len(acc.eval()))
+            print("Test argmax (len 5): "+str(tf.argmax(input=[0,0,0,0,0])))
+            print("Test argmax (len 2): " + str(tf.argmax(input=[0, 0])))
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q3_pred = 0
         q8_pred = 0
