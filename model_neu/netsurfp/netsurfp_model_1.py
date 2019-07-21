@@ -254,33 +254,33 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
 
 #--------------------------------- main ---------------------------------
 
-#load data
-X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
-
-if hmm:
-    print("X train shape: ", X_train_aug[0].shape)
-    print("X aug train shape: ", X_train_aug[1].shape)
+if predict_only:
+    build_and_predict(build_model(), best_weights, save_pred_file)
+    test_acc = None
+    time_data = time.time() - start_time
 else:
-    print("X train shape: ", X_train_aug.shape)
-print("y train shape: ", y_train.shape)
+    # load data
+    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
 
-time_data = time.time() - start_time
+    if hmm:
+        print("X train shape: ", X_train_aug[0].shape)
+        print("X aug train shape: ", X_train_aug[1].shape)
+    else:
+        print("X train shape: ", X_train_aug.shape)
+    print("y train shape: ", y_train.shape)
 
-if cross_validate :
+    time_data = time.time() - start_time
 
-    cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
-    test_accs = save_cv(weights_file, cv_scores, file_scores, file_scores_mean, N_FOLDS)
-    test_acc = test_accs[file_test[0]+'_mean']
+    if cross_validate:
 
-else:
-    if predict_only:
-        build_and_predict(build_model(), best_weights, save_pred_file)
-        test_acc = None
+        cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
+        test_accs = save_cv(weights_file, cv_scores, file_scores, file_scores_mean, N_FOLDS)
+        test_acc = test_accs[file_test[0] + '_mean']
+
     else:
         X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file)
-
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
