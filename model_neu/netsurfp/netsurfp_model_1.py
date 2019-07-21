@@ -243,7 +243,7 @@ def onehot_to_seq(oh_seq, index):
             s += index[i]
         else:
             #stop here or pad?
-            s += index[-1]
+            return s
     return s
 
 def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700']):
