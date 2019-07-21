@@ -232,14 +232,18 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 best_weights = "model/mod_1-CB513-2019_07_21-12_15.h5"
 save_pred_file = "_pred_1.npy"
 PRED_DIR = "preds/"
-q8_list = list('GHIBESTC')
-q3_list = list('HHHEECCC')
+q8_list = list('GHIBESTC-')
+q3_list = list('HHHEECCC-')
 
 def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
-        i = np.argmax(o)
-        s += index[i]
+        if np.max(o)!=0:
+            i = np.argmax(o)
+            s += index[i]
+        else:
+            #stop here or pad?
+            s += index[-1]
     return s
 
 def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700']):
@@ -247,6 +251,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         model = build_model()
 
     for test in file_test:
+        i=True
         X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
         model.load_weights(best_weights)
 
@@ -267,6 +272,14 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             seq_true_3 = onehot_to_seq(true, q3_list)
             seq_true_8 = onehot_to_seq(true, q8_list)
 
+            if i:
+                print('First Q3 prediction: ' + str(seq3[:10]))
+                print('First true prediction: ' + str(seq_true_3[:10]))
+                print('First Q8 prediction: ' + str(seq8[:10]))
+                print('First true prediction: ' + str(seq_true_8[:10]))
+                i=False
+
+
 
             f.write(seq3)
             g.write(seq8)
@@ -278,6 +291,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             q8_pred.append(get_acc(seq_true_8, seq8))
         f.close()
         g.close()
+
 
         print("Q3 " +test+ " test accuracy: "+str(np.mean(q3_pred)))
         print("Q8 " +test+ " test accuracy: "+str(np.mean(q8_pred)))
