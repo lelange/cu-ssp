@@ -250,13 +250,18 @@ def accuracy2(y_true, y_predicted):
     print("understand metric:")
     y = tf.argmax(y_true, axis =- 1)
     print("y:")
-    print(y.eval())
+    print(y.eval()[:30])
     y_ = tf.argmax(y_predicted, axis =- 1)
+    print("y_:")
+    print(y_.eval()[:30])
     mask = tf.greater(y, 0)
     print('mask:')
-    print(mask.eval())
-    print("tf boolean mask")
-    print(tf.boolean_mask(y, mask).eval())
+    print(mask.eval()[:30])
+    print("tf boolean mask y")
+    print(tf.boolean_mask(y, mask).eval()[:30])
+    print("tf boolean mask y_")
+    print(tf.boolean_mask(y_, mask).eval()[:30])
+    print(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)).eval()[:30])
 
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
@@ -284,8 +289,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
         with sess.as_default():
             acc = accuracy2(y_test, y_test_pred)
             print("Accuracy2: ")
-            print(acc.eval())
-        sess.run()
+            print(acc.eval()[:30])
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q3_pred = []
         q8_pred = []
