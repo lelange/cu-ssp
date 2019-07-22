@@ -31,7 +31,10 @@ import json
 from bson import json_util
 from datetime import datetime
 
-from utils import parse_arguments, get_data, train_val_split, save_cv, telegram_me, accuracy, get_acc
+from utils import parse_arguments, get_data, train_val_split, \
+    save_cv, telegram_me, accuracy, get_acc, build_and_predict, save_results_to_file
+
+
 from collections import defaultdict
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -231,9 +234,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 # write best weight models in file and look for model (eg. mod_1) name in weight name
 best_weights = "model/mod_1-CB513-2019_07_22-12_53.h5"
 save_pred_file = "_pred_1.npy"
-PRED_DIR = "preds/"
-q8_list = list('-GHIBESTC')
-q3_list = list('-HHHEECCC')
+
 
 def onehot_to_seq(oh_seq, index):
     s = ''
@@ -376,6 +377,7 @@ if predict_only:
     build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
     test_acc = None
     time_data = time.time() - start_time
+    save_results = False
 else:
     # load data
     X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
@@ -388,6 +390,7 @@ else:
     print("y train shape: ", y_train.shape)
 
     time_data = time.time() - start_time
+    save_results = True
 
     if cross_validate:
 
@@ -404,6 +407,8 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
+if save_results:
+    save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc)
 
-#telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
+telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
 

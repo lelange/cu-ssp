@@ -50,6 +50,8 @@ from hyperopt.mongoexp import MongoTrials
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 MODEL_NAME = 'mod_3'
+save_pred_file = "_pred_3.npy"
+
 N_FOLDS = 10 # for cross validation
 MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
 NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
@@ -60,7 +62,7 @@ NB_FEATURES = 30 # feature dimension
 
 start_time = time.time()
 
-args = parse_arguments(default_epochs=10)
+args = parse_arguments(default_epochs=20)
 
 normalize = args.normalize
 standardize = args.standardize
@@ -301,8 +303,8 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 
 # write best weight models in file and look for model (eg. mod_1) name in weight name
 best_weights = "model/mod_3-CB513-2019_07_22-15_08.h5"
-save_pred_file = "_pred_3.npy"
-PRED_DIR = "preds/"
+
+
 
 #--------------------------------- main ---------------------------------
 
@@ -341,10 +343,10 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)#
+telegram_me(m, s, sys.argv[0], test_acc, hmm, standardize)
 
 if save_results:
-    save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc)
+    save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc, hmm, standardize, normalize)
 
 '''
 if cross_validate :
