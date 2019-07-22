@@ -40,7 +40,7 @@ NB_CLASSES_Q3 = 3 # number Q3 classes
 NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
 NB_FEATURES = 30 # feature dimension
 
-args = parse_arguments(default_epochs=80)
+args = parse_arguments(default_epochs=35)
 
 normalize = args.normalize
 standardize = args.standardize
@@ -111,8 +111,8 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.2, patience=6, verbose=1, mode='max')
     callbacks = [checkpointer]
 
-    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-                        epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
+    #history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val), epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
+    history = model.fit(X_train_aug, y_train, epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
 
     # plot accuracy during training
     return model, history
@@ -203,7 +203,9 @@ else:
         test_acc = test_accs[file_test[0] + '_mean']
 
     else:
-        X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+        #X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+        X_val_aug = None
+        y_val = None
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file)
 
