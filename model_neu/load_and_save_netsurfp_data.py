@@ -22,9 +22,9 @@ minlen_seq= 100
 
 data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
 
-#data_train = np.load(data_root+'Train_HHblits.npz')
-#data_cb513 = np.load(data_root+'CB513_HHblits.npz')
-#data_ts115 = np.load(data_root+'TS115_HHblits.npz')
+data_train = np.load(data_root+'Train_HHblits.npz')
+data_cb513 = np.load(data_root+'CB513_HHblits.npz')
+data_ts115 = np.load(data_root+'TS115_HHblits.npz')
 data_casp12 = np.load(data_root+'CASP12_HHblits.npz')
 
 def onehot_to_seq(oh_seq, index):
@@ -56,6 +56,7 @@ def get_q8(data, seq_range):
     return data[:,:maxlen_seq,57:65][seq_range]
 
 
+#add extra dimension for no sequence in one hot encoded labels
 def get_and_save_data(data, filename):
     database = data['data']
     mask = get_mask(database)
@@ -76,14 +77,14 @@ def get_and_save_data(data, filename):
     q9[:,:,0]= 1-mask[seq_range,:maxlen_seq]
     #print('hmm shape: ', hmm.shape)
     #np.save(data_root+filename+'_input.npy', input_seq)
-    #np.save(data_root+filename+'_q8.npy', q8)
+    np.save(data_root+filename+'_q9.npy', q9)
     #np.save(data_root+filename+'_hmm.npy', hmm)
     print(filename+' is saved.')
 
 
-#get_and_save_data(data_train, 'train_700')
-#get_and_save_data(data_cb513, 'cb513_700')
-#get_and_save_data(data_ts115, 'ts115_700')
+get_and_save_data(data_train, 'train_700')
+get_and_save_data(data_cb513, 'cb513_700')
+get_and_save_data(data_ts115, 'ts115_700')
 get_and_save_data(data_casp12, 'casp12_700')
 
 
