@@ -40,13 +40,13 @@ from utils import parse_arguments, get_data, train_val_split, \
     save_cv, telegram_me, accuracy, get_acc, build_and_predict, save_results_to_file
 
 from collections import defaultdict
-
 from datetime import datetime
 
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
 #import objective
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 MODEL_NAME = 'mod_3'
