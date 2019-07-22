@@ -32,8 +32,8 @@ args = parse_arguments(default_epochs=15)
 batch_size = 64
 
 start_time = time.time()
-MODEL_NAME = 'mod_3'
-save_pred_file = "_pred_3.npy"
+MODEL_NAME = 'mod_4'
+save_pred_file = "_pred_4.npy"
 
 N_FOLDS = 10 # for cross validation
 MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
@@ -74,7 +74,7 @@ file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ st
 Model
 
 '''
-len_seq = 600
+
 
 def build_model():
     model = None
@@ -90,7 +90,7 @@ def build_model():
     # one dense layer to remove sparsity
     x = Dense(128, activation='relu', use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros')(x)
 
-    x = Reshape([len_seq, 128, 1])(x)
+    x = Reshape([MAXLEN_SEQ, 128, 1])(x)
 
     # Defining 3 convolutional layers with different kernel sizes
     # kernel size = 3
