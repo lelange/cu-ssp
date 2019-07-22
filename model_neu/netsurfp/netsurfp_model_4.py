@@ -28,7 +28,7 @@ from datetime import datetime
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
-args = parse_arguments(default_epochs=15)
+args = parse_arguments(default_epochs=25)
 batch_size = 64
 
 start_time = time.time()

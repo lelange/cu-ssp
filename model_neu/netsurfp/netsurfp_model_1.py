@@ -109,6 +109,8 @@ def build_and_train (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
                         epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping],
                         verbose=1, shuffle=True)
 
+    K.clear_session()
+
     return model, history
 
 
@@ -173,6 +175,8 @@ def build_model():
         loss="categorical_crossentropy",
         metrics=["accuracy", accuracy])
 
+    K.clear_session()
+
     return model
 
 def evaluate_model(model, load_file, test_ind = None):
@@ -189,6 +193,8 @@ def evaluate_model(model, load_file, test_ind = None):
         print(file_test[i] +' test accuracy:', score[2])
         test_accs.append(score[2])
         names.append(file_test[i])
+    K.clear_session()
+    del model
     return dict(zip(names, test_accs))
 
 def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
@@ -370,11 +376,15 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         f.write("----------------------------\n")
         f.close()
 
+        K.clear_session()
+        del model
+
 
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
+    model=build_model()
+    build_and_predict(model, best_weights, save_pred_file, MODEL_NAME, file_test)
     test_acc = None
     time_data = time.time() - start_time
     save_results = False
@@ -402,6 +412,9 @@ else:
         X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file)
+
+K.clear_session()
+del model
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
