@@ -109,9 +109,10 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.2, patience=6, verbose=1, mode='max')
+    callbacks = [checkpointer]
 
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer], verbose=1, shuffle=True)
+                        epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
 
     # plot accuracy during training
     return model, history
