@@ -22,10 +22,10 @@ minlen_seq= 100
 
 data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
 
-data_train = np.load(data_root+'Train_HHblits.npz')
+#data_train = np.load(data_root+'Train_HHblits.npz')
 #data_cb513 = np.load(data_root+'CB513_HHblits.npz')
 #data_ts115 = np.load(data_root+'TS115_HHblits.npz')
-#data_casp12 = np.load(data_root+'CASP12_HHblits.npz')
+data_casp12 = np.load(data_root+'CASP12_HHblits.npz')
 
 def onehot_to_seq(oh_seq, index):
     s = ''
@@ -41,7 +41,7 @@ def seq2onehot(seqs, n):
             out[i, j, seq[j]] = 1
     return out
 
-q3_list = list('HHHEECCC')
+#q3_list = list('HHHEECCC')
 
 def get_mask(data):
     return data[:,:,50]
@@ -55,30 +55,32 @@ def get_hmm(data, seq_range):
 def get_q8(data, seq_range):
     return data[:,:maxlen_seq,57:65][seq_range]
 
-'''
+
 def get_and_save_data(data, filename):
     database = data['data']
     mask = get_mask(database)
     seq_range = [minlen_seq<=mask[i].sum()<=maxlen_seq for i in range(len(mask))]
-    input_seq = get_input(database, seq_range)
+    #input_seq = get_input(database, seq_range)
     q8 = get_q8(database, seq_range)
-    hmm = get_hmm(database, seq_range)
-    print('Input shape: ', input_seq.shape)
-    print('q8 shape: ', q8.shape)
-    print('hmm shape: ', hmm.shape)
-    np.save(data_root+filename+'_input.npy', input_seq)
-    np.save(data_root+filename+'_q8.npy', q8)
-    np.save(data_root+filename+'_hmm.npy', hmm)
+    #hmm = get_hmm(database, seq_range)
+    #print('Input shape: ', input_seq.shape)
+    print('q8 shape: '+ str(q8.shape))
+    q9 = np.pad(q8, ((0,0),(0,0),(1,0)), 'constant')
+    print('q9 shape:' + str(q9.shape))
+    #print('hmm shape: ', hmm.shape)
+    #np.save(data_root+filename+'_input.npy', input_seq)
+    #np.save(data_root+filename+'_q8.npy', q8)
+    #np.save(data_root+filename+'_hmm.npy', hmm)
     print(filename+' is saved.')
 
 
-get_and_save_data(data_train, 'train_700')
-get_and_save_data(data_cb513, 'cb513_700')
-get_and_save_data(data_ts115, 'ts115_700')
+#get_and_save_data(data_train, 'train_700')
+#get_and_save_data(data_cb513, 'cb513_700')
+#get_and_save_data(data_ts115, 'ts115_700')
 get_and_save_data(data_casp12, 'casp12_700')
 
 
-
+# prepare q8 and q3 data
 '''
 def get_and_save_data(data, filename):
 
@@ -104,3 +106,4 @@ def get_and_save_data(data, filename):
     print(filename + ' is saved.')
 
 get_and_save_data(data_train, 'train_700')
+'''
