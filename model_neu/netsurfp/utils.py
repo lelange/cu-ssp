@@ -157,6 +157,16 @@ def onehot_to_seq(oh_seq, index):
             return s
     return s
 
+def onehot_to_seq2(oh_seq, index):
+    s = ''
+    for o in oh_seq:
+        i = np.argmax(o)
+        s += index[i]
+
+        if i ==0:
+            return s
+    return s
+
 counter = 0
 # prints the results
 def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False, print_pred=False):
