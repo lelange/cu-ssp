@@ -64,7 +64,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
 
         else:
             input_seq =  np.load(data_root+filename+'_input.npy')
-    q8 = np.load(data_root + filename + '_q8.npy')
+    q8 = np.load(data_root + filename + '_q9.npy')
     #q3 = np.load(data_root + filename + '_q3.npy')
     if hmm:
         profiles = np.load(data_root+filename+'_hmm.npy')
