@@ -373,7 +373,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['ts115_700
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file)
+    build_and_predict(build_model(), best_weights, save_pred_file, file_test)
     test_acc = None
     time_data = time.time() - start_time
 else:
