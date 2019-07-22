@@ -68,7 +68,7 @@ if test_mode:
 batch_size = 128
 
 data_root = '../data/netsurfp/'
-weights_file = "mod_1-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
 file_scores = "logs/cv_results.txt"
 file_scores_mean = "logs/cv_results_mean.txt"
@@ -139,13 +139,13 @@ def super_conv_block(x):
     return x
 
 def build_model():
+    input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     if hmm:
-        input = Input(shape=(MAXLEN_SEQ, NB_AS,))
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
-        input = Input(shape=(MAXLEN_SEQ, NB_AS,))
+
         x = input
         inp = input
 
@@ -229,11 +229,11 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 
 
 # write best weight models in file and look for model (eg. mod_1) name in weight name
-best_weights = "model/mod_1-CB513-2019_07_21-12_15.h5"
+best_weights = "model/mod_1-CB513-2019_07_22-12_53.h5"
 save_pred_file = "_pred_1.npy"
 PRED_DIR = "preds/"
-q8_list = list('GHIBESTC')
-q3_list = list('HHHEECCC')
+q8_list = list('-GHIBESTC')
+q3_list = list('-HHHEECCC')
 
 def onehot_to_seq(oh_seq, index):
     s = ''
@@ -242,7 +242,7 @@ def onehot_to_seq(oh_seq, index):
             i = np.argmax(o)
             s += index[i]
         else:
-            #stop here or pad?
+            #s += index[0]
             return s
     return s
 
@@ -279,7 +279,7 @@ def accuracy2(y_true, y_predicted):
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
 
-def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700']):
+def build_and_predict(model, best_weights, save_pred_file, file_test=['ts115_700']):
     if model is None:
         model = build_model()
 
@@ -290,14 +290,12 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
 
         print("\nPredict " + test +"...")
 
-
-
         y_test_pred = model.predict(X_test_aug)
         score = model.evaluate(X_test_aug, y_test)
         print("Accuracy from model evaluate: "+str(score[2]))
-        #np.save(PRED_DIR+test+save_pred_file, y_test_pred)
+        np.save(PRED_DIR+test+save_pred_file, y_test_pred)
 
-
+        '''
         sess = tf.Session()
         with sess.as_default():
             acc = accuracy2(y_test, y_test_pred)
@@ -308,25 +306,35 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['cb513_700
             print(np.sum(acc.eval())/len(acc.eval()))
             print("Test argmax (len 5, max at 3): "+str(tf.argmax(input=[2,0,1,0,0]).eval()))
             print("Test argmax (len 2): " + str(tf.argmax(input=[0]).eval()))
+            
+        '''
+
         print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q3_pred = 0
         q8_pred = 0
         q3_len = 0
         q8_len = 0
 
-        f = open(PRED_DIR+"q3_pred_mod_1.txt", "a+")
-        g = open(PRED_DIR+"q8_pred_mod_1.txt", "a+")
+        f = open(PRED_DIR+"q4_pred_mod_1.txt", "a+")
+        g = open(PRED_DIR+"q9_pred_mod_1.txt", "a+")
         for true, pred in zip(y_test, y_test_pred):
             seq3 = onehot_to_seq(pred, q3_list)
             seq8 = onehot_to_seq(pred, q8_list)
-            seq_true_3 = onehot_to_seq2(true, q3_list)
-            seq_true_8 = onehot_to_seq2(true, q8_list)
+            seq_true_3 = onehot_to_seq(true, q3_list)
+            seq_true_8 = onehot_to_seq(true, q8_list)
 
             if i:
-                print('First Q3 prediction: ' + str(seq3[:60]))
-                print('First true prediction: ' + str(seq_true_3[:60]))
-                print('First Q8 prediction: ' + str(seq8[:60]))
-                print('First true prediction: ' + str(seq_true_8[:60]))
+                print('Q3 prediction, first pred then true: ')
+                print(seq3[:60])
+                print(seq_true_3[:60])
+                print(seq3[-60:])
+                print(seq_true_3[-60:])
+
+                print('Q8 prediction, first pred then true: ')
+                print(seq8[:60])
+                print(seq_true_8[:60])
+                print(seq8[-60:])
+                print(seq_true_8[-60:])
                 i=False
 
             f.write(seq3)

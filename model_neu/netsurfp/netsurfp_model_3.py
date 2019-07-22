@@ -36,13 +36,25 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-from utils import *
+from utils import parse_arguments, get_data, train_val_split, save_cv, telegram_me, accuracy, get_acc
+from collections import defaultdict
+
+from datetime import datetime
 
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 from hyperopt.mongoexp import MongoTrials
 
 import objective
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+MODEL_NAME = 'mod_3'
+N_FOLDS = 10 # for cross validation
+MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
+NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
+NB_CLASSES_Q3 = 3 # number Q3 classes
+NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
+NB_FEATURES = 30 # feature dimension
+
 
 start_time = time.time()
 
@@ -56,41 +68,36 @@ epochs = args.epochs
 plot = args.plot
 no_input = args.no_input
 optimize = args.optimize
-tv_perc = args.tv_perc
 cross_validate = args.cv
+tv_perc = args.tv_perc
+test_mode = args.test_mode
+predict_only = args.predict
+
+if test_mode:
+    N_FOLDS = 2
+    epochs = 2
 
 batch_size = 16
 
-n_tags = 8
-n_words = 20
 data_root = '../data/netsurfp/'
+weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/"+weights_file
+file_scores = "logs/cv_results.txt"
+file_scores_mean = "logs/cv_results_mean.txt"
 
-file_train = 'train'
-file_test = ['cb513', 'ts115', 'casp12']
+file_train = 'train_' + str(MAXLEN_SEQ)
+file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
 
-#load data
-X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
-
-if hmm:
-    print("X train shape: ", X_train_aug[0].shape)
-    print("X aug train shape: ", X_train_aug[1].shape)
-else:
-    print("X train shape: ", X_train_aug.shape)
-print("y train shape: ", y_train.shape)
-
-time_data = time.time() - start_time
 
 def build_model():
     model = None
-
+    input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     if hmm:
-        input = Input(shape=(X_train_aug[0].shape[1], X_train_aug[0].shape[2],))
-        profiles_input = Input(shape=(X_train_aug[1].shape[1], X_train_aug[1].shape[2],))
+        profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
-        input = Input(shape=(X_train_aug.shape[1], X_train_aug.shape[2],))
         x1 = input
         x2 = input
         inp = input
@@ -109,7 +116,7 @@ def build_model():
     w = Dropout(0.4)(w)
     w = tcn.TCN(return_sequences=True)(w)
 
-    y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
+    y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(w)
 
     # Defining the model as a whole and printing the summary
     model = Model(inp, y)
@@ -144,8 +151,8 @@ space = {
     'decay': hp.choice('decay', LR_CHOICES),
     'batch_size': hp.choice('batch_size', BATCH_CHOICES)
 }
-#load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
-load_file = "./model/mod_3-CB513-test.h5"
+load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+#load_file = "./model/mod_3-CB513-test.h5"
 
 def data():
     data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
@@ -243,7 +250,7 @@ def evaluate_model(model, load_file, test_ind = None):
     for i in test_ind:
         X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
         model.load_weights(load_file)
-        print("####evaluate" + file_test[i] +":")
+        print("####evaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
         print(file_test[i] +' test loss:', score[0])
         print(file_test[i] +' test accuracy:', score[2])
@@ -251,6 +258,51 @@ def evaluate_model(model, load_file, test_ind = None):
         names.append(file_test[i])
     return dict(zip(names, test_accs))
 
+def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
+    X_train, X_aug_train = X_train_aug
+    # Instantiate the cross validator
+    kfold_splits = n_folds
+    kf = KFold(n_splits=kfold_splits, shuffle=True)
+
+    cv_scores = defaultdict(list)
+    model_history = []
+
+    # Loop through the indices the split() method returns
+    for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
+        print('\n\n-----------------------')
+        print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
+        print('-----------------------\n')
+
+        # Generate batches from indices
+        X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
+        X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
+        y_train_fold, y_val_fold = y_train[train_indices], y_train[val_indices]
+
+        print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
+            X_val_fold.shape[0]) + " validation samples...")
+
+        model, history = build_and_train([X_train_fold, X_aug_train_fold], y_train_fold,
+                                  [X_val_fold, X_aug_val_fold], y_val_fold)
+
+        print(history.history)
+
+        test_acc = evaluate_model(model, load_file, test_ind = [0, 1, 2])
+
+        cv_scores['val_accuracy'].append(max(history.history['val_accuracy']))
+
+        for k, v in test_acc.items():
+            cv_scores[k].append(v)
+
+        model_history.append(model)
+
+    return cv_scores, model_history
+
+# write best weight models in file and look for model (eg. mod_1) name in weight name
+best_weights = "model/mod_3-CB513-2019_07_22-12_53.h5"
+save_pred_file = "_pred_3.npy"
+PRED_DIR = "preds/"
+q8_list = list('-GHIBESTC')
+q3_list = list('-HHHEECCC')
 
 if cross_validate :
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)

@@ -15,6 +15,7 @@ import os, pickle
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
 data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
+PRED_DIR = "preds/"
 
 def parse_arguments(default_epochs):
     """
@@ -142,14 +143,16 @@ def to_seq(y):
 # encoding, takes a one-hot encoded y matrix
 # with an lookup table "index"
 # Maps the sequence to a one-hot encoding
+
 def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
-        i = np.argmax(o)
-        if i != 0:
+        if np.max(o)!=0:
+            i = np.argmax(o)
             s += index[i]
         else:
-            break
+            #s += index[0]
+            return s
     return s
 
 counter = 0
