@@ -16,6 +16,8 @@ residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
 data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
 PRED_DIR = "preds/"
+q8_list = list('-GHIBESTC')
+q3_list = list('-HHHEECCC')
 
 def parse_arguments(default_epochs):
     """
