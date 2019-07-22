@@ -36,7 +36,9 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-from utils import parse_arguments, get_data, train_val_split, save_cv, telegram_me, accuracy, get_acc, build_and_predict
+from utils import parse_arguments, get_data, train_val_split, \
+    save_cv, telegram_me, accuracy, get_acc, build_and_predict, save_results_to_file
+
 from collections import defaultdict
 
 from datetime import datetime
@@ -77,7 +79,7 @@ if test_mode:
     N_FOLDS = 2
     epochs = 2
 
-batch_size = 16
+batch_size = 128
 
 data_root = '../data/netsurfp/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
@@ -240,7 +242,7 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
         plt.legend()
         plt.savefig('./plots/mod_3-CB513-' + datetime.now().strftime("%m_%d-%H_%M") + '_accuracy.png')
 
-    return model
+    return model, history
 
 def evaluate_model(model, load_file, test_ind = None):
     if test_ind is None:
@@ -298,7 +300,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     return cv_scores, model_history
 
 # write best weight models in file and look for model (eg. mod_1) name in weight name
-best_weights = "model/mod_3-CB513-2019_07_22-12_53.h5"
+best_weights = "model/mod_3-CB513-2019_07_22-15_08.h5"
 save_pred_file = "_pred_3.npy"
 PRED_DIR = "preds/"
 q8_list = list('-GHIBESTC')
@@ -331,6 +333,7 @@ else:
 
     else:
         X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+        #korrigiere name und return
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file)
 
@@ -340,7 +343,7 @@ print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in tota
 
 #telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
 
-
+save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc)
 
 '''
 if cross_validate :

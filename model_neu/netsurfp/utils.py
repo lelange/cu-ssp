@@ -450,7 +450,30 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         f.write("----------------------------\n")
         f.close()
 
+def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True, standardize=True, normalize=False, no_input=False):
+    f = open("results_experiments.txt", "a+")
+    f.write("Results for " + model_name + " and weights " + weights_file +".")
+    f.write("\n")
 
+    m, s = divmod(time_end, 60)
+    msg = '(Runtime: {:.0f}min {:.0f}s)'.format(m, s)
+    if hmm:
+        verb = ''
+        if standardize:
+            verb += 'Standardized '
+        if normalize:
+            verb += 'and normalized '
+        msg += '\n ' + verb + 'hhblits profiles and netsurf data were used.'
+    if no_input:
+        msg += '\n Only hhblits profiles were used as input.'
+    if test_acc is not None:
+        for name, value in test_acc.items():
+            msg += '\n' + name + ' test accuracy: {:.3%}'.format(value)
+
+    f.write(msg)
+    f.write("\n")
+    f.write("----------------------------\n")
+    f.close()
 
 
 
