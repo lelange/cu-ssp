@@ -46,7 +46,7 @@ def data():
     std = np.std(profiles)
     X_aug_test = (profiles - mean) / std
     X_test_aug = np.concatenate((X_test, X_aug_test), axis = 2)
-    y_test = np.load(data_root + file_test[0] + '_q8.npy')
+    y_test = np.load(data_root + file_test[0] + '_q9.npy')
 
     X_train = np.load(data_root + file_train + '_input.npy')
     profiles = np.load(data_root + file_train + '_hmm.npy')
@@ -54,7 +54,7 @@ def data():
     std = np.std(profiles)
     X_aug_train = (profiles - mean) / std
     X_train_aug = [X_train, X_aug_train]
-    y_train = np.load(data_root + file_train + '_q8.npy')
+    y_train = np.load(data_root + file_train + '_q9.npy')
 
     X_train_aug, y_train, X_val_aug, y_val = train_val_split(X_train_aug, y_train)
 
@@ -211,7 +211,7 @@ def build_model(hype_space):
     #print(x._keras_shape)
     x = concatenate([x, w], axis=2)
     #print(x._keras_shape)
-
+    x = TimeDistributed(Dropout(hype_space['dropout']))(x)
     z = Conv1D(int(hype_space['conv_filter_size']), 5, strides=1, padding='same')(x)
     #print(z._keras_shape)
     w = Conv1D(int(hype_space['conv_filter_size']), 3, strides=1, padding='same')(x)
@@ -222,7 +222,9 @@ def build_model(hype_space):
     #print(x._keras_shape)
     x = concatenate([x, w], axis=2)
     #print(x._keras_shape)
+    x = TimeDistributed(Dropout(hype_space['dropout']))(x)
     x = Bidirectional(CuDNNLSTM(units=int(128*hype_space['LSTM_units_mult']), return_sequences=True))(x)
+    x = TimeDistributed(Dropout(hype_space['dropout2']))(x)
     #print('units = ', int(128*hype_space['LSTM_units_mult']))
     #print(x._keras_shape)
     # Two heads as outputs:

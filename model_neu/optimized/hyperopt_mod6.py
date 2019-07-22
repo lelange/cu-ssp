@@ -72,6 +72,10 @@ space = {
     'LSTM_units_mult': hp.loguniform('LSTM_units_mult', -0.6, 0.6),
     # Use batch normalisation at more places?
     'use_BN': hp.choice('use_BN', [False, True]),
+    # Uniform distribution in finding appropriate dropout values, conv layers
+    'dropout': hp.uniform('dropout', 0.0, 0.7),
+    # Uniform distribution in finding appropriate dropout values, conv layers
+    'dropout2': hp.uniform('dropout2', 0.0, 0.7),
 }
 
 def optimize_model(hyperspace):

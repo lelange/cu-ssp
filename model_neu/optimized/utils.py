@@ -91,6 +91,6 @@ def get_test_data(filename):
     std = np.std(profiles)
     X_aug_test = (profiles - mean) / std
     X_test_aug = np.concatenate((X_test, X_aug_test), axis=2)
-    y_test = np.load(data_root + filename + '_q8.npy')
+    y_test = np.load(data_root + filename + '_q9.npy')
 
     return  X_test_aug, y_test
