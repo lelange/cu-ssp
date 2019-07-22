@@ -72,7 +72,8 @@ file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ st
 
 
 def build_model():
-    model = None
+    #model = None
+
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
@@ -86,18 +87,19 @@ def build_model():
     w = Conv1D(64, 7, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
+
     z = Conv1D(64, 5, strides=1, padding='same')(x)
     w = Conv1D(64, 3, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
     x = Bidirectional(CuDNNLSTM(units=128, return_sequences=True))(x)
 
-    y_q8 = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(x)
+    y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(x)
     #y_q3 = TimeDistributed(Dense(3, activation="softmax"), name="y_q3")(x)
 
-    model = Model(inp, y_q8)
+    model = Model(inp, y)
     model.compile(optimizer='RMSprop', loss="categorical_crossentropy", metrics=["accuracy", accuracy])
-    model.summary()
+    #model.summary()
     K.clear_session()
     return model
 
@@ -108,11 +110,9 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.2, patience=6, verbose=1, mode='max')
 
-    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val), epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
 
     # plot accuracy during training
-    K.clear_session()
     return model, history
 
 def evaluate_model(model, load_file, test_ind = None):
