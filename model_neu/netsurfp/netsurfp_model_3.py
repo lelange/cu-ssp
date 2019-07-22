@@ -303,8 +303,6 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 best_weights = "model/mod_3-CB513-2019_07_22-15_08.h5"
 save_pred_file = "_pred_3.npy"
 PRED_DIR = "preds/"
-q8_list = list('-GHIBESTC')
-q3_list = list('-HHHEECCC')
 
 #--------------------------------- main ---------------------------------
 
@@ -312,6 +310,7 @@ if predict_only:
     build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
     test_acc = None
     time_data = time.time() - start_time
+    save_results = False
 else:
     # load data
     X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
@@ -324,6 +323,7 @@ else:
     print("y train shape: ", y_train.shape)
 
     time_data = time.time() - start_time
+    save_results = True
 
     if cross_validate:
 
@@ -341,9 +341,10 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-#telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
+telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)#
 
-save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc)
+if save_results:
+    save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc)
 
 '''
 if cross_validate :

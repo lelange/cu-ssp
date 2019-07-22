@@ -218,6 +218,17 @@ def get_acc(gt, pred):
             correct += 1
     return (1.0 * correct), len(gt)
 
+def get_acc2(gt, pred):
+    '''
+         if len(gt)!=len(pred):
+        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
+    '''
+    correct = 0
+    for i in range(len(gt)):
+        if gt[i] == pred[i]:
+            correct += 1
+    return (1.0 * correct)/len(gt)
+
 def evaluate_acc(y_predicted):
     print('Analyse accuracy')
 
@@ -408,8 +419,11 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         q3_len = 0
         q8_len = 0
 
-        f = open(PRED_DIR + "q4_pred_mod_1.txt", "a+")
-        g = open(PRED_DIR + "q9_pred_mod_1.txt", "a+")
+        q8_accs=[]
+        q3_accs=[]
+
+        f = open(PRED_DIR + "q4_pred_mod_1.txt", "w+")
+        g = open(PRED_DIR + "q9_pred_mod_1.txt", "w+")
         for true, pred in zip(y_test, y_test_pred):
             seq3 = onehot_to_seq(pred, q3_list)
             seq8 = onehot_to_seq(pred, q8_list)
@@ -420,14 +434,11 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
                 print('Q3 prediction, first pred then true: ')
                 print(seq3[:60])
                 print(seq_true_3[:60])
-                print(seq3[-60:])
-                print(seq_true_3[-60:])
 
                 print('Q8 prediction, first pred then true: ')
                 print(seq8[:60])
                 print(seq_true_8[:60])
-                print(seq8[-60:])
-                print(seq_true_8[-60:])
+
                 i = False
 
             f.write(seq3)
@@ -437,6 +448,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
             corr3, len3 = get_acc(seq_true_3, seq3)
             corr8, len8 = get_acc(seq_true_8, seq8)
+            q8_accs.append(get_acc2(seq_true_8, seq8))
+            q3_accs.append(get_acc2(seq_true_3, seq3))
             q3_pred += corr3
             q8_pred += corr8
             q3_len += len3
@@ -446,36 +459,49 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
         print(q8_pred)
         print(q8_len)
+        print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
         print("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
         print("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
+        print("Accuracy mean(#correct per protein/#len_protein):")
+        print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
+        print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
 
         f = open(PRED_DIR + "prediction_accuracy.txt", "a+")
         f.write("Results for " + model_name + " and weights " + best_weights)
-        f.write("\n")
-        f.write("Netsurf data were used with standardized hhblits profiles.")
-        f.write("\n")
+        f.write("\n\n")
+        f.write("Netsurf data were used with standardized hhblits profiles.\n")
+        f.write("Accuracy #sum(correct per proteins)/#sum(len_proteins):\n")
         f.write("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
         f.write("\n")
         f.write("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
+        f.write("\n\n")
+
+        f.write("Accuracy mean(#correct per protein/#len_protein):\n")
+        f.write("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
         f.write("\n")
+        f.write("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
+        f.write("\n")
+        f.write("Accuracy from model evaluate: " + str(score[2]))
+        f.write("\n\n")
+
         f.write("Predictions are saved to: " + PRED_DIR + test + save_pred_file)
-        f.write("----------------------------\n")
+        f.write("\n----------------------------\n\n\n")
         f.close()
 
 def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True, standardize=True, normalize=False, no_input=False):
     f = open("results_experiments.txt", "a+")
     f.write("Results for " + model_name + " and weights " + weights_file +".")
-    f.write("\n")
+    f.write("\n\n")
 
     m, s = divmod(time_end, 60)
-    msg = '(Runtime: {:.0f}min {:.0f}s)'.format(m, s)
+    msg = 'Runtime: {:.0f}min {:.0f}s'.format(m, s)
     if hmm:
         verb = ''
         if standardize:
             verb += 'Standardized '
         if normalize:
             verb += 'and normalized '
-        msg += '\n ' + verb + 'hhblits profiles and netsurf data were used.'
+        msg += '\n' + verb + 'hhblits profiles and netsurf data were used.'
     if no_input:
         msg += '\n Only hhblits profiles were used as input.'
     if test_acc is not None:
@@ -485,6 +511,7 @@ def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True,
     f.write(msg)
     f.write("\n")
     f.write("----------------------------\n")
+    f.write("\n\n")
     f.close()
 
 
