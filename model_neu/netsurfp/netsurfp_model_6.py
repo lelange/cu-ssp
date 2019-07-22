@@ -111,7 +111,7 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.2, patience=6, verbose=1, mode='max')
 
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer], verbose=1, shuffle=True)
 
     # plot accuracy during training
     return model, history

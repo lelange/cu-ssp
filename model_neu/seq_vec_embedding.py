@@ -33,7 +33,7 @@ data_root = '../data/netsurfp/'
 data_train = np.load(data_root+'Train_HHblits.npz')
 data_cb513 = np.load(data_root+'CB513_HHblits.npz')
 
-maxlen_seq = 600
+maxlen_seq = 700
 minlen_seq= 100
 
 def get_seq_mask(data):
