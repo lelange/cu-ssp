@@ -72,12 +72,12 @@ file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ st
 
 
 def build_model():
-    #model = None
+    model = None
 
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
-        x = concatenate([input, profiles_input])
+        x = concatenate([input, profiles_input], axis=2)
         inp = [input, profiles_input]
     else:
         x = input
@@ -100,7 +100,7 @@ def build_model():
     model = Model(inp, y)
     model.compile(optimizer='RMSprop', loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     #model.summary()
-    K.clear_session()
+
     return model
 
 def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
@@ -110,7 +110,8 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.2, patience=6, verbose=1, mode='max')
 
-    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val), epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
+                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
 
     # plot accuracy during training
     return model, history
