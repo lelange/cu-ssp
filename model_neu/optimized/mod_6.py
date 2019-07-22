@@ -4,8 +4,8 @@ from utils import print_json, train_val_split, accuracy, get_test_data
 import numpy as np
 import keras
 from keras.layers.core import K  # import keras.backend as K
-from keras.models import Model, Input
-from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, GRU, Conv1D, CuDNNLSTM, concatenate
+from keras.models import *
+from keras.layers import *
 from keras.optimizers import Adam, Nadam, RMSprop
 import tensorflow as tf
 from hyperopt import STATUS_OK, STATUS_FAIL
