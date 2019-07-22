@@ -387,7 +387,10 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
     if model is None:
         model = build_model()
 
+    # save all accuracys from Q8 and Q3 preditions
+    f = open(PRED_DIR + "prediction_accuracy.txt", "a+")
     for test in file_test:
+
         i = True
         X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
         model.load_weights(best_weights)
@@ -397,7 +400,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         y_test_pred = model.predict(X_test_aug)
         score = model.evaluate(X_test_aug, y_test)
         print("Accuracy from model evaluate: " + str(score[2]))
-        np.save(PRED_DIR + test + save_pred_file, y_test_pred)
+        np.save(PRED_DIR +'Q8/' + test + save_pred_file, y_test_pred)
 
         '''
         sess = tf.Session()
@@ -422,8 +425,10 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         q8_accs=[]
         q3_accs=[]
 
-        f = open(PRED_DIR + "q4_pred_mod_1.txt", "w+")
-        g = open(PRED_DIR + "q9_pred_mod_1.txt", "w+")
+        g = open(PRED_DIR +'Q8/' +"q9_pred_mod_1.txt", "w+")
+        h = open(PRED_DIR +'Q8/'+ "q4_pred_mod_1.txt", "w+")
+
+        #calculate q8, q3 representations from one hot encoding and calculate accuracy
         for true, pred in zip(y_test, y_test_pred):
             seq3 = onehot_to_seq(pred, q3_list)
             seq8 = onehot_to_seq(pred, q8_list)
@@ -441,9 +446,9 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
                 i = False
 
-            f.write(seq3)
+            h.write(seq3)
             g.write(seq8)
-            f.write("\n")
+            h.write("\n")
             g.write("\n")
 
             corr3, len3 = get_acc(seq_true_3, seq3)
@@ -454,19 +459,18 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             q8_pred += corr8
             q3_len += len3
             q8_len += len8
-        f.close()
         g.close()
+        h.close()
 
-        print(q8_pred)
-        print(q8_len)
+        #print results
         print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
         print("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
         print("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
-        print("Accuracy mean(#correct per protein/#len_protein):")
+        print("\nAccuracy mean(#correct per protein/#len_protein):")
         print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
         print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
 
-        f = open(PRED_DIR + "prediction_accuracy.txt", "a+")
+        #save results to file
         f.write("Results for " + model_name + " and weights " + best_weights)
         f.write("\n\n")
         f.write("Netsurf data were used with standardized hhblits profiles.\n")
@@ -480,13 +484,17 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         f.write("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
         f.write("\n")
         f.write("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
-        f.write("\n")
+        f.write("\n\n")
+
         f.write("Accuracy from model evaluate: " + str(score[2]))
         f.write("\n\n")
 
         f.write("Predictions are saved to: " + PRED_DIR + test + save_pred_file)
-        f.write("\n----------------------------\n\n\n")
-        f.close()
+        f.write("\n----------------------------\n\n")
+
+    f.write("\n----------------------------\n")
+    f.write("\n----------------------------\n\n\n")
+    f.close()
 
 def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True, standardize=True, normalize=False, no_input=False):
     f = open("results_experiments.txt", "a+")
