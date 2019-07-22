@@ -36,7 +36,7 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-from utils import parse_arguments, get_data, train_val_split, save_cv, telegram_me, accuracy, get_acc
+from utils import parse_arguments, get_data, train_val_split, save_cv, telegram_me, accuracy, get_acc, build_and_predict
 from collections import defaultdict
 
 from datetime import datetime
@@ -218,7 +218,7 @@ def build_model_ho_3(params):
 
     return result
 
-def train_model(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
+def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     model = build_model()
 
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
@@ -304,6 +304,45 @@ PRED_DIR = "preds/"
 q8_list = list('-GHIBESTC')
 q3_list = list('-HHHEECCC')
 
+#--------------------------------- main ---------------------------------
+
+if predict_only:
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
+    test_acc = None
+    time_data = time.time() - start_time
+else:
+    # load data
+    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
+
+    if hmm:
+        print("X train shape: ", X_train_aug[0].shape)
+        print("X aug train shape: ", X_train_aug[1].shape)
+    else:
+        print("X train shape: ", X_train_aug.shape)
+    print("y train shape: ", y_train.shape)
+
+    time_data = time.time() - start_time
+
+    if cross_validate:
+
+        cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
+        test_accs = save_cv(weights_file, cv_scores, file_scores, file_scores_mean, N_FOLDS)
+        test_acc = test_accs[file_test[0] + '_mean']
+
+    else:
+        X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+        model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
+        test_acc = evaluate_model(model, load_file)
+
+time_end = time.time() - start_time
+m, s = divmod(time_end, 60)
+print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
+
+#telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
+
+
+
+'''
 if cross_validate :
     cv_scores, model_history = crossValidation(load_file, X_train_aug, y_train)
     test_acc = np.mean(cv_scores)
@@ -331,3 +370,5 @@ m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
 telegram_me(m, s, sys.argv[0], test_acc, hmm, standardize, normalize, no_input)
+'''
+

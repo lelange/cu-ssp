@@ -360,6 +360,98 @@ def save_cv(weights_file, cv_scores, file_scores, file_scores_mean, n_folds):
     return test_acc
 
 
+def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['ts115_700']):
+    if model is None:
+        model = build_model()
+
+    for test in file_test:
+        i = True
+        X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
+        model.load_weights(best_weights)
+
+        print("\nPredict " + test + "...")
+
+        y_test_pred = model.predict(X_test_aug)
+        score = model.evaluate(X_test_aug, y_test)
+        print("Accuracy from model evaluate: " + str(score[2]))
+        np.save(PRED_DIR + test + save_pred_file, y_test_pred)
+
+        '''
+        sess = tf.Session()
+        with sess.as_default():
+            acc = accuracy2(y_test, y_test_pred)
+            print("Accuracy2: ")
+            print(acc.eval()[:30])
+            print(np.sum(acc.eval()))
+            print(len(acc.eval()))
+            print(np.sum(acc.eval())/len(acc.eval()))
+            print("Test argmax (len 5, max at 3): "+str(tf.argmax(input=[2,0,1,0,0]).eval()))
+            print("Test argmax (len 2): " + str(tf.argmax(input=[0]).eval()))
+
+        '''
+
+        print("Saved predictions to " + PRED_DIR + test + save_pred_file + ".")
+        q3_pred = 0
+        q8_pred = 0
+        q3_len = 0
+        q8_len = 0
+
+        f = open(PRED_DIR + "q4_pred_mod_1.txt", "a+")
+        g = open(PRED_DIR + "q9_pred_mod_1.txt", "a+")
+        for true, pred in zip(y_test, y_test_pred):
+            seq3 = onehot_to_seq(pred, q3_list)
+            seq8 = onehot_to_seq(pred, q8_list)
+            seq_true_3 = onehot_to_seq2(true, q3_list)
+            seq_true_8 = onehot_to_seq2(true, q8_list)
+
+            if i:
+                print('Q3 prediction, first pred then true: ')
+                print(seq3[:60])
+                print(seq_true_3[:60])
+                print(seq3[-60:])
+                print(seq_true_3[-60:])
+
+                print('Q8 prediction, first pred then true: ')
+                print(seq8[:60])
+                print(seq_true_8[:60])
+                print(seq8[-60:])
+                print(seq_true_8[-60:])
+                i = False
+
+            f.write(seq3)
+            g.write(seq8)
+            f.write("\n")
+            g.write("\n")
+
+            corr3, len3 = get_acc(seq_true_3, seq3)
+            corr8, len8 = get_acc(seq_true_8, seq8)
+            q3_pred += corr3
+            q8_pred += corr8
+            q3_len += len3
+            q8_len += len8
+        f.close()
+        g.close()
+
+        print(q8_pred)
+        print(q8_len)
+        print("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
+        print("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
+
+        f = open(PRED_DIR + "prediction_accuracy.txt", "a+")
+        f.write("Results for " + model_name + " and weights " + best_weights)
+        f.write("\n")
+        f.write("Netsurf data were used with standardized hhblits profiles.")
+        f.write("\n")
+        f.write("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
+        f.write("\n")
+        f.write("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
+        f.write("\n")
+        f.write("Predictions are saved to: " + PRED_DIR + test + save_pred_file)
+        f.write("----------------------------\n")
+        f.close()
+
+
+
 
 
 

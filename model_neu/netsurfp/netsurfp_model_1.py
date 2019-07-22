@@ -279,7 +279,7 @@ def accuracy2(y_true, y_predicted):
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
 
-def build_and_predict(model, best_weights, save_pred_file, file_test=['ts115_700']):
+def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['ts115_700']):
     if model is None:
         model = build_model()
 
@@ -357,7 +357,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['ts115_700
         print("Q8 " +test+ " test accuracy: "+str(q8_pred/q8_len))
 
         f = open(PRED_DIR+"prediction_accuracy.txt", "a+")
-        f.write("Results for "+MODEL_NAME+" and weights "+best_weights)
+        f.write("Results for "+model_name+" and weights "+best_weights)
         f.write("\n")
         f.write("Netsurf data were used with standardized hhblits profiles.")
         f.write("\n")
@@ -373,7 +373,7 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['ts115_700
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file, file_test)
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
     test_acc = None
     time_data = time.time() - start_time
 else:
