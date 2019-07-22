@@ -64,6 +64,8 @@ def get_and_save_data(data, filename):
     q8 = get_q8(database, seq_range)
     #hmm = get_hmm(database, seq_range)
     #print('Input shape: ', input_seq.shape)
+    print('mask shape: '+str(mask.shape))
+    print('mask seq_range shape: '+str(mask[seq_range].shape))
     print('q8 shape: '+ str(q8.shape))
     q9 = np.pad(q8, ((0,0),(0,0),(1,0)), 'constant')
     print('q9 shape:' + str(q9.shape))
