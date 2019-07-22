@@ -401,6 +401,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         score = model.evaluate(X_test_aug, y_test)
         print("Accuracy from model evaluate: " + str(score[2]))
         np.save(PRED_DIR +'Q8/' + test + save_pred_file, y_test_pred)
+        print("Saved predictions to " + PRED_DIR + 'Q8/' + test + save_pred_file + ".")
 
         '''
         sess = tf.Session()
@@ -415,8 +416,6 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print("Test argmax (len 2): " + str(tf.argmax(input=[0]).eval()))
 
         '''
-
-        print("Saved predictions to " + PRED_DIR + test + save_pred_file + ".")
         q3_pred = 0
         q8_pred = 0
         q3_len = 0
@@ -426,7 +425,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         q3_accs=[]
 
         g = open(PRED_DIR +'Q8/' +"q9_pred_mod_1.txt", "w+")
-        h = open(PRED_DIR +'Q8/'+ "q4_pred_mod_1.txt", "w+")
+        h = open(PRED_DIR +'Q3/'+ "q4_pred_mod_1.txt", "w+")
 
         #calculate q8, q3 representations from one hot encoding and calculate accuracy
         for true, pred in zip(y_test, y_test_pred):
@@ -461,6 +460,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             q8_len += len8
         g.close()
         h.close()
+        print('Saved Q8 sequences to '+PRED_DIR +'Q8/' +"q9_pred_mod_1.txt")
+        print('Saved Q3 sequences to ' + PRED_DIR + 'Q3/' + "q4_pred_mod_1.txt")
 
         #print results
         print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
@@ -471,7 +472,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
 
         #save results to file
-        f.write("Results for " + model_name + " and weights " + best_weights)
+        f.write("Results for " + model_name + " and weights " + best_weights+" on "+test+".")
         f.write("\n\n")
         f.write("Netsurf data were used with standardized hhblits profiles.\n")
         f.write("Accuracy #sum(correct per proteins)/#sum(len_proteins):\n")
@@ -492,8 +493,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         f.write("Predictions are saved to: " + PRED_DIR + test + save_pred_file)
         f.write("\n----------------------------\n\n")
 
-    f.write("\n----------------------------\n")
-    f.write("\n----------------------------\n\n\n")
+    f.write("----------------------------\n\n\n")
     f.close()
 
 def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True, standardize=True, normalize=False, no_input=False):
