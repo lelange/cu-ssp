@@ -320,8 +320,8 @@ def build_and_predict(model, best_weights, save_pred_file, file_test=['ts115_700
         for true, pred in zip(y_test, y_test_pred):
             seq3 = onehot_to_seq(pred, q3_list)
             seq8 = onehot_to_seq(pred, q8_list)
-            seq_true_3 = onehot_to_seq(true, q3_list)
-            seq_true_8 = onehot_to_seq(true, q8_list)
+            seq_true_3 = onehot_to_seq2(true, q3_list)
+            seq_true_8 = onehot_to_seq2(true, q8_list)
 
             if i:
                 print('Q3 prediction, first pred then true: ')
