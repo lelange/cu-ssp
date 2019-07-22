@@ -26,13 +26,25 @@ import time
 import dill as pickle
 
 from utils import *
+from collections import defaultdict
+from datetime import datetime
+
 
 start_time = time.time()
 
-args = parse_arguments(default_epochs=25)
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-data_root = '../data/netsurfp/'
-load_file = "./model/mod_5-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+MODEL_NAME = 'mod_3'
+save_pred_file = "_pred_3.npy"
+
+N_FOLDS = 10 # for cross validation
+MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
+NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
+NB_CLASSES_Q3 = 3 # number Q3 classes
+NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
+NB_FEATURES = 30 # feature dimension
+
+args = parse_arguments(default_epochs=25)
 
 normalize = args.normalize
 standardize = args.standardize
@@ -44,18 +56,24 @@ no_input = args.no_input
 optimize = args.optimize
 cross_validate = args.cv
 tv_perc = args.tv_perc
+test_mode = args.test_mode
+predict_only = args.predict
+
+if test_mode:
+    N_FOLDS = 2
+    epochs = 2
+
 batch_size = 64
 
-n_tags = 8
-n_words = 20
+data_root = '../data/netsurfp/'
+weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/"+weights_file
+file_scores = "logs/cv_results.txt"
+file_scores_mean = "logs/cv_results_mean.txt"
 
-file_train = 'train'
-file_test = ['cb513', 'ts115', 'casp12']
+file_train = 'train_' + str(MAXLEN_SEQ)
+file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
 
-#load data
-X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
-
-time_data = time.time() - start_time
 ############################### Model starts here ##############################
 
 def build_model():
