@@ -31,7 +31,7 @@ from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
 from mod_6 import build_and_train, build_model
 
-MODEL_NAME = "mod_6" #f or identifing the results and load the best for this model
+MODEL_NAME = "mod_6_1" #f or identifing the results and load the best for this model
 
 
 def plot(hyperspace, file_name_prefix):
@@ -55,7 +55,7 @@ def plot_best_model():
 
     print("Best hyperspace yet:")
     print_json(space_best_model)
-    plot(space_best_model, "model_best")
+    plot(space_best_model, "model_6_best")
 
 space = {
     # This loguniform scale will multiply the learning rate, so as to make
