@@ -75,6 +75,7 @@ Model
 
 '''
 
+len_seq=700
 
 def build_model():
     model = None
