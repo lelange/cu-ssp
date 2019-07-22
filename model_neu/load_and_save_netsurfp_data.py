@@ -70,7 +70,10 @@ def get_and_save_data(data, filename):
     q9 = np.pad(q8, ((0,0),(0,0),(1,0)), 'constant')
     print('q9 shape:' + str(q9.shape))
     print(np.sum(q9[:,:,0], axis=1))
-    
+    print(np.sum(q9[:, :, 8], axis=1))
+    print(np.sum(mask[seq_range,:maxlen_seq], axis=1))
+    print(np.sum(1-mask[seq_range, :maxlen_seq], axis=1))
+    q9[:,:,0]= 1-mask[seq_range,:maxlen_seq]
     #print('hmm shape: ', hmm.shape)
     #np.save(data_root+filename+'_input.npy', input_seq)
     #np.save(data_root+filename+'_q8.npy', q8)
