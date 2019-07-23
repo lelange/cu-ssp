@@ -65,7 +65,7 @@ def create_var_length_list(arr, lengths):
 def get_and_save_data(data, filename):
     database = data['data']
     mask = get_mask(database)
-    seq_range = [minlen_seq<=mask[i].sum()<=maxlen_seq for i in range(len(mask))]
+    seq_range = range(len(mask)) #[minlen_seq<=mask[i].sum()<=maxlen_seq for i in range(len(mask))]
     new_mask = mask[seq_range,:maxlen_seq]
     input_seq = get_input(database, seq_range)
     q8 = get_q8(database, seq_range)
