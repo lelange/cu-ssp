@@ -39,7 +39,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 MODEL_NAME = 'mod_1'
 N_FOLDS = 10 # for cross validation
-MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
+MAXLEN_SEQ = None # only use sequences to this length and pad to this length, choose from 600, 608, 700
 NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
 NB_CLASSES_Q3 = 3 # number Q3 classes
 NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
@@ -74,9 +74,13 @@ load_file = "./model/"+weights_file
 file_scores = "logs/cv_results.txt"
 file_scores_mean = "logs/cv_results_mean.txt"
 
-file_train = 'train_' + str(MAXLEN_SEQ)
-file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
+if MAXLEN_SEQ is None:
+    ending = "full"
+else:
+    ending= str(MAXLEN_SEQ)
 
+file_train = 'train_' + ending
+file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
 '''
 p = {'activation1':[relu, softmax],
      'activation2':[relu, softmax],
