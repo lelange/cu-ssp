@@ -63,7 +63,7 @@ if test_mode:
     N_FOLDS = 2
     epochs = 2
 
-batch_size = 64
+batch_size = 48
 
 data_root = '../data/netsurfp/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
@@ -189,7 +189,7 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
             epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
 
     # plot accuracy during training
-    K.clear_session()
+
     return model, history
 
 def evaluate_model(model, load_file, test_ind = None):
