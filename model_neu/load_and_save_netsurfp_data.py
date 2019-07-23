@@ -91,7 +91,7 @@ def get_and_save_data(data, filename):
     #np.save(data_root + filename + 'var_len_hmm.npy', var_len_hmm)
     #np.save(data_root + filename + 'var_len_q9.npy', var_len_q9)
     pickle.dump(var_len_input_seq, open(data_root + filename + '_var_len_input.txt', "wb"))
-    pickle.dump(var_len_hmm, open(data_root + filename + '_var_len_input.txt', "wb"))
+    pickle.dump(var_len_hmm, open(data_root + filename + '_var_len_hmm.txt', "wb"))
     pickle.dump(var_len_q9, open(data_root + filename + '_var_len_q9.txt', "wb"))
     #np.save(data_root+filename+'_q9.npy', q9)
     #np.save(data_root+filename+'_hmm.npy', hmm)
