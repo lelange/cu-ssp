@@ -1,7 +1,7 @@
 import numpy as np
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
-
+import pickle
 
 maxlen_seq = None ###! change back!
 minlen_seq= None
@@ -86,9 +86,13 @@ def get_and_save_data(data, filename):
     var_len_hmm = create_var_length_list(hmm, np.sum(new_mask, axis = 1))
     var_len_q9 = create_var_length_list(q9, np.sum(new_mask, axis = 1))
     #np.save(data_root+filename+'_input.npy', input_seq)
-    np.save(data_root + filename + 'var_len_input.npy', var_len_input_seq)
-    np.save(data_root + filename + 'var_len_hmm.npy', var_len_hmm)
-    np.save(data_root + filename + 'var_len_q9.npy', var_len_q9)
+
+    #np.save(data_root + filename + 'var_len_input.npy', var_len_input_seq)
+    #np.save(data_root + filename + 'var_len_hmm.npy', var_len_hmm)
+    #np.save(data_root + filename + 'var_len_q9.npy', var_len_q9)
+    pickle.dump(var_len_input_seq, open(data_root + filename + '_var_len_input.txt', "wb"))
+    pickle.dump(var_len_hmm, open(data_root + filename + '_var_len_input.txt', "wb"))
+    pickle.dump(var_len_q9, open(data_root + filename + '_var_len_q9.txt', "wb"))
     #np.save(data_root+filename+'_q9.npy', q9)
     #np.save(data_root+filename+'_hmm.npy', hmm)
     #np.save(data_root + filename + '_mask.npy', mask[seq_range,:maxlen_seq])
