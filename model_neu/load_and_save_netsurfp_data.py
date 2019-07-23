@@ -3,7 +3,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 
 
-maxlen_seq = 700 ###! change back!
+maxlen_seq = 608 ###! change back!
 minlen_seq= 100
 
 # [0:20] Amino Acids (sparse encoding)
