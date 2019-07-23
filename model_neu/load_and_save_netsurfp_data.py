@@ -56,7 +56,7 @@ def get_q8(data, seq_range):
     return data[:,:maxlen_seq,57:65][seq_range]
 
 def create_var_length_list(arr, lengths):
-    return [line[:int(len)] for line, len in zip(arr, lengths)]
+    return np.array([line[:int(len)] for line, len in zip(arr, lengths)])
 
 #usage: create_var_length_list(arr, np.sum(new_mask, axis = 1))
 
@@ -87,12 +87,12 @@ def get_and_save_data(data, filename):
     var_len_q9 = create_var_length_list(q9, np.sum(new_mask, axis = 1))
     #np.save(data_root+filename+'_input.npy', input_seq)
 
-    #np.save(data_root + filename + 'var_len_input.npy', var_len_input_seq)
-    #np.save(data_root + filename + 'var_len_hmm.npy', var_len_hmm)
-    #np.save(data_root + filename + 'var_len_q9.npy', var_len_q9)
-    pickle.dump(var_len_input_seq, open(data_root + filename + '_var_len_input.txt', "wb"))
-    pickle.dump(var_len_hmm, open(data_root + filename + '_var_len_hmm.txt', "wb"))
-    pickle.dump(var_len_q9, open(data_root + filename + '_var_len_q9.txt', "wb"))
+    np.save(data_root + filename + '_var_len_input.npy', var_len_input_seq)
+    np.save(data_root + filename + '_var_len_hmm.npy', var_len_hmm)
+    np.save(data_root + filename + '_var_len_q9.npy', var_len_q9)
+    #pickle.dump(var_len_input_seq, open(data_root + filename + '_var_len_input.txt', "wb"))
+    #pickle.dump(var_len_hmm, open(data_root + filename + '_var_len_hmm.txt', "wb"))
+    #pickle.dump(var_len_q9, open(data_root + filename + '_var_len_q9.txt', "wb"))
     #np.save(data_root+filename+'_q9.npy', q9)
     #np.save(data_root+filename+'_hmm.npy', hmm)
     #np.save(data_root + filename + '_mask.npy', mask[seq_range,:maxlen_seq])

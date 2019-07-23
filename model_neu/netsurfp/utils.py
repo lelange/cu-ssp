@@ -11,6 +11,7 @@ import argparse
 import telegram
 import sys
 import os, pickle
+import random
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
@@ -286,6 +287,31 @@ def train_val_split(hmm, X_train_aug, y_train, perc = None):
 
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
+
+    if hmm:
+        '''
+        X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[validation_idx]
+        X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[training_idx]
+        '''
+        X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
+        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
+    else:
+        X_val_aug = X_train_aug[validation_idx]
+        X_train_aug = X_train_aug[training_idx]
+
+    return X_train_aug, y_train, X_val_aug, y_val
+
+def train_val_split2(hmm, X_train_aug, y_train, perc = None):
+    n_samples = len(y_train)
+    np.random.seed(0)
+
+    if perc is None:
+        perc = 0.1
+
+    size = int(n_samples * perc)
+
+    y_val = np.random.choice(y_train, size=size, replace=False)
+    y_train = (list(set(y_train) - set(y_val)))
 
     if hmm:
         '''
