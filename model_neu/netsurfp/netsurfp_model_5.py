@@ -92,7 +92,7 @@ def build_model():
     x1_out_last = x1_out[:, -1, :]
 
     x2_out = CuDNNLSTM(units=150, return_sequences=True)(x1_out,
-                                                                           initial_state=[x1_out_last, x1_out_last])
+                                                                )
     x2_out_last = x2_out[:, -1, :]
 
     attention = dot([x2_out, x1_out], axes=[2, 2])
@@ -101,7 +101,7 @@ def build_model():
     x2_out_combined_context = concatenate([context, x2_out])
 
     x3_out = CuDNNLSTM(units=150, return_sequences=True)(x2_out,
-                                                                           initial_state=[x2_out_last, x2_out_last])
+                                                            )
     x3_out_last = x3_out[:, -1, :]
 
     attention_2 = dot([x3_out, x2_out], axes=[2, 2])
@@ -115,7 +115,7 @@ def build_model():
     x3_1_out_combined_context = concatenate([context_2_1, x3_out])
 
     x4_out = CuDNNLSTM(units=150, return_sequences=True)(x3_out,
-                                                                           initial_state=[x3_out_last, x3_out_last])
+                                                            )
     x4_out_last = x4_out[:, -1, :]
 
     attention_3 = dot([x4_out, x3_out], axes=[2, 2])
@@ -134,7 +134,7 @@ def build_model():
     x4_2_out_combined_context = concatenate([context_3_2, x4_out])
 
     x5_out = CuDNNLSTM(units=150, return_sequences=True)(x4_out,
-                                                                           initial_state=[x4_out_last, x4_out_last])
+                                                                )
     x5_out_last = x5_out[:, -1, :]
 
     attention_4 = dot([x5_out, x4_out], axes=[2, 2])
@@ -181,7 +181,7 @@ def build_model():
 def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     model = build_model()
 
-    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=5, verbose=1, mode='max')
+    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=4, verbose=1, mode='max', cooldown = 2)
 
