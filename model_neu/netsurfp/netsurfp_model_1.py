@@ -77,7 +77,7 @@ file_scores = "logs/cv_results.txt"
 file_scores_mean = "logs/cv_results_mean.txt"
 
 if MAXLEN_SEQ is None:
-    ending = "full"
+    ending = "fullvar_len"
 else:
     ending= str(MAXLEN_SEQ)
 
