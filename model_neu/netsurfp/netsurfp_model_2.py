@@ -240,7 +240,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     return cv_scores, model_history
 
 
-best_weights = "model/mod_2-CB513-2019_07_22-15_08.h5"
+best_weights = "model/mod_2-CB513-2019_07_23-10_35.h5"
 #--------------------------------- main ---------------------------------
 
 if predict_only:
