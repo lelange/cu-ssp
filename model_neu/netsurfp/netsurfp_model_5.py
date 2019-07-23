@@ -11,7 +11,7 @@ from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
 from keras.models import Model, Input
-from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional
+from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNLSTM
 from keras.layers import Activation, BatchNormalization, dot, concatenate
 from sklearn.model_selection import train_test_split
 from keras.metrics import categorical_accuracy
