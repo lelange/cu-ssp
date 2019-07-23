@@ -88,10 +88,10 @@ def build_model():
         x = input
         inp = input
 
-    x1_out = Bidirectional(CuDNNLSTM(units=75, return_sequences=True, recurrent_dropout=0.2), merge_mode='concat')(x)
+    x1_out = Bidirectional(CuDNNLSTM(units=75, return_sequences=True), merge_mode='concat')(x)
     x1_out_last = x1_out[:, -1, :]
 
-    x2_out = CuDNNLSTM(units=150, return_sequences=True, recurrent_dropout=0.2)(x1_out,
+    x2_out = CuDNNLSTM(units=150, return_sequences=True)(x1_out,
                                                                            initial_state=[x1_out_last, x1_out_last])
     x2_out_last = x2_out[:, -1, :]
 
@@ -100,7 +100,7 @@ def build_model():
     context = dot([attention, x1_out], axes=[2, 1])
     x2_out_combined_context = concatenate([context, x2_out])
 
-    x3_out = CuDNNLSTM(units=150, return_sequences=True, recurrent_dropout=0.2)(x2_out,
+    x3_out = CuDNNLSTM(units=150, return_sequences=True)(x2_out,
                                                                            initial_state=[x2_out_last, x2_out_last])
     x3_out_last = x3_out[:, -1, :]
 
@@ -114,7 +114,7 @@ def build_model():
     context_2_1 = dot([attention_2_1, x1_out], axes=[2, 1])
     x3_1_out_combined_context = concatenate([context_2_1, x3_out])
 
-    x4_out = CuDNNLSTM(units=150, return_sequences=True, recurrent_dropout=0.2)(x3_out,
+    x4_out = CuDNNLSTM(units=150, return_sequences=True)(x3_out,
                                                                            initial_state=[x3_out_last, x3_out_last])
     x4_out_last = x4_out[:, -1, :]
 
@@ -133,7 +133,7 @@ def build_model():
     context_3_2 = dot([attention_3_2, x1_out], axes=[2, 1])
     x4_2_out_combined_context = concatenate([context_3_2, x4_out])
 
-    x5_out = CuDNNLSTM(units=150, return_sequences=True, recurrent_dropout=0.2)(x4_out,
+    x5_out = CuDNNLSTM(units=150, return_sequences=True)(x4_out,
                                                                            initial_state=[x4_out_last, x4_out_last])
     x5_out_last = x5_out[:, -1, :]
 
