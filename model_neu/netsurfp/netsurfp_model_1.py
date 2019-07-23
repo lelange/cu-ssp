@@ -150,9 +150,11 @@ def super_conv_block(x):
     return x
 
 def build_model():
-    input = Input(shape=(MAXLEN_SEQ, NB_AS,))
+    #input = Input(shape=(MAXLEN_SEQ, NB_AS,))
+    input = Input(shape=(None,))
     if hmm:
-        profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
+        #profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
+        profiles_input = Input(shape=(None,))
         x = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
