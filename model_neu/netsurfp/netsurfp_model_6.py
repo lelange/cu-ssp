@@ -111,7 +111,7 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.2, patience=6, verbose=1, mode='max')
     callbacks = [checkpointer]
 
-    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val), epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
+    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val), epochs=epochs, callbacks= callbacks, batch_size=batch_size, verbose=1, shuffle=True)
 
     #history = model.fit(X_train_aug, y_train, epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
     #model.save_weights(load_file)
