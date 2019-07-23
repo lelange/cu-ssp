@@ -398,13 +398,6 @@ else:
     # load data
     X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
 
-    if hmm:
-        print("X train shape: ", X_train_aug[0].shape)
-        print("X aug train shape: ", X_train_aug[1].shape)
-    else:
-        print("X train shape: ", X_train_aug.shape)
-    print("y train shape: ", y_train.shape)
-
     time_data = time.time() - start_time
     save_results = True
 
