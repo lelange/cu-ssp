@@ -3,7 +3,6 @@ Cascaded Convolution Model
 - Pranav Shrestha (ps2958)
 - Jeffrey Wan (jw3468)
 """
-
 import sys
 import pickle
 import numpy as np
@@ -21,7 +20,7 @@ from keras import backend as K
 from keras.regularizers import l1, l2
 import tensorflow as tf
 import keras
-from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
+from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
 import os
 import time
 import dill as pickle
@@ -33,17 +32,18 @@ from datetime import datetime
 from utils import parse_arguments, get_data, train_val_split, \
     save_cv, telegram_me, accuracy, get_acc, build_and_predict, save_results_to_file
 
+
 from collections import defaultdict
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 MODEL_NAME = 'mod_1'
-N_FOLDS = 10  # for cross validation
-MAXLEN_SEQ = 700  # only use sequences to this length and pad to this length, choose from 600, 608, 700
-NB_CLASSES_Q8 = 9  # number Q8 classes, used in final layer for classification (one extra for empty slots)
-NB_CLASSES_Q3 = 3  # number Q3 classes
-NB_AS = 20  # number of amino acids, length of one-hot endoded amino acids vectors
-NB_FEATURES = 30  # feature dimension
+N_FOLDS = 10 # for cross validation
+MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
+NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
+NB_CLASSES_Q3 = 3 # number Q3 classes
+NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
+NB_FEATURES = 30 # feature dimension
 
 start_time = time.time()
 
@@ -69,18 +69,14 @@ if test_mode:
 batch_size = 128
 
 data_root = '../data/netsurfp/'
-weights_file = MODEL_NAME + "-CB513-" + datetime.now().strftime("%Y_%m_%d-%H_%M") + ".h5"
-load_file = "./model/" + weights_file
+weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/"+weights_file
 file_scores = "logs/cv_results.txt"
 file_scores_mean = "logs/cv_results_mean.txt"
 
-if MAXLEN_SEQ is None:
-    ending = "full"
-else:
-    ending= str(MAXLEN_SEQ)
+file_train = 'train_' + str(MAXLEN_SEQ)
+file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
 
-file_train = 'train_' + ending
-file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
 '''
 p = {'activation1':[relu, softmax],
      'activation2':[relu, softmax],
@@ -93,7 +89,7 @@ p = {'activation1':[relu, softmax],
 '''
 
 
-def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs):
+def build_and_train (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     """
     Main Training function with the following properties:
         Optimizer - Nadam
@@ -111,8 +107,6 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs):
                         epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping],
                         verbose=1, shuffle=True)
 
-    K.clear_session()
-
     return model, history
 
 
@@ -127,7 +121,6 @@ def conv_block(x, activation=True, batch_norm=True, drop_out=True, res=True):
     if res:        cnn = Concatenate(axis=-1)([x, cnn])
 
     return cnn
-
 
 def super_conv_block(x):
     c3 = Conv1D(32, 1, padding="same")(x)
@@ -145,7 +138,6 @@ def super_conv_block(x):
     x = Concatenate(axis=-1)([x, c3, c7, c11])
     x = TimeDistributed(Dropout(0.5))(x)
     return x
-
 
 def build_model():
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
@@ -179,12 +171,9 @@ def build_model():
         loss="categorical_crossentropy",
         metrics=["accuracy", accuracy])
 
-    K.clear_session()
-
     return model
 
-
-def evaluate_model(model, load_file, test_ind=None):
+def evaluate_model(model, load_file, test_ind = None):
     if test_ind is None:
         test_ind = range(len(file_test))
     test_accs = []
@@ -192,16 +181,13 @@ def evaluate_model(model, load_file, test_ind=None):
     for i in test_ind:
         X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
         model.load_weights(load_file)
-        print("\nevaluate " + file_test[i] + ":")
+        print("\nevaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-        print(file_test[i] + ' test loss:', score[0])
-        print(file_test[i] + ' test accuracy:', score[2])
+        print(file_test[i] +' test loss:', score[0])
+        print(file_test[i] +' test accuracy:', score[2])
         test_accs.append(score[2])
         names.append(file_test[i])
-    K.clear_session()
-    del model
     return dict(zip(names, test_accs))
-
 
 def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     X_train, X_aug_train = X_train_aug
@@ -215,7 +201,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     # Loop through the indices the split() method returns
     for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
         print('\n\n-----------------------')
-        print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) + "...")
+        print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
         print('-----------------------\n')
 
         # Generate batches from indices
@@ -227,11 +213,11 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
             X_val_fold.shape[0]) + " validation samples...")
 
         model, history = build_and_train([X_train_fold, X_aug_train_fold], y_train_fold,
-                                         [X_val_fold, X_aug_val_fold], y_val_fold)
+                                  [X_val_fold, X_aug_val_fold], y_val_fold)
 
         print(history.history)
 
-        test_acc = evaluate_model(model, load_file, test_ind=[0, 1, 2])
+        test_acc = evaluate_model(model, load_file, test_ind = [0, 1, 2])
 
         cv_scores['val_accuracy'].append(max(history.history['val_accuracy']))
 
@@ -251,14 +237,13 @@ save_pred_file = "_pred_1.npy"
 def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
-        if np.max(o) != 0:
+        if np.max(o)!=0:
             i = np.argmax(o)
             s += index[i]
         else:
-            # s += index[0]
+            #s += index[0]
             return s
     return s
-
 
 def onehot_to_seq2(oh_seq, index):
     s = ''
@@ -266,19 +251,19 @@ def onehot_to_seq2(oh_seq, index):
         i = np.argmax(o)
         s += index[i]
 
-        if i == 0:
+        if i ==0:
             return s
     return s
 
 
 def accuracy2(y_true, y_predicted):
     print("understand metric:")
-    # turn onehot to seq
-    y = tf.argmax(y_true, axis=- 1)
+    #turn onehot to seq
+    y = tf.argmax(y_true, axis =- 1)
     print("y shape:")
     print(y.eval().shape)
-    # turn onehot to seq
-    y_ = tf.argmax(y_predicted, axis=- 1)
+    #turn onehot to seq
+    y_ = tf.argmax(y_predicted, axis =- 1)
     print("y_:")
     print(y_.eval().shape)
     mask = tf.greater(y, 0)
@@ -298,16 +283,16 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         model = build_model()
 
     for test in file_test:
-        i = True
+        i=True
         X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
         model.load_weights(best_weights)
 
-        print("\nPredict " + test + "...")
+        print("\nPredict " + test +"...")
 
         y_test_pred = model.predict(X_test_aug)
         score = model.evaluate(X_test_aug, y_test)
-        print("Accuracy from model evaluate: " + str(score[2]))
-        np.save(PRED_DIR + test + save_pred_file, y_test_pred)
+        print("Accuracy from model evaluate: "+str(score[2]))
+        np.save(PRED_DIR+test+save_pred_file, y_test_pred)
 
         '''
         sess = tf.Session()
@@ -320,17 +305,17 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print(np.sum(acc.eval())/len(acc.eval()))
             print("Test argmax (len 5, max at 3): "+str(tf.argmax(input=[2,0,1,0,0]).eval()))
             print("Test argmax (len 2): " + str(tf.argmax(input=[0]).eval()))
-
+            
         '''
 
-        print("Saved predictions to " + PRED_DIR + test + save_pred_file + ".")
+        print("Saved predictions to "+PRED_DIR+test+save_pred_file+".")
         q3_pred = 0
         q8_pred = 0
         q3_len = 0
         q8_len = 0
 
-        f = open(PRED_DIR + "q4_pred_mod_1.txt", "a+")
-        g = open(PRED_DIR + "q9_pred_mod_1.txt", "a+")
+        f = open(PRED_DIR+"q4_pred_mod_1.txt", "a+")
+        g = open(PRED_DIR+"q9_pred_mod_1.txt", "a+")
         for true, pred in zip(y_test, y_test_pred):
             seq3 = onehot_to_seq(pred, q3_list)
             seq8 = onehot_to_seq(pred, q8_list)
@@ -349,7 +334,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
                 print(seq_true_8[:60])
                 print(seq8[-60:])
                 print(seq_true_8[-60:])
-                i = False
+                i=False
 
             f.write(seq3)
             g.write(seq8)
@@ -358,40 +343,36 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
             corr3, len3 = get_acc(seq_true_3, seq3)
             corr8, len8 = get_acc(seq_true_8, seq8)
-            q3_pred += corr3
-            q8_pred += corr8
-            q3_len += len3
-            q8_len += len8
+            q3_pred+=corr3
+            q8_pred+=corr8
+            q3_len+= len3
+            q8_len+=len8
         f.close()
         g.close()
 
         print(q8_pred)
         print(q8_len)
-        print("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
-        print("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
+        print("Q3 " +test+ " test accuracy: "+str(q3_pred/q3_len))
+        print("Q8 " +test+ " test accuracy: "+str(q8_pred/q8_len))
 
-        f = open(PRED_DIR + "prediction_accuracy.txt", "a+")
-        f.write("Results for " + model_name + " and weights " + best_weights)
+        f = open(PRED_DIR+"prediction_accuracy.txt", "a+")
+        f.write("Results for "+model_name+" and weights "+best_weights)
         f.write("\n")
         f.write("Netsurf data were used with standardized hhblits profiles.")
         f.write("\n")
-        f.write("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
+        f.write("Q3 " +test+ " test accuracy: "+str(q3_pred/q3_len))
         f.write("\n")
-        f.write("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
+        f.write("Q8 " +test+ " test accuracy: "+str(q8_pred/q8_len))
         f.write("\n")
-        f.write("Predictions are saved to: " + PRED_DIR + test + save_pred_file)
+        f.write("Predictions are saved to: "+PRED_DIR+test+save_pred_file)
         f.write("----------------------------\n")
         f.close()
 
-        K.clear_session()
-        del model
 
-
-# --------------------------------- main ---------------------------------
+#--------------------------------- main ---------------------------------
 
 if predict_only:
-    model = build_model()
-    build_and_predict(model, best_weights, save_pred_file, MODEL_NAME, file_test)
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
     test_acc = None
     time_data = time.time() - start_time
     save_results = False
@@ -419,9 +400,6 @@ else:
         X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file)
-
-K.clear_session()
-del model
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
