@@ -155,7 +155,7 @@ def build_model():
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         #profiles_input = Input(shape=(None,))
-        x = concatenate([input, profiles_input])
+        x = concatenate([input, profiles_input], axis=2)
         inp = [input, profiles_input]
     else:
 
