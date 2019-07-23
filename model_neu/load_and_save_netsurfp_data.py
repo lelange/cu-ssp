@@ -56,7 +56,7 @@ def get_q8(data, seq_range):
     return data[:,:maxlen_seq,57:65][seq_range]
 
 def create_var_length_list(arr, lengths):
-    return [line[:len] for line, len in zip(arr, lengths)]
+    return [line[:int(len)] for line, len in zip(arr, lengths)]
 
 #usage: create_var_length_list(arr, np.sum(new_mask, axis = 1))
 
