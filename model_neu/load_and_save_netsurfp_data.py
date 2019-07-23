@@ -3,7 +3,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 
 
-maxlen_seq = 700 ###! change back!
+maxlen_seq = 608 ###! change back!
 minlen_seq= 100
 
 # [0:20] Amino Acids (sparse encoding)
@@ -57,6 +57,7 @@ def get_q8(data, seq_range):
 
 
 #add extra dimension for no sequence in one hot encoded labels
+
 def get_and_save_data(data, filename):
     database = data['data']
     mask = get_mask(database)
