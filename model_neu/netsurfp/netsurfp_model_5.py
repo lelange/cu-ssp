@@ -63,7 +63,7 @@ if test_mode:
     N_FOLDS = 2
     epochs = 2
 
-batch_size = 80
+batch_size = 64
 
 data_root = '../data/netsurfp/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"

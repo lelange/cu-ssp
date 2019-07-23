@@ -113,7 +113,7 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
 
     #history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val), epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
     history = model.fit(X_train_aug, y_train, epochs=epochs, batch_size=batch_size, verbose=1, shuffle=True)
-
+    model.save_weights(load_file)
     # plot accuracy during training
     return model, history
 
@@ -124,7 +124,7 @@ def evaluate_model(model, load_file, test_ind = None):
     names = []
     for i in test_ind:
         X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
-        #model.load_weights(load_file)
+        model.load_weights(load_file)
         print("####evaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
         print(file_test[i] +' test loss:', score[0])
