@@ -3,7 +3,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 
 
-maxlen_seq = 608 ###! change back!
+maxlen_seq = 700 ###! change back!
 minlen_seq= 100
 
 # [0:20] Amino Acids (sparse encoding)
@@ -83,10 +83,10 @@ def get_and_save_data(data, filename):
     print(filename+' is saved.')
 
 
-get_and_save_data(data_train, 'train_'+maxlen_seq)
-get_and_save_data(data_cb513, 'cb513_'+maxlen_seq)
-get_and_save_data(data_ts115, 'ts115_'+maxlen_seq)
-get_and_save_data(data_casp12, 'casp12_'+maxlen_seq)
+get_and_save_data(data_train, 'train_'+str(maxlen_seq))
+get_and_save_data(data_cb513, 'cb513_'+str(maxlen_seq))
+get_and_save_data(data_ts115, 'ts115_'+str(maxlen_seq))
+get_and_save_data(data_casp12, 'casp12_'+str(maxlen_seq))
 
 
 # prepare q8 and q3 data
