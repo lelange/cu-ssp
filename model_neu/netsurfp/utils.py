@@ -61,7 +61,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     else:
         if no_input:
             #input_seq = pickle.load(open(data_root + filename + '_hmm.txt', "rb")) #
-            input_seq= np.load(data_root + filename + '_hmm.npy')
+            input_seq= np.load(data_root + filename + '_hmm.npy', allow_pickle=True)
             if normalize:
                 input_seq = normal(input_seq)
             if standardize:
@@ -69,13 +69,13 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
 
         else:
             #input_seq =  pickle.load(open(data_root + filename + '_input.txt', "rb"))#
-            input_seq = np.load(data_root+filename+'_input.npy')
+            input_seq = np.load(data_root+filename+'_input.npy', allow_pickle=True)
     #q8 = pickle.load(open(data_root + filename + '_q9.txt', "rb"))#
-    q8 = np.load(data_root + filename + '_q9.npy')
+    q8 = np.load(data_root + filename + '_q9.npy', allow_pickle=True)
     #q3 = np.load(data_root + filename + '_q3.npy')
     if hmm:
         #profiles = pickle.load(open(data_root + filename + '_hmm.txt', "rb"))#
-        profiles = np.load(data_root+filename+'_hmm.npy')
+        profiles = np.load(data_root+filename+'_hmm.npy', allow_pickle=True)
         if normalize:
             print('Normalize...')
             profiles = normal(profiles)
