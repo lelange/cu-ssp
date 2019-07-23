@@ -59,18 +59,18 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         input_seq = np.load(data_root + filename + '_netsurfp_input_embedding_residue.npy')
     else:
         if no_input:
-            input_seq = pickle.load(data_root + filename + '_hmm.txt') #np.load(data_root + filename + '_hmm.npy')
+            input_seq = pickle.load(open(data_root + filename + '_hmm.txt', "rb")) #np.load(data_root + filename + '_hmm.npy')
             if normalize:
                 input_seq = normal(input_seq)
             if standardize:
                 input_seq = standard(input_seq)
 
         else:
-            input_seq =  pickle.load(data_root+filename+'_input.txt')#np.load(data_root+filename+'_input.npy')
-    q8 = pickle.load(data_root + filename + '_q9.txt')#np.load(data_root + filename + '_q9.npy')
+            input_seq =  pickle.load(open(data_root + filename + '_input.txt', "rb"))#np.load(data_root+filename+'_input.npy')
+    q8 = pickle.load(open(data_root + filename + '_q9.txt', "rb"))#np.load(data_root + filename + '_q9.npy')
     #q3 = np.load(data_root + filename + '_q3.npy')
     if hmm:
-        profiles = pickle.load(data_root+filename+'_hmm.txt')#np.load(data_root+filename+'_hmm.npy')
+        profiles = pickle.load(open(data_root + filename + '_hmm.txt', "rb"))#np.load(data_root+filename+'_hmm.npy')
         if normalize:
             print('Normalize...')
             profiles = normal(profiles)
