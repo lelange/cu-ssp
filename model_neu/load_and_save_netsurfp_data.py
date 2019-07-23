@@ -3,8 +3,8 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 
 
-maxlen_seq = 608 ###! change back!
-minlen_seq= 100
+maxlen_seq = None ###! change back!
+minlen_seq= None
 
 # [0:20] Amino Acids (sparse encoding)
 # Unknown residues are stored as an all-zero vector
@@ -55,6 +55,10 @@ def get_hmm(data, seq_range):
 def get_q8(data, seq_range):
     return data[:,:maxlen_seq,57:65][seq_range]
 
+def create_var_length_list(arr, lengths):
+    return [line[:len] for line, len in zip(arr, lengths)]
+
+#usage: create_var_length_list(arr, np.sum(new_mask, axis = 1))
 
 #add extra dimension for no sequence in one hot encoded labels
 
@@ -62,31 +66,40 @@ def get_and_save_data(data, filename):
     database = data['data']
     mask = get_mask(database)
     seq_range = [minlen_seq<=mask[i].sum()<=maxlen_seq for i in range(len(mask))]
-    #input_seq = get_input(database, seq_range)
+    new_mask = mask[seq_range,:maxlen_seq]
+    input_seq = get_input(database, seq_range)
     q8 = get_q8(database, seq_range)
-    #hmm = get_hmm(database, seq_range)
-    #print('Input shape: ', input_seq.shape)
+    hmm = get_hmm(database, seq_range)
+    print('Input shape: ', input_seq.shape)
     print('mask shape: '+str(mask.shape))
-    print('mask seq_range shape: '+str(mask[seq_range,:maxlen_seq].shape))
+    print('mask seq_range shape: '+str(new_mask.shape))
     print('q8 shape: '+ str(q8.shape))
     q9 = np.pad(q8, ((0,0),(0,0),(1,0)), 'constant')
     print('q9 shape:' + str(q9.shape))
     print(np.sum(q9[:,:,0], axis=1))
     print(np.sum(q9[:, :, 8], axis=1))
-    print(np.sum(mask[seq_range,:maxlen_seq], axis=1))
-    print(np.sum(1-mask[seq_range, :maxlen_seq], axis=1))
-    q9[:,:,0]= 1-mask[seq_range,:maxlen_seq]
-    #print('hmm shape: ', hmm.shape)
+    print(np.sum(new_mask, axis=1))
+    print(np.sum(1-new_mask, axis=1))
+    q9[:,:,0]= 1-new_mask
+    print('hmm shape: ', hmm.shape)
+    var_len_input_seq = create_var_length_list(input_seq, np.sum(new_mask, axis = 1))
+    var_len_hmm = create_var_length_list(hmm, np.sum(new_mask, axis = 1))
+    var_len_q9 = create_var_length_list(q9, np.sum(new_mask, axis = 1))
     #np.save(data_root+filename+'_input.npy', input_seq)
-    np.save(data_root+filename+'_q9.npy', q9)
+    np.save(data_root + filename + 'var_len_input.npy', var_len_input_seq)
+    np.save(data_root + filename + 'var_len_hmm.npy', var_len_hmm)
+    np.save(data_root + filename + 'var_len_q9.npy', var_len_q9)
+    #np.save(data_root+filename+'_q9.npy', q9)
     #np.save(data_root+filename+'_hmm.npy', hmm)
+    #np.save(data_root + filename + '_mask.npy', mask[seq_range,:maxlen_seq])
     print(filename+' is saved.')
 
-
-get_and_save_data(data_train, 'train_'+str(maxlen_seq))
-get_and_save_data(data_cb513, 'cb513_'+str(maxlen_seq))
-get_and_save_data(data_ts115, 'ts115_'+str(maxlen_seq))
-get_and_save_data(data_casp12, 'casp12_'+str(maxlen_seq))
+#ending = str(maxlen_seq)
+ending= "full"
+get_and_save_data(data_train, 'train_'+ending)
+get_and_save_data(data_cb513, 'cb513_'+ending)
+get_and_save_data(data_ts115, 'ts115_'+ending)
+get_and_save_data(data_casp12, 'casp12_'+ending)
 
 
 # prepare q8 and q3 data
