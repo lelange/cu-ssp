@@ -181,25 +181,30 @@ def to_seq(y):
 # with an lookup table "index"
 # Maps the sequence to a one-hot encoding
 
-def onehot_to_seq(oh_seq, index):
-    s = ''
-    for o in oh_seq:
-        if np.max(o)!=0:
-            i = np.argmax(o)
-            s += index[i]
-        else:
-            #s += index[0]
-            return s
-    return s
 
-def onehot_to_seq2(oh_seq, index):
+def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
         i = np.argmax(o)
         s += index[i]
+    return s
 
-        if i ==0:
-            return s
+def onehot_to_seq2(oh_seq, index, length=None):
+    s = ''
+    if length is None:
+        for o in oh_seq:
+            i = np.argmax(o)
+            if i != 0:
+                s += index[i]
+            else:
+                break
+    else:
+        for idx, o in enumerate(oh_seq):
+            i = np.argmax(o[1:])
+            if idx < length:
+                s += index[i+1]
+            else:
+                break
     return s
 
 counter = 0

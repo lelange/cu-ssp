@@ -3,13 +3,16 @@ import matplotlib.pyplot as plt
 from utils import get_data, onehot_to_seq, onehot_to_seq2, get_acc, get_acc2
 data_file = "preds/Q8/"
 
+
+test = 'cb513_700'
 m1 = np.load(data_file+'cb513_700_pred_1.npy')
 #m2 = np.load(data_file+'cb513_608_pred_2.npy')
 m3 = np.load(data_file+'cb513_700_pred_3.npy')
 m4 = np.load(data_file+'cb513_700_pred_4.npy')
 m5 = np.load(data_file+'cb513_700_pred_5.npy')
 m6 = np.load(data_file+'cb513_700_pred_6.npy')
-mask = np.load(data_file+'cb513_700_len.npy')
+mask = np.load(data_file+'cb513_700_mask.npy')
+
 length_list = np.sum(mask, axis=1)
 
 print(m1.shape, m3.shape, m4.shape, m5.shape, m6.shape, length_list.shape)
@@ -34,16 +37,6 @@ m6p = np.zeros_like(m4)
 
 _, y_true = get_data('cb513_700', hmm=True, normalize=False, standardize=True)
 
-# change one-hot encoding order st. it corresponds to list of labels and ensure same length
-for count, i in enumerate(order_list):
-    m1p[:, :, i] = m1[:, :700, count]
-    m2p[:, :, i] = m2[:, :700, count]
-    m3p[:, :, i] = m3[:, :700, count]
-    m4p[:, :, i] = m4[:, :700, count]
-    m5p[:, :, i] = m5[:, :700, count]
-    m6p[:, :, i] = m6[:, :700, count]
-
-
 # check that prediction is prob distribution
 def check_softmax(T):
     for i in range(T.shape[0]):
@@ -56,16 +49,15 @@ def check_softmax(T):
     print('outputs are softmaxed')
 
 
-# check_softmax(m1)
-
-summed_probs = m1 + m3 + m4 + m5 + m6
+check_softmax(m1)
 
 #length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
 print('max protein seq length is', np.max(length_list))
 
+summed_probs = m1 + m3 + m4 + m5 + m6
 
-def get_ensemble_pred(labels, summed_probs):
-
+def get_ensemble_pred(labels):
+    summed_probs = m1 + m3 + m4 + m5 + m6
     # create new prediciton as highest scorer in sum of all other predictions
     ensemble_predictions = []
     for protein_idx, i in enumerate(length_list):
@@ -84,7 +76,11 @@ q8_len = 0
 q8_accs = []
 q3_accs = []
 
-y_ensemble = get_ensemble_pred()
+#y_ensemble = get_ensemble_pred()
+y_ensemble = summed_probs
+
+print(y_ensemble.shape)
+print(y_true.shape)
 
 for true, pred in zip(y_true, y_ensemble):
     seq3 = onehot_to_seq(pred, q3_list)
