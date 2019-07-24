@@ -71,9 +71,13 @@ load_file = "./model/"+weights_file
 file_scores = "logs/cv_results.txt"
 file_scores_mean = "logs/cv_results_mean.txt"
 
-file_train = 'train_' + str(MAXLEN_SEQ)
-file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
+if MAXLEN_SEQ is None:
+    ending = "full"
+else:
+    ending= str(MAXLEN_SEQ)
 
+file_train = 'train_' + ending
+file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
 ############################### Model starts here ##############################
 
 def build_model():
