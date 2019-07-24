@@ -87,11 +87,11 @@ def get_data2(filename, hmm=True, normalize=False, standardize=True, embedding =
         input_aug = input_seq
     return input_aug, q8
 
-def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False):
+def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False, nb_components = 500):
 
     print('Load ' + filename + ' data...')
     if embedding:
-        input_seq = np.load(data_root + 'input_500_umap_embedding.npy')
+        input_seq = np.load(data_root + filename + '_umap_' + str(nb_components) + '_input.npy')
         hmm = False
     else:
         if no_input:
@@ -562,13 +562,16 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
     f.write("----------------------------\n\n\n")
     f.close()
 
-def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True, standardize=True, normalize=False, no_input=False):
+def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True, standardize=True, normalize=False, no_input=False, embedding=False):
     f = open("results_experiments.txt", "a+")
     f.write("Results for " + model_name + " and weights " + weights_file +".")
     f.write("\n\n")
 
     m, s = divmod(time_end, 60)
     msg = 'Runtime: {:.0f}min {:.0f}s'.format(m, s)
+    if embedding:
+        "Input values were split to 3-grams and each 3-gram has been embedded in 100 dim with word2 vec.\n " \
+        "After that, the input dimension was reduced from (#samples, 70000) to (#samples, 500) with UMAP."
     if hmm:
         verb = ''
         if standardize:

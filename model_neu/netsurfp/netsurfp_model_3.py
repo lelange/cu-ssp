@@ -95,7 +95,11 @@ file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ st
 
 def build_model():
     model = None
-    input = Input(shape=(MAXLEN_SEQ, NB_AS,))
+    if embedding:
+        input = Input(shape=(500,))
+        hmm = False
+    else:
+        input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x1 = concatenate([input, profiles_input])
@@ -155,8 +159,7 @@ space = {
     'decay': hp.choice('decay', LR_CHOICES),
     'batch_size': hp.choice('batch_size', BATCH_CHOICES)
 }
-load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
-#load_file = "./model/mod_3-CB513-test.h5"
+
 
 def data():
     data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
@@ -313,7 +316,7 @@ if predict_only:
     save_results = False
 else:
     # load data
-    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
+    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
 
     if hmm:
         print("X train shape: ", X_train_aug[0].shape)
@@ -333,7 +336,7 @@ else:
 
     else:
         X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
-        #korrigiere name und return
+
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file)
 
@@ -344,7 +347,7 @@ print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in tota
 telegram_me(m, s, sys.argv[0], test_acc, hmm, standardize)
 
 if save_results:
-    save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc, hmm, standardize, normalize)
+    save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc, hmm, standardize, normalize, embedding=embedding)
 
 '''
 if cross_validate :
