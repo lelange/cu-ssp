@@ -118,10 +118,10 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     outputs.append(input_aug)
     if embedding:
         embed_seq = np.load(data_root + filename + '_umap_' + str(nb_components) + '_input.npy')
-        outputs.append((embed_seq))
+        input_aug = [input_seq, embed_seq]
     q8 = np.load(data_root + filename + '_q9.npy')
     outputs.append(q8)
-    return outputs
+    return input_aug, q8
 
 # for pssm+hmm data
 def prepare_profiles(pssm, hmm, normalize, standardize):
