@@ -1,12 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-m1 = np.load('cb513_test_prob_1.npy')
-m2 = np.load('cb513_test_prob_2.npy')
-m3 = np.load('cb513_test_prob_3.npy')
-m4 = np.load('cb513_test_prob_4.npy')
-m5 = np.load('cb513_test_prob_5.npy')
-m6 = np.load('cb513_test_prob_6.npy')
+file = '../acc_test/'
+
+m1 = np.load(file+'cb513_test_prob_1.npy')
+m2 = np.load(file+'cb513_test_prob_2.npy')
+m3 = np.load(file+'cb513_test_prob_3.npy')
+m4 = np.load(file+'cb513_test_prob_4.npy')
+m5 = np.load(file+'cb513_test_prob_5.npy')
+m6 = np.load(file+e'cb513_test_prob_6.npy')
 
 print (m1.shape, m2.shape, m3.shape, m4.shape, m5.shape, m6.shape)
 
