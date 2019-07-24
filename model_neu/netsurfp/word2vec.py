@@ -76,32 +76,42 @@ for filename in file_test:
     print(embed_seq.shape)
 
     embed_time = time.time() - gram_time
-    m, s = divmod(embed_time, 60)
-    print("Needed {:.0f}min {:.0f}s to embed the sequences.".format(m, s))
-
+    #m, s = divmod(embed_time, 60)
+    #print("Needed {:.0f}min {:.0f}s to embed the sequences.".format(m, s))
 
     # save embedding to disk
 
     np.save(data_root + filename + "_word2vec_input.npy", embed_seq)
     print("Saved to " + data_root + filename + "_word2vec_input.npy")
 
-    # ----------- dim. reduction with umap ----
+# ----------- dim. reduction with umap ----
 
-    #embed_seq = np.load(data_root + filename + "_word2vec_input.npy")
-    
-    nb_components = 500
+train_embed_seq = np.load(data_root + 'train_700' + "_word2vec_input.npy")
 
-    print("Start UMAP reduction...")
+nb_components = 500
 
-    # reduce dimension with umap
-    reducer = umap.UMAP(n_components=nb_components, verbose=True)
-    embedding = reducer.fit_transform(embed_seq)
+print("Start UMAP reduction...")
 
-    print(embedding.shape)
+# reduce dimension with umap
+reducer = umap.UMAP(n_components=nb_components, verbose=True)
+embedding = reducer.fit_transform(train_embed_seq)
 
-    # save to disk
-    np.save(data_root + filename + '_umap_' + str(nb_components) + '_input.npy', embedding)
+print(embedding.shape)
+
+# save to disk
+#np.save(data_root + 'train_700' + '_umap_' + str(nb_components) + '_input.npy', embedding)
+#print("Saved to " + data_root + 'train_700' + '_umap_' + str(nb_components) + '_input.npy')
+
+for filename in file_test:
+
+    print('Load ' + filename + "_word2vec_input.npy")
+    test_embed_seq = np.load(data_root + filename + "_word2vec_input.npy")
+
+    test_embedding = reducer.transform(test_embed_seq)
+
+    np.save(data_root + filename + '_umap_' + str(nb_components) + '_input.npy', test_embedding)
     print("Saved to " + data_root + filename + '_umap_' + str(nb_components) + '_input.npy')
+
 
 end_time = time.time() - start_time
 m, s = divmod(end_time, 60)
