@@ -87,7 +87,7 @@ def get_data2(filename, hmm=True, normalize=False, standardize=True, embedding =
         input_aug = input_seq
     return input_aug, q8
 
-def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False, nb_components = 500):
+def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = True, no_input=False, nb_components = 500):
 
     print('Load ' + filename + ' data...')
     outputs=[]
@@ -120,6 +120,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         input_aug = embed_seq
     q8 = np.load(data_root + filename + '_q9.npy')
     outputs.append(q8)
+    print(input_aug.shape)
     return input_aug, q8
 
 # for pssm+hmm data

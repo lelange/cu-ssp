@@ -278,7 +278,7 @@ def evaluate_model(model, load_file, test_ind = None):
     test_accs = []
     names = []
     for i in test_ind:
-        X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
+        X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize, embedding)
         model.load_weights(load_file)
         print("####evaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
