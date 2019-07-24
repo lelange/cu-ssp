@@ -135,7 +135,7 @@ def build_model():
     w = Dropout(0.4)(w)
     w = tcn.TCN(return_sequences=True)(w)
     print(w._keras_shape)
-    w = TimeDistributed(Dense(500, activation="relu"))(w)
+    w = TimeDistributed(Dense(64, activation="relu"))(w)
     print(w._keras_shape)
 
     w2 = tcn.TCN(return_sequences=True)(x3)
