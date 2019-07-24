@@ -1,14 +1,15 @@
 import pandas as pd
 import numpy as np
 import time
+import umap
 
-from utils import get_data
+data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
+filename= "700"
+seq_list = list('ACDEFGHIKLMNPQRSTVWY')
 
 start_time = time.time()
 
-data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
-filename= "train_700"
-seq_list = list('ACDEFGHIKLMNPQRSTVWY')
+'''
 
 def seq2ngrams(seqs, n = 3):
     return np.array( [[seq[i:i+n] for i in range(int(len(seq)-2))] for seq in seqs])
@@ -37,7 +38,7 @@ embeddings = protVec.iloc[:,1:].values
 word_embed = dict(zip(protVec['words'], embeddings))
 
 # load input data
-train_input = np.load(data_root+filename+'_input.npy')
+train_input = np.load(data_root+'train_'+filename+'_input.npy')
 print("train input shape: "+str(train_input.shape))
 
 # decode input data from one hot to sequences
@@ -77,8 +78,16 @@ print(embed_seq[-1])
 np.save(data_root+'input_word2vec.npy', embed_seq)
 print("Saved to disk.")
 
-# reduce dimension with umap
 
+'''
+
+input = np.load(data_root+"input_700_word2vec.npy")
+print(input.shape)
+
+# reduce dimension with umap
+reducer = umap.UMAP()
+embedding = reducer.fit_transform(input)
+print(embedding.shape)
 # save to disk
 
 end_time = time.time() -start_time
