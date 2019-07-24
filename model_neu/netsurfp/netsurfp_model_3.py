@@ -141,12 +141,14 @@ def build_model():
     w2 = tcn.TCN(return_sequences=True)(x3)
     print(w2._keras_shape)
 
-    z =concatenate([w, w2], axis =1)
-    print(z._keras_shape)
+    w2 = TimeDistributed(Dense(180, activation="relu"))(w2)
 
-    w = TimeDistributed(Dense(180, activation="relu"))(z)
+    y1 = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(w)
+    y2 = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(w2)
 
-    y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(w)
+    y_comb = concatenate([y1, y2])
+
+    y1 = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(y_comb)
 
     # Defining the model as a whole and printing the summary
     model = Model(inp, y)
