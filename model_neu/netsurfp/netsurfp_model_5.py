@@ -38,7 +38,7 @@ MODEL_NAME = 'mod_5'
 save_pred_file = "_pred_5.npy"
 
 N_FOLDS = 10 # for cross validation
-MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
+MAXLEN_SEQ = None # only use sequences to this length and pad to this length, choose from 600, 608, 700
 NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
 NB_CLASSES_Q3 = 3 # number Q3 classes
 NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
@@ -289,7 +289,6 @@ else:
         test_acc = evaluate_model(model, load_file)
 
 K.clear_session()
-del model
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
