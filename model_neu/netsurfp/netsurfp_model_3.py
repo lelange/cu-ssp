@@ -327,7 +327,7 @@ else:
     # load data
     X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
 
-    if hmm:
+    if hmm or embedding:
         print("X train shape: ", X_train_aug[0].shape)
         print("X aug train shape: ", X_train_aug[1].shape)
     else:
