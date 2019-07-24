@@ -116,7 +116,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         input_aug = input_seq
     outputs.append(input_aug)
     if embedding:
-        embed_seq = np.load(data_root + filename + '_word2vec_input')
+        embed_seq = np.load(data_root + filename + '_word2vec_3D_input.npy')
         input_aug = embed_seq
     q8 = np.load(data_root + filename + '_q9.npy')
     outputs.append(q8)
