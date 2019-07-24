@@ -85,10 +85,11 @@ input = np.load(data_root+"input_700_word2vec.npy")
 print(input.shape)
 
 # reduce dimension with umap
-reducer = umap.UMAP()
+reducer = umap.UMAP(n_components=500)
 embedding = reducer.fit_transform(input)
 print(embedding.shape)
 # save to disk
+np.save(data_root+'input_500_umap_embedding.npy', embedding)
 
 end_time = time.time() -start_time
 m, s = divmod(end_time, 60)
