@@ -12,15 +12,15 @@ m6 = np.load(data_file+'cb513_700_pred_6.npy')
 mask = np.load(data_file+'cb513_700_len.npy')
 length_list = np.sum(mask, axis=1)
 
-print(m1.shape, m2.shape, m3.shape, m4.shape, m5.shape, m6.shape)
+print(m1.shape, m3.shape, m4.shape, m5.shape, m6.shape, length_list.shape)
 
 # warped_order_1 = ['NoSeq', 'H', 'E', 'L','T', 'S', 'G', 'B',  'I']
 #                    0        1    2    3   4    5    6    7     8
 #                  ['L',     'B', 'E', 'G','I', 'H', 'S', 'T', 'NoSeq'] # new order
 
 # for decoding one-hot-encoding
-order_list = [8, 5, 2, 0, 7, 6, 3, 1, 4]
-labels = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T', 'NoSeq']
+#order_list = [8, 5, 2, 0, 7, 6, 3, 1, 4]
+#labels = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T', 'NoSeq']
 
 q8_list = list('-GHIBESTC')
 q3_list = list('-HHHEECCC')
