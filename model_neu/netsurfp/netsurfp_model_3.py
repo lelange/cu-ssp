@@ -77,6 +77,7 @@ tv_perc = args.tv_perc
 test_mode = args.test_mode
 predict_only = args.predict
 
+
 if test_mode:
     N_FOLDS = 2
     epochs = 2
@@ -93,8 +94,13 @@ file_train = 'train_' + str(MAXLEN_SEQ)
 file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
 
 
+
 def build_model():
     model = None
+
+    if embedding:
+        MAXLEN_SEQ =
+
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     inp = input
     x1 = input

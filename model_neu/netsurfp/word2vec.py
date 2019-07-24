@@ -43,7 +43,7 @@ embeddings = protVec.iloc[:,1:].values
 word_embed = dict(zip(protVec['words'], embeddings))
 
 
-for filename in file_test:
+for filename in file_test.append(file_train):
 
     # load input data
     train_input = np.load(data_root + filename + '_input.npy')
@@ -66,12 +66,23 @@ for filename in file_test:
     m, s = divmod(gram_time, 60)
     print("Needed {:.0f}min {:.0f}s to create the 3 grams.".format(m, s))
 
+
+    '''
     # replace 3 gramm with 100 dim embedding
     embed_seq = np.zeros((train_input.shape[0], train_input.shape[1] * 100))
 
     for i, grams in enumerate(n_grams):
         for j, g in enumerate(grams):
             embed_seq[i, j:j + 100] = word_embed[g]
+
+    print(embed_seq.shape)
+    '''
+    # replace 3 gramm with 100 dim embedding
+    embed_seq = np.zeros((train_input.shape[0], 700, 100))
+
+    for i, grams in enumerate(n_grams):
+        for j, g in enumerate(grams):
+            embed_seq[i, j, :] = word_embed[g]
 
     print(embed_seq.shape)
 
@@ -81,11 +92,12 @@ for filename in file_test:
 
     # save embedding to disk
 
-    np.save(data_root + filename + "_word2vec_input.npy", embed_seq)
-    print("Saved to " + data_root + filename + "_word2vec_input.npy")
+    np.save(data_root + filename + "_word2vec_3D_input.npy", embed_seq)
+    print("Saved to " + data_root + filename + "_word2vec_3D_input.npy")
 
 # ----------- dim. reduction with umap ----
 
+'''
 train_embed_seq = np.load(data_root + 'train_700' + "_word2vec_input.npy")
 
 nb_components = 500
@@ -116,3 +128,5 @@ for filename in file_test:
 end_time = time.time() - start_time
 m, s = divmod(end_time, 60)
 print("Needed {:.0f}min {:.0f}s in total.".format(m, s))
+'''
+
