@@ -344,7 +344,7 @@ else:
         test_acc = test_accs[file_test[0] + '_mean']
 
     else:
-        X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+        X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, embedding, X_train_aug, y_train, tv_perc)
 
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
         test_acc = evaluate_model(model, load_file)
