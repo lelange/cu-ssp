@@ -102,13 +102,16 @@ def build_model():
 
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
-        inp.append(profiles_input)
+        inp = [input, profiles_input]
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
     if embedding:
         embed_input = Input(shape=(500,))
         x1 = embed_input
-        inp.append(embed_input)
+        if hmm:
+            inp = [input, profiles_input, embed_input]
+        else:
+            inp = [input, embed_input]
 
     x1 = Dense(1200, activation="relu")(x1)
     print(x1._keras_shape)
