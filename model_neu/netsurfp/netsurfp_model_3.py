@@ -136,8 +136,13 @@ def build_model():
     w = tcn.TCN(return_sequences=True)(w)
     print(w._keras_shape)
 
-    z = tcn.TCN(return_sequences=True)(x3)
+    w2 = tcn.TCN(return_sequences=True)(x3)
+    print(w2._keras_shape)
+
+    z =concatenate([w, w2])
     print(z._keras_shape)
+
+    w = TimeDistributed(Dense(128, activation="relu"))(z)
 
     y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(w)
 
