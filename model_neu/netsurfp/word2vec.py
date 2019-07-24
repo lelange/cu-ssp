@@ -3,7 +3,7 @@ import numpy as np
 
 from utils import get_data
 
-data_root = '../../data/netsurfp/'
+data_root = '../../data'
 filename= "train_700"
 seq_list = list('ACDEFGHIKLMNPQRSTVWY')
 
