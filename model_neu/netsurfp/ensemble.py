@@ -11,7 +11,8 @@ m3 = np.load(data_file+'cb513_700_pred_3.npy')
 m4 = np.load(data_file+'cb513_700_pred_4.npy')
 m5 = np.load(data_file+'cb513_700_pred_5.npy')
 m6 = np.load(data_file+'cb513_700_pred_6.npy')
-mask = np.load(data_file+'cb513_700_mask.npy')
+
+mask = np.load('preds/cb513_700_mask.npy')
 
 length_list = np.sum(mask, axis=1)
 
