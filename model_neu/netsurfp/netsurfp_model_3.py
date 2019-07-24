@@ -107,7 +107,10 @@ def build_model():
         x2 = concatenate([input, profiles_input])
     if embedding:
         embed_input = Input(shape=(500,))
-        x1 = embed_input
+        x3 = embed_input
+        print(x3._keras_shape)
+        x3 = Reshape((500,1))(x3)
+        print(x3._keras_shape)
         if hmm:
             inp = [input, profiles_input, embed_input]
         else:
