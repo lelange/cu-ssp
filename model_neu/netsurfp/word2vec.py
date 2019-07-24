@@ -85,7 +85,7 @@ input = np.load(data_root+"input_700_word2vec.npy")
 print(input.shape)
 
 # reduce dimension with umap
-reducer = umap.UMAP(n_components=500)
+reducer = umap.UMAP(n_components=500, verbose=True)
 embedding = reducer.fit_transform(input)
 print(embedding.shape)
 # save to disk
