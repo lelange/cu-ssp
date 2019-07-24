@@ -24,8 +24,7 @@ def seq2ngrams(seqs, n = 3):
 def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
-        m = np.max(o)
-        if m != 0:
+        if np.max(o) != 0:
             i = np.argmax(o)
             s += index[i]
         else:
@@ -74,6 +73,8 @@ for filename in file_test:
         for j, g in enumerate(grams):
             embed_seq[i, j:j + 100] = word_embed[g]
 
+    print(embed_seq.shape)
+
     embed_time = time.time() - gram_time
     m, s = divmod(embed_time, 60)
     print("Needed {:.0f}min {:.0f}s to embed the sequences.".format(m, s))
@@ -86,9 +87,8 @@ for filename in file_test:
 
     # ----------- dim. reduction with umap ----
 
-    #embed_seq =np.load(data_root + filename + "_word2vec_input.npy")
-    print(embed_seq.shape)
-
+    #embed_seq = np.load(data_root + filename + "_word2vec_input.npy")
+    
     nb_components = 500
 
     print("Start UMAP reduction...")
