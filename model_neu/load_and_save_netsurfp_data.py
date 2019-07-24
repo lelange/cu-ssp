@@ -99,8 +99,11 @@ def get_and_save_data(data, filename):
     np.save(data_root + filename + '_mask.npy', mask[seq_range,:maxlen_seq])
     print(filename+' is saved.')
 
-#ending = str(maxlen_seq)
-ending= "full"
+if maxlen_seq is None:
+    ending = "full"
+else:
+    ending = str(maxlen_seq)
+
 get_and_save_data(data_train, 'train_'+ending)
 get_and_save_data(data_cb513, 'cb513_'+ending)
 get_and_save_data(data_ts115, 'ts115_'+ending)
