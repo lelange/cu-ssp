@@ -6,7 +6,7 @@ data_file = "preds/Q8/"
 
 test = 'cb513_700'
 m1 = np.load(data_file+'cb513_700_pred_1.npy')
-#m2 = np.load(data_file+'cb513_608_pred_2.npy')
+m2 = np.load(data_file+'cb513_608_pred_2.npy')
 m3 = np.load(data_file+'cb513_700_pred_3.npy')
 m4 = np.load(data_file+'cb513_700_pred_4.npy')
 m5 = np.load(data_file+'cb513_700_pred_5.npy')
@@ -55,7 +55,7 @@ check_softmax(m1)
 #length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
 print('max protein seq length is', np.max(length_list))
 
-summed_probs = m1 + m3 + m4 + m5 + m6
+summed_probs = m1[:,:608,:] + m3 + m4 + m5 + m6
 
 def get_ensemble_pred(labels):
     summed_probs = m1 + m3 + m4 + m5 + m6
