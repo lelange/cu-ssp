@@ -15,7 +15,7 @@ else:
 
 file_train = 'train_' + ending
 file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
-
+file_train_test = file_test.append(file_train)
 
 def seq2ngrams(seqs, n = 3):
     return np.array( [[seq[i:i+n] for i in range(int(len(seq)-2))] for seq in seqs])
@@ -43,7 +43,7 @@ embeddings = protVec.iloc[:,1:].values
 word_embed = dict(zip(protVec['words'], embeddings))
 
 
-for filename in file_test.append(file_train):
+for filename in file_train_test:
 
     # load input data
     train_input = np.load(data_root + filename + '_input.npy')
