@@ -83,6 +83,7 @@ y_ensemble = summed_probs
 print(y_ensemble.shape)
 print(y_true.shape)
 
+i = True
 for true, pred in zip(y_true, y_ensemble):
     seq3 = onehot_to_seq(pred, q3_list)
     seq8 = onehot_to_seq(pred, q8_list)
