@@ -97,7 +97,6 @@ def build_model():
     model = None
     if embedding:
         input = Input(shape=(500,))
-        hmm = False
     else:
         input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     if hmm:
