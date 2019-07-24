@@ -137,18 +137,19 @@ def build_model():
     print(w._keras_shape)
     w = TimeDistributed(Dense(64, activation="relu"))(w)
     print(w._keras_shape)
-
     w2 = tcn.TCN(return_sequences=True)(x3)
     print(w2._keras_shape)
 
     w2 = TimeDistributed(Dense(180, activation="relu"))(w2)
 
     y1 = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(w)
+    print(y1._keras_shape)
     y2 = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(w2)
+    print(y2._keras_shape)
 
     y_comb = concatenate([y1, y2])
 
-    y1 = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(y_comb)
+    y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(y_comb)
 
     # Defining the model as a whole and printing the summary
     model = Model(inp, y)
@@ -342,7 +343,7 @@ else:
     # load data
     X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
 
-    if hmm or embedding:
+    if hmm:
         print("X train shape: ", X_train_aug[0].shape)
         print("X aug train shape: ", X_train_aug[1].shape)
     else:

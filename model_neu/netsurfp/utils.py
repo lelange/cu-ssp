@@ -103,7 +103,6 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
             input_seq = standard(input_seq)
 
 
-
     if hmm:
         profiles = np.load(data_root+filename+'_hmm.npy')
         if normalize:
@@ -117,8 +116,8 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         input_aug = input_seq
     outputs.append(input_aug)
     if embedding:
-        embed_seq = np.load(data_root + filename + '_umap_' + str(nb_components) + '_input.npy')
-        input_aug = [input_seq, embed_seq]
+        embed_seq = np.load(data_root + filename + '_word2vec_input')
+        input_aug = embed_seq
     q8 = np.load(data_root + filename + '_q9.npy')
     outputs.append(q8)
     return input_aug, q8
@@ -333,7 +332,7 @@ def train_val_split(hmm, embedding, X_train_aug, y_train, perc = None):
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
 
-    if hmm or embedding:
+    if hmm:
         '''
         X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[validation_idx]
         X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[training_idx]
