@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from utils import get_data, onehot_to_seq, onehot_to_seq2, get_acc, get_acc2
 data_file = "preds/Q8/"
 
+maxlen_seq = 608
 
 test = 'cb513_700'
 m1 = np.load(data_file+'cb513_700_pred_1.npy')
@@ -12,7 +13,7 @@ m4 = np.load(data_file+'cb513_700_pred_4.npy')
 m5 = np.load(data_file+'cb513_700_pred_5.npy')
 m6 = np.load(data_file+'cb513_700_pred_6.npy')
 
-mask = np.load('preds/cb513_700_mask.npy')
+mask = np.load('preds/cb513_'+str(maxlen_seq)+'_mask.npy')
 
 length_list = np.sum(mask, axis=1)
 
@@ -55,7 +56,8 @@ check_softmax(m1)
 #length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
 print('max protein seq length is', np.max(length_list))
 
-summed_probs = m1[:,:608,:] + m3 + m4 + m5 + m6
+summed_probs = m1 + m3 + m4 + m5 + m6
+#summed_probs = summed_probs[:,:608,:] +m2
 
 def get_ensemble_pred(labels):
     summed_probs = m1 + m3 + m4 + m5 + m6
