@@ -112,7 +112,7 @@ def build_model():
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
 
-    x1 = Dense(1200, activation="relu")(x1)
+    x1 = Dense(200, activation="relu")(x1)
     print(x1._keras_shape)
     x1 = Dropout(0.5)(x1)
 
