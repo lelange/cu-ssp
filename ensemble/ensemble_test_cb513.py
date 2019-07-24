@@ -8,7 +8,7 @@ m2 = np.load(file+'cb513_test_prob_2.npy')
 m3 = np.load(file+'cb513_test_prob_3.npy')
 m4 = np.load(file+'cb513_test_prob_4.npy')
 m5 = np.load(file+'cb513_test_prob_5.npy')
-m6 = np.load(file+e'cb513_test_prob_6.npy')
+m6 = np.load(file+'cb513_test_prob_6.npy')
 
 print (m1.shape, m2.shape, m3.shape, m4.shape, m5.shape, m6.shape)
 
