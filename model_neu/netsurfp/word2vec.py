@@ -11,7 +11,7 @@ filename= "train_700"
 seq_list = list('ACDEFGHIKLMNPQRSTVWY')
 
 def seq2ngrams(seqs, n = 3):
-    return np.array( [[seq[i:i+n] for i in range(int(len(seq)))] for seq in seqs])
+    return np.array( [[seq[i:i+n] for i in range(int(len(seq)-2))] for seq in seqs])
 
 
 def onehot_to_seq(oh_seq, index):
