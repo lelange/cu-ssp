@@ -15,7 +15,7 @@ else:
 
 file_train = 'train_' + ending
 file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
-file_train_test = file_test.append(file_train)
+file_train_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending, 'train_' + ending]
 
 def seq2ngrams(seqs, n = 3):
     return np.array( [[seq[i:i+n] for i in range(int(len(seq)-2))] for seq in seqs])
