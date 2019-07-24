@@ -91,7 +91,8 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
 
     print('Load ' + filename + ' data...')
     if embedding:
-        input_seq = np.load(data_root + filename + '_netsurfp_input_embedding_residue.npy')
+        input_seq = np.load(data_root + 'input_500_umap_embedding.npy')
+        hmm = False
     else:
         if no_input:
             input_seq = np.load(data_root + filename + '_hmm.npy')
