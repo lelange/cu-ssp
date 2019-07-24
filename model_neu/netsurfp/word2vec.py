@@ -43,7 +43,6 @@ prim_seq = []
 for i, oh in enumerate(train_input):
     seq = onehot_to_seq(oh, seq_list)
     prim_seq.append(seq)
-print(prim_seq.shape)
 
 # create overlapping? 3 grams from sequences
 n_grams = seq2ngrams(prim_seq)
@@ -62,6 +61,9 @@ print(embed_seq[0])
 print(embed_seq[-1])
 
 # save embedding to disk
+
+np.save(data_root+'input_word2vec.npy', embed_seq)
+print("Saved to disk.")
 
 # reduce dimension with umap
 
