@@ -118,18 +118,19 @@ def build_model():
 
     #x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
     # Defining a bidirectional LSTM using the embedded representation of the inputs
-    x2 = Bidirectional(CuDNNGRU(units=200, return_sequences=True))(x2)
-    print(x2._keras_shape)
-    #x2 = Dropout(0.5)(x2)
     x2 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x2)
     print(x2._keras_shape)
     #x2 = Dropout(0.5)(x2)
-    COMBO_MOVE = concatenate([x1, x2])
-    print(COMBO_MOVE._keras_shape)
-    w = Dense(24, activation="relu")(COMBO_MOVE)  # try 500
+    x2 = Bidirectional(CuDNNGRU(units=50, return_sequences=True))(x2)
+    print(x2._keras_shape)
+    #x2 = Dropout(0.5)(x2)
+    #COMBO_MOVE = concatenate([x1, x2])
+    #print(COMBO_MOVE._keras_shape)
+    #w = Dense(24, activation="relu")(COMBO_MOVE)  #try 500
+    w = Dense(24, activation="relu")(x2)
     print(w._keras_shape)
-    w = Dropout(0.4)(w)
-    w = tcn.TCN(return_sequences=True)(w)
+    w = Dropout(0.2)(w)
+    #w = tcn.TCN(return_sequences=True)(w)
     print(w._keras_shape)
     #w = TimeDistributed(Dense(64, activation="relu"))(w)
     #print(w._keras_shape)
