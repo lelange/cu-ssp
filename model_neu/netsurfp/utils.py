@@ -90,21 +90,20 @@ def get_data2(filename, hmm=True, normalize=False, standardize=True, embedding =
 def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False, nb_components = 500):
 
     print('Load ' + filename + ' data...')
-    if embedding:
-        embed_seq = np.load(data_root + filename + '_umap_' + str(nb_components) + '_input.npy')
+    outputs=[]
 
-    if no_input:
+    if not no_input:
+        input_seq = np.load(data_root + filename + '_input.npy')
+
+    else:
         input_seq = np.load(data_root + filename + '_hmm.npy')
         if normalize:
             input_seq = normal(input_seq)
         if standardize:
             input_seq = standard(input_seq)
 
-    else:
-        input_seq = np.load(data_root + filename + '_input.npy')
 
-    q8 = np.load(data_root + filename + '_q9.npy')
-    #q3 = np.load(data_root + filename + '_q3.npy')
+
     if hmm:
         profiles = np.load(data_root+filename+'_hmm.npy')
         if normalize:
@@ -116,7 +115,13 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         input_aug = [input_seq, profiles]
     else:
         input_aug = input_seq
-    return input_aug, q8, embed_seq
+    outputs.append(input_aug)
+    if embedding:
+        embed_seq = np.load(data_root + filename + '_umap_' + str(nb_components) + '_input.npy')
+        outputs.append((embed_seq))
+    q8 = np.load(data_root + filename + '_q9.npy')
+    outputs.append(q8)
+    return outputs
 
 # for pssm+hmm data
 def prepare_profiles(pssm, hmm, normalize, standardize):

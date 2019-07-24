@@ -22,7 +22,7 @@ from keras import regularizers, constraints, initializers, activations
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from keras.engine import InputSpec
 from keras.engine.topology import Layer
-from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU
+from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU, Reshape
 from keras.layers import Dropout, Flatten, Activation, RepeatVector, Permute
 
 from keras.layers import Dropout
@@ -95,19 +95,20 @@ file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ st
 
 def build_model():
     model = None
-    if embedding:
-        input = Input(shape=(500,))
-    else:
-        input = Input(shape=(MAXLEN_SEQ, NB_AS,))
+    input = Input(shape=(MAXLEN_SEQ, NB_AS,))
+    inp = input
+    x1 = input
+    x2 = input
+
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
+        inp.append(profiles_input)
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
-        inp = [input, profiles_input]
-    else:
-        x1 = input
-        x2 = input
-        inp = input
+    if embedding:
+        embed_input = Input(shape=(500,))
+        x1 = embed_input
+        inp.append(embed_input)
 
     x1 = Dense(1200, activation="relu")(x1)
     print(x1._keras_shape)
