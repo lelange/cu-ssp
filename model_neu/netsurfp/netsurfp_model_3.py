@@ -141,7 +141,7 @@ def build_model():
     w2 = tcn.TCN(return_sequences=True)(x3)
     print(w2._keras_shape)
 
-    z =concatenate([w, w2])
+    z =concatenate([w, w2], axis =1)
     print(z._keras_shape)
 
     w = TimeDistributed(Dense(180, activation="relu"))(z)
