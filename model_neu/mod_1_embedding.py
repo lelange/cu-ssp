@@ -30,7 +30,7 @@ import time
 
 from utils import *
 
-
+data_root = '/nosave/lange/cu-ssp/data/'
 start_time = time.time()
 
 args = parse_arguments(default_epochs=75) #=50
@@ -88,7 +88,7 @@ def train_model(X_train_aug, y_train,
         loss="categorical_crossentropy",
         metrics=["accuracy", accuracy])
 
-    load_file = "./model/mod_1-CB513-" + datetime.now().strftime("%Y_%m_%d-%H_%M") + ".h5"
+    load_file = data_root+"model/mod_1-CB513-" + datetime.now().strftime("%Y_%m_%d-%H_%M") + ".h5"
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
                                    mode='max')
