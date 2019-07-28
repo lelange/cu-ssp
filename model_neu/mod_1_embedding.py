@@ -50,20 +50,23 @@ n_words = 24
 
 #inputs: primary structure
 if embedding:
-    X_train = np.load('../data/train_input_embedding_residue.npy')
-    X_test = np.load('../data/test_input_embedding_residue.npy')
+    X_train = np.load('/nosave/lange/cu-ssp/data/train_input_embedding_residue.npy')
+    X_test = np.load('/nosave/lange/cu-ssp/data/test_input_embedding_residue.npy')
+    print("Loaded embedding input data")
 else:
     X_train = np.load('../data/X_train_6133.npy')
     X_test = np.load('../data/X_test_513.npy')
+    print("Loaded input data")
 
 #labels: secondary structure
 y_train = np.load('../data/y_train_6133.npy')
 y_test = np.load('../data/y_test_513.npy')
 
+
 if hmm or pssm:
 
     X_aug_train, X_aug_test = prepare_profiles(pssm, hmm, normalize, standardize)
-
+    print("Loaded profiles.")
 time_data = time.time() - start_time
 
 
@@ -188,7 +191,7 @@ else:
     X_train = X_train[training_idx]
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
-    if hmm or psmm:
+    if hmm or pssm:
         X_aug_val = X_aug_train[validation_idx]
         X_aug_train = X_aug_train[training_idx]
         X_train_aug = [X_train, X_aug_train]
