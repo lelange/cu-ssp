@@ -196,7 +196,8 @@ def CNN_BIGRU():
 best_weights = "model/mod_1-CB513-2019_07_28-20_54.h5"
 
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, ['cb513'])
+
+    build_and_predict(CNN_BIGRU(), best_weights, save_pred_file, MODEL_NAME, ['cb513'])
     test_acc = None
     time_data = time.time() - start_time
     save_results = False
