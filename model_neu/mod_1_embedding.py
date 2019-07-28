@@ -32,6 +32,7 @@ from utils import *
 
 
 MODEL_NAME = "mod_1_embedding"
+save_pred_file = "_pred_1_embedding.npy"
 data_root = '/nosave/lange/cu-ssp/data/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
