@@ -31,16 +31,29 @@ import time
 from utils import *
 
 data_root = '/nosave/lange/cu-ssp/data/'
+weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/"+weights_file
+file_scores = "logs/cv_results.txt"
+file_scores_mean = "logs/cv_results_mean.txt"
+MODEL_NAME = "mod_1_embedding"
+
 start_time = time.time()
 
 args = parse_arguments(default_epochs=75) #=50
 
 normalize = args.normalize
 standardize = args.standardize
-pssm = args.pssm
 hmm = args.hmm
+pssm = args.pssm
 embedding = args.embedding
 epochs = args.epochs
+plot = args.plot
+no_input = args.no_input
+optimize = args.optimize
+cross_validate = args.cv
+tv_perc = args.tv_perc
+test_mode = args.test_mode
+predict_only = args.predict
 
 n_tags = 9
 n_words = 24
@@ -178,31 +191,41 @@ def CNN_BIGRU():
 
     return model
 
-if args.cv :
-    cv_scores, model_history = crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test)
-    print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
+
+best_weights = "model/mod_1-CB513-2019_07_28-20_54.h5"
+
+if predict_only:
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, ['cb513'])
+    test_acc = None
+    time_data = time.time() - start_time
+    save_results = False
 else:
-    n_samples = len(X_train)
-    np.random.seed(0)
-    validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
-    training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
-
-    X_val = X_train[validation_idx]
-    X_train = X_train[training_idx]
-    y_val = y_train[validation_idx]
-    y_train = y_train[training_idx]
-    if hmm or pssm:
-        X_aug_val = X_aug_train[validation_idx]
-        X_aug_train = X_aug_train[training_idx]
-        X_train_aug = [X_train, X_aug_train]
-        X_val_aug = [X_val, X_aug_val]
-        X_test_aug = [X_test, X_aug_test]
+    if args.cv:
+        cv_scores, model_history = crossValidation(X_train, X_aug_train, y_train, X_test, X_aug_test, y_test)
+        print('Estimated accuracy %.3f (%.3f)' % (np.mean(cv_scores), np.std(cv_scores)))
     else:
-        X_train_aug = X_train
-        X_val_aug = X_val
-        X_test_aug = X_test
+        n_samples = len(X_train)
+        np.random.seed(0)
+        validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+        training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
 
-    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=epochs)
+        X_val = X_train[validation_idx]
+        X_train = X_train[training_idx]
+        y_val = y_train[validation_idx]
+        y_train = y_train[training_idx]
+        if hmm or pssm:
+            X_aug_val = X_aug_train[validation_idx]
+            X_aug_train = X_aug_train[training_idx]
+            X_train_aug = [X_train, X_aug_train]
+            X_val_aug = [X_val, X_aug_val]
+            X_test_aug = [X_test, X_aug_test]
+        else:
+            X_train_aug = X_train
+            X_val_aug = X_val
+            X_test_aug = X_test
+
+        model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=epochs)
+
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)

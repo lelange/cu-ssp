@@ -14,13 +14,18 @@ import os, pickle
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
-data_root = '../data/netsurfp/'
+data_root = '../data/'
+PRED_DIR = "preds/"
+q8_list = list('-GHIBESTC')
+q3_list = list('-HHHEECCC')
+
 
 def parse_arguments(default_epochs):
     """
     :return: command line arguments
     """
     parser = argparse.ArgumentParser()
+    parser.add_argument('-test_mode', help='test mode: epochs=1 and n_folds = 1', action='store_true')
     parser.add_argument('-no_input', help='do not use input data', action='store_true')
     parser.add_argument('-optimize', help='perform hyperoptimization', action='store_true')
     parser.add_argument('-pssm', help='use pssm profiles', action='store_true')
@@ -32,6 +37,7 @@ def parse_arguments(default_epochs):
     parser.add_argument('-epochs',type=int ,required=False, help='number of training epochs', default=default_epochs)
     parser.add_argument('-tv_perc',type=float, required=False, help='ratio train validation split')
     parser.add_argument('-plot', help='plot accuracy', action='store_true')
+    parser.add_argument('-predict', help='predict model', action='store_true')
     return parser.parse_args()
 
 def normal(data):
@@ -135,21 +141,7 @@ def to_seq(y):
         seqs.append(seq_i)
     return seqs
 
-# Decode: map to a sequence from a one-hot
-# encoding, takes a one-hot encoded y matrix
-# with an lookup table "index"
-# Maps the sequence to a one-hot encoding
-def onehot_to_seq(oh_seq, index):
-    s = ''
-    for o in oh_seq:
-        i = np.argmax(o)
-        if i != 0:
-            s += index[i]
-        else:
-            break
-    return s
 
-counter = 0
 # prints the results
 def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False, print_pred=False):
     if write_df:
@@ -189,14 +181,6 @@ def load_augmented_data(npy_path, max_len):
     len_list = np.array([len(x) for x in residue_str_list])
     train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'expected': q8_str_list})
     return train_df, profile_padded
-
-
-def get_acc(gt, pred):
-    correct = 0
-    for i in range(len(gt)):
-        if gt[i] == pred[i]:
-            correct += 1
-    return (1.0 * correct) / len(gt)
 
 
 def evaluate_acc(y_predicted):
@@ -243,31 +227,6 @@ def evaluate_acc(y_predicted):
 def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
-
-def train_val_split(hmm, X_train_aug, y_train, perc = None):
-    if hmm:
-        n_samples = len(X_train_aug[0])
-    else:
-        n_samples = len(X_train_aug)
-    np.random.seed(0)
-    if perc is None:
-        perc = 0.1
-    print(type(n_samples), type(perc))
-    size = int(n_samples*perc)
-    validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
-    training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
-
-    y_val = y_train[validation_idx]
-    y_train = y_train[training_idx]
-
-    if hmm:
-        X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
-        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
-    else:
-        X_val_aug = X_train_aug[validation_idx]
-        X_train_aug = X_train_aug[training_idx]
-
-    return X_train_aug, y_train, X_val_aug, y_val
 
 
 def telegram_me(m, s, model_name, test_acc = None, hmm=False, standardize=False, normalize = False, no_input = False, embedding=False):
@@ -337,3 +296,273 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=10):
         model_history.append(model)
 
     return cv_scores, model_history
+
+
+def onehot_to_seq(oh_seq, index):
+    s = ''
+    for o in oh_seq:
+        i = np.argmax(o)
+        s += index[i]
+    return s
+
+def onehot_to_seq2(oh_seq, index, length=None):
+    s = ''
+    if length is None:
+        for o in oh_seq:
+            i = np.argmax(o)
+            if i != 0:
+                s += index[i]
+            else:
+                break
+    else:
+        for idx, o in enumerate(oh_seq):
+            i = np.argmax(o[1:])
+            if idx < length:
+                s += index[i+1]
+            else:
+                break
+    return s
+
+def get_acc(gt, pred):
+    '''
+         if len(gt)!=len(pred):
+        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
+    '''
+    correct = 0
+    for i in range(len(gt)):
+        if gt[i] == pred[i]:
+            correct += 1
+    return (1.0 * correct), len(gt)
+
+def get_acc2(gt, pred):
+    '''
+         if len(gt)!=len(pred):
+        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
+    '''
+    correct = 0
+    for i in range(len(gt)):
+        if gt[i] == pred[i]:
+            correct += 1
+    return (1.0 * correct)/len(gt)
+
+def evaluate_acc(y_predicted):
+    print('Analyse accuracy')
+
+    order_list = [8, 5, 2, 0, 7, 6, 3, 1, 4]
+    labels = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T', 'NoSeq']
+
+    m1p = np.zeros_like(y_predicted)
+    for count, i in enumerate(order_list):
+        m1p[:, :, i] = y_predicted[:, :y_predicted.shape[1], count]
+
+    summed_probs = m1p
+
+    length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
+    print('max protein seq length is', np.max(length_list))
+
+    ensemble_predictions = []
+    for protein_idx, i in enumerate(length_list):
+        new_pred = ''
+        for j in range(i):
+            new_pred += labels[np.argmax(summed_probs[protein_idx, j, :])]
+        ensemble_predictions.append(new_pred)
+
+    # calculating accuracy: compare to cb513test_solution
+    gt_all = [line.strip().split(',')[3] for line in open('cb513test_solution.csv').readlines()]
+    acc_list = []
+    equal_counter = 0
+    total = 0
+
+    for gt, pred in zip(gt_all, ensemble_predictions):
+        if len(gt) == len(pred):
+            acc = get_acc(gt, pred)
+            acc_list.append(acc)
+            equal_counter += 1
+        else:
+            acc = get_acc(gt, pred)
+            acc_list.append(acc)
+        total += 1
+    print('the accuracy is', np.mean(acc_list))
+    print(str(equal_counter) + ' from ' + str(total) + ' proteins are of equal length')
+    return acc_list
+
+def train_val_split(hmm, embedding, X_train_aug, y_train, perc = None):
+    n_samples = len(y_train)
+    np.random.seed(0)
+    if perc is None:
+        perc = 0.1
+    size = int(n_samples * perc)
+
+    validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
+    training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
+
+    y_val = y_train[validation_idx]
+    y_train = y_train[training_idx]
+
+    if hmm:
+        '''
+        X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[validation_idx]
+        X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[training_idx]
+        '''
+        X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
+        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
+    else:
+        X_val_aug = X_train_aug[validation_idx]
+        X_train_aug = X_train_aug[training_idx]
+
+    return X_train_aug, y_train, X_val_aug, y_val
+
+
+def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700']):
+    embedding = True
+    pssm=False
+    hmm=False
+    standardize=False
+    normalize = False
+
+    if model is None:
+        model = build_model()
+
+    # save all accuracys from Q8 and Q3 preditions
+    f = open(PRED_DIR + "prediction_accuracy.txt", "a+")
+    for test in file_test:
+
+        i = True
+        # inputs: primary structure
+        if embedding:
+            X_test = np.load('/nosave/lange/cu-ssp/data/test_input_embedding_residue.npy')
+            print("Loaded embedding input data")
+        else:
+            X_test = np.load('../data/X_test_513.npy')
+            print("Loaded input data")
+
+        # labels: secondary structure
+        y_test = np.load('../data/y_test_513.npy')
+
+        if hmm or pssm:
+            X_aug_train, X_aug_test = prepare_profiles(pssm, hmm, normalize, standardize)
+            print("Loaded profiles.")
+            X_test_aug = [X_test, X_aug_test]
+        else:
+            X_test_aug = X_test
+
+        model.load_weights(best_weights)
+
+        print("\nPredict " + test + "...")
+
+        y_test_pred = model.predict(X_test_aug)
+        score = model.evaluate(X_test_aug, y_test)
+        print("Accuracy from model evaluate: " + str(score[2]))
+        np.save(PRED_DIR +'Q8/' + test + save_pred_file, y_test_pred)
+        print("Saved predictions to " + PRED_DIR + 'Q8/' + test + save_pred_file + ".")
+
+        q3_pred = 0
+        q8_pred = 0
+        q3_len = 0
+        q8_len = 0
+
+        q8_accs=[]
+        q3_accs=[]
+
+        g = open(PRED_DIR +'Q8/' +"q9_pred_mod_1.txt", "w+")
+        h = open(PRED_DIR +'Q3/'+ "q4_pred_mod_1.txt", "w+")
+
+        #calculate q8, q3 representations from one hot encoding and calculate accuracy
+        for true, pred in zip(y_test, y_test_pred):
+            seq3 = onehot_to_seq(pred, q3_list)
+            seq8 = onehot_to_seq(pred, q8_list)
+            seq_true_3 = onehot_to_seq2(true, q3_list)
+            seq_true_8 = onehot_to_seq2(true, q8_list)
+
+            if i:
+                print('Q3 prediction, first pred then true: ')
+                print(seq3[:60])
+                print(seq_true_3[:60])
+
+                print('Q8 prediction, first pred then true: ')
+                print(seq8[:60])
+                print(seq_true_8[:60])
+
+                i = False
+
+            h.write(seq3)
+            g.write(seq8)
+            h.write("\n")
+            g.write("\n")
+
+            corr3, len3 = get_acc(seq_true_3, seq3)
+            corr8, len8 = get_acc(seq_true_8, seq8)
+            q8_accs.append(get_acc2(seq_true_8, seq8))
+            q3_accs.append(get_acc2(seq_true_3, seq3))
+            q3_pred += corr3
+            q8_pred += corr8
+            q3_len += len3
+            q8_len += len8
+        g.close()
+        h.close()
+        print('Saved Q8 sequences to '+PRED_DIR +'Q8/' +"q9_pred_mod_1.txt")
+        print('Saved Q3 sequences to ' + PRED_DIR + 'Q3/' + "q4_pred_mod_1.txt")
+
+        #print results
+        print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
+        print("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
+        print("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
+        print("\nAccuracy mean(#correct per protein/#len_protein):")
+        print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
+        print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
+
+        #save results to file
+        f.write("Results for " + model_name + " and weights " + best_weights+" on "+test+".")
+        f.write("\n\n")
+        f.write("Netsurf data were used with standardized hhblits profiles.\n")
+        f.write("Accuracy #sum(correct per proteins)/#sum(len_proteins):\n")
+        f.write("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
+        f.write("\n")
+        f.write("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
+        f.write("\n\n")
+
+        f.write("Accuracy mean(#correct per protein/#len_protein):\n")
+        f.write("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
+        f.write("\n")
+        f.write("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
+        f.write("\n\n")
+
+        f.write("Accuracy from model evaluate: " + str(score[2]))
+        f.write("\n\n")
+
+        f.write("Predictions are saved to: " + PRED_DIR + test + save_pred_file)
+        f.write("\n----------------------------\n\n")
+
+    f.write("----------------------------\n\n\n")
+    f.close()
+
+def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True, standardize=True, normalize=False, no_input=False, embedding=False):
+    f = open("results_experiments.txt", "a+")
+    f.write("Results for " + model_name + " and weights " + weights_file +".")
+    f.write("\n\n")
+
+    m, s = divmod(time_end, 60)
+    msg = 'Runtime: {:.0f}min {:.0f}s'.format(m, s)
+    if embedding:
+        "Input values were split to 3-grams and each 3-gram has been embedded in 100 dim with word2 vec.\n " \
+        "After that, the input dimension was reduced from (#samples, 70000) to (#samples, 500) with UMAP."
+    if hmm:
+        verb = ''
+        if standardize:
+            verb += 'Standardized '
+        if normalize:
+            verb += 'and normalized '
+        msg += '\n' + verb + 'hhblits profiles and netsurf data were used.'
+    if no_input:
+        msg += '\n Only hhblits profiles were used as input.'
+    if test_acc is not None:
+        for name, value in test_acc.items():
+            msg += '\n' + name + ' test accuracy: {:.3%}'.format(value)
+
+    f.write(msg)
+    f.write("\n")
+    f.write("----------------------------\n")
+    f.write("\n\n")
+    f.close()
+
+
