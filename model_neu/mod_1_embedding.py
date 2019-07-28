@@ -30,12 +30,14 @@ import time
 
 from utils import *
 
+
+MODEL_NAME = "mod_1_embedding"
 data_root = '/nosave/lange/cu-ssp/data/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
 file_scores = "logs/cv_results.txt"
 file_scores_mean = "logs/cv_results_mean.txt"
-MODEL_NAME = "mod_1_embedding"
+
 
 start_time = time.time()
 
@@ -101,7 +103,6 @@ def train_model(X_train_aug, y_train,
         loss="categorical_crossentropy",
         metrics=["accuracy", accuracy])
 
-    load_file = data_root+"model/mod_1-CB513-" + datetime.now().strftime("%Y_%m_%d-%H_%M") + ".h5"
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
                                    mode='max')
