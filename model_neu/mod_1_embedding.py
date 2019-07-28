@@ -45,8 +45,8 @@ epochs = args.epochs
 n_tags = 9
 n_words = 24
 
-if not pssm and not hmm:
-    raise Exception('you should use one of the profiles!')
+#if not pssm and not hmm:
+#    raise Exception('you should use one of the profiles!')
 
 #inputs: primary structure
 if embedding:
@@ -60,7 +60,9 @@ else:
 y_train = np.load('../data/y_train_6133.npy')
 y_test = np.load('../data/y_test_513.npy')
 
-X_aug_train, X_aug_test = prepare_profiles(pssm, hmm, normalize, standardize)
+if hmm or pssm:
+
+    X_aug_train, X_aug_test = prepare_profiles(pssm, hmm, normalize, standardize)
 
 time_data = time.time() - start_time
 
@@ -139,8 +141,15 @@ def super_conv_block(x):
 def CNN_BIGRU():
     model = None
     input = Input(shape=(X_train.shape[1], X_train.shape[2],))
-    profile_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
-    x = concatenate([input, profile_input])
+    inp = input
+    if hmm or pssm:
+        profile_input = Input(shape=(X_aug_train.shape[1], X_aug_train.shape[2],))
+        x = concatenate([input, profile_input])
+        #inp += profile_input
+        inp = [input, profile_input]
+    else:
+        x = input
+
     '''
     x = super_conv_block(x)
     x = conv_block(x)
@@ -161,7 +170,7 @@ def CNN_BIGRU():
 
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(x)
 
-    model = Model([input, profile_input], y)
+    model = Model(inp, y)
     model.summary()
 
     return model
@@ -179,12 +188,17 @@ else:
     X_train = X_train[training_idx]
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
-    X_aug_val = X_aug_train[validation_idx]
-    X_aug_train = X_aug_train[training_idx]
+    if hmm or psmm:
+        X_aug_val = X_aug_train[validation_idx]
+        X_aug_train = X_aug_train[training_idx]
+        X_train_aug = [X_train, X_aug_train]
+        X_val_aug = [X_val, X_aug_val]
+        X_test_aug = [X_test, X_aug_test]
+    else:
+        X_train_aug = X_train
+        X_val_aug = X_val
+        X_test_aug = X_test
 
-    X_train_aug = [X_train, X_aug_train]
-    X_val_aug = [X_val, X_aug_val]
-    X_test_aug = [X_test, X_aug_test]
     model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=epochs)
 
 time_end = time.time() - start_time
