@@ -98,9 +98,6 @@ file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ st
 def build_model():
     model = None
 
-    if embedding:
-        NB_AS = 100
-
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     inp = input
     x1 = input
