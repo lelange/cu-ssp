@@ -87,7 +87,7 @@ def get_data2(filename, hmm=True, normalize=False, standardize=True, embedding =
         input_aug = input_seq
     return input_aug, q8
 
-def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = True, no_input=False, nb_components = 500):
+def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False, nb_components = 500):
 
     print('Load ' + filename + ' data...')
     outputs=[]
