@@ -1,6 +1,6 @@
 import numpy as np
-from numpy import array
 import pandas as pd
+from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
@@ -9,16 +9,23 @@ from keras import backend as K
 import tensorflow as tf
 import argparse
 import telegram
-import sys
+from datetime import datetime
 import os, pickle
-import random
+from collections import defaultdict
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
-data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
+
+data_root = '/nosave/lange/cu-ssp/data/'
+qzlsy_root = '/nosave/lange/cu-ssp/data/data_qzlshy/'
+netsurfp_root = '/nosave/lange/cu-ssp/data/netsurfp/'
+princeton_root = '/nosave/lange/cu-ssp/data/data_princeton/'
+
+
 PRED_DIR = "preds/"
 q8_list = list('-GHIBESTC')
 q3_list = list('-HHHEECCC')
+
 
 def parse_arguments(default_epochs):
     """
@@ -52,118 +59,59 @@ def standard(data):
     data_ = (data - mean) / std
     return data_
 
-# for netsurf (hmm) data
-def get_data2(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False):
+def get_data(filename, primary=True, hmm=True, pssm=False, normalize=False, standardize=True, embedding = False):
+    #input (primary and/or embedding)
 
-    print('Load ' + filename + ' data...')
-    if embedding:
-        input_seq = np.load(data_root + filename + '_netsurfp_input_embedding_residue.npy')
-    else:
-        if no_input:
-            #input_seq = pickle.load(open(data_root + filename + '_hmm.txt', "rb")) #
-            input_seq= np.load(data_root + filename + '_hmm.npy', allow_pickle=True)
-            if normalize:
-                input_seq = normal(input_seq)
-            if standardize:
-                input_seq = standard(input_seq)
+    if princeton:
 
-        else:
-            #input_seq =  pickle.load(open(data_root + filename + '_input.txt', "rb"))#
-            input_seq = np.load(data_root+filename+'_input.npy', allow_pickle=True)
-    #q8 = pickle.load(open(data_root + filename + '_q9.txt', "rb"))#
-    q8 = np.load(data_root + filename + '_q9.npy', allow_pickle=True)
-    #q3 = np.load(data_root + filename + '_q3.npy')
-    if hmm:
-        #profiles = pickle.load(open(data_root + filename + '_hmm.txt', "rb"))#
-        profiles = np.load(data_root+filename+'_hmm.npy', allow_pickle=True)
-        if normalize:
-            print('Normalize...')
-            profiles = normal(profiles)
-        if standardize:
-            print('Standardize...')
-            profiles = standard(profiles)
-        input_aug = [input_seq, profiles]
-    else:
-        input_aug = input_seq
-    return input_aug, q8
+    if qzlsy:
 
-def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = True, no_input=False, nb_components = 500):
+    if netsurf:
 
-    print('Load ' + filename + ' data...')
-    outputs=[]
 
-    if not no_input:
-        input_seq = np.load(data_root + filename + '_input.npy')
+    #profiles (pssm and/or hmm)
 
-    else:
-        input_seq = np.load(data_root + filename + '_hmm.npy')
-        if normalize:
-            input_seq = normal(input_seq)
-        if standardize:
-            input_seq = standard(input_seq)
+    return
 
-    if hmm:
-        profiles = np.load(data_root+filename+'_hmm.npy')
-        if normalize:
-            print('Normalize...')
-            profiles = normal(profiles)
-        if standardize:
-            print('Standardize...')
-            profiles = standard(profiles)
-        input_aug = [input_seq, profiles]
-    else:
-        input_aug = input_seq
-    outputs.append(input_aug)
-    if embedding:
-        embed_seq = np.load(data_root + filename + '_word2vec_3D_input.npy')
-        input_aug = embed_seq
-    q8 = np.load(data_root + filename + '_q9.npy')
-    outputs.append(q8)
-    print(input_aug.shape)
+def get_qzlshy_profiles(name, pssm, hmm, normalize, standardize):
+    # profiles can be use for train and test profiles
+    if not name in ['train', 'test']:
+        print("Mode should be either train or test.")
 
-    return input_aug, q8
+    filename=data_root+name
 
-# for pssm+hmm data
-def prepare_profiles(pssm, hmm, normalize, standardize):
-    # profiles
     if pssm == True:
         print("load pssm profiles... ")
-        train_pssm = np.load('../data/train_pssm.npy')
-        test_pssm = np.load('../data/test_pssm.npy')
+        train_pssm = np.load(filename+'_pssm.npy')
 
         if normalize:
             print('normalize pssm profiles...')
             train_pssm = normal(train_pssm)
-            test_pssm= normal(test_pssm)
 
         if standardize:
+            print('standardize pssm profiles...')
             train_pssm = standard(train_pssm)
-            test_pssm = standard(test_pssm)
 
     if hmm == True:
         print("load hmm profiles... ")
-        train_hmm = np.load('../data/train_hmm.npy')
-        test_hmm = np.load('../data/test_hmm.npy')
+        train_hmm = np.load(filename+'_hmm.npy')
 
         if normalize:
             train_hmm = normal(train_hmm)
-            test_hmm = normal(test_hmm)
 
         if standardize:
             train_hmm = standard(train_hmm)
-            test_hmm = standard(test_hmm)
 
     if pssm and hmm:
         train_profiles = np.concatenate((train_pssm, train_hmm), axis=2)
-        test_profiles = np.concatenate((test_pssm, test_hmm), axis=2)
     elif pssm:
         train_profiles = train_pssm
-        test_profiles = test_pssm
     else:
         train_profiles = train_hmm
-        test_profiles = test_hmm
 
-    return train_profiles, test_profiles
+
+    return train_profiles
+
 
 # The custom accuracy metric used for this task
 def accuracy(y_true, y_predicted):
@@ -172,86 +120,12 @@ def accuracy(y_true, y_predicted):
     mask = tf.greater(y, 0)
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
-# Convert probabilities to secondary structure
-def to_seq(y):
-    seqs=[]
-    for i in range(len(y)):
-        seq_i=''
-        for j in range(len(y[i])):
-            seq_i += q8_list[np.argmax(y[i][j])]
-        seqs.append(seq_i)
-    return seqs
-
-# Decode: map to a sequence from a one-hot
-# encoding, takes a one-hot encoded y matrix
-# with an lookup table "index"
-# Maps the sequence to a one-hot encoding
-
-
 def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
         i = np.argmax(o)
         s += index[i]
     return s
-
-def onehot_to_seq2(oh_seq, index, length=None):
-    s = ''
-    if length is None:
-        for o in oh_seq:
-            i = np.argmax(o)
-            if i != 0:
-                s += index[i]
-            else:
-                break
-    else:
-        for idx, o in enumerate(oh_seq):
-            i = np.argmax(o[1:])
-            if idx < length:
-                s += index[i+1]
-            else:
-                break
-    return s
-
-counter = 0
-# prints the results
-def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False, print_pred=False):
-    if write_df:
-        Ans['id'][counter] = test_df['id'][counter]
-        Ans['expected'][counter] = str(onehot_to_seq(y_, revsere_decoder_index).upper())
-    if print_pred:
-        print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
-
-# Computes and returns the n-grams of a particular sequence, defaults to trigrams
-def seq2ngrams(seqs, n = 1):
-    return np.array([[seq[i : i + n] for i in range(len(seq))] for seq in seqs])
-
-def load_augmented_data(npy_path, max_len):
-    data = np.load(npy_path)
-
-    data_reshape = data.reshape(data.shape[0], 700, -1)
-    residue_onehot = data_reshape[:,:,0:22]
-    residue_q8_onehot = data_reshape[:,:,22:31]
-    profile = data_reshape[:,:,35:57]
-    #pad profiles to same length
-    zero_arr = np.zeros((profile.shape[0], max_len - profile.shape[1], profile.shape[2]))
-    profile_padded = np.concatenate([profile, zero_arr], axis=1)
-
-    residue_array = np.array(residue_list)[residue_onehot.argmax(2)]
-    q8_array = np.array(q8_list)[residue_q8_onehot.argmax(2)]
-    residue_str_list = []
-    q8_str_list = []
-    for vec in residue_array:
-        x = ''.join(vec[vec != 'NoSeq'])
-        residue_str_list.append(x)
-    for vec in q8_array:
-        x = ''.join(vec[vec != 'NoSeq'])
-        q8_str_list.append(x)
-
-    id_list = np.arange(1, len(residue_array) + 1)
-    len_list = np.array([len(x) for x in residue_str_list])
-    train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'expected': q8_str_list})
-    return train_df, profile_padded
 
 def get_acc(gt, pred):
     '''
@@ -275,110 +149,9 @@ def get_acc2(gt, pred):
             correct += 1
     return (1.0 * correct)/len(gt)
 
-def evaluate_acc(y_predicted):
-    print('Analyse accuracy')
-
-    order_list = [8, 5, 2, 0, 7, 6, 3, 1, 4]
-    labels = ['L', 'B', 'E', 'G', 'I', 'H', 'S', 'T', 'NoSeq']
-
-    m1p = np.zeros_like(y_predicted)
-    for count, i in enumerate(order_list):
-        m1p[:, :, i] = y_predicted[:, :y_predicted.shape[1], count]
-
-    summed_probs = m1p
-
-    length_list = [len(line.strip().split(',')[2]) for line in open('cb513test_solution.csv').readlines()]
-    print('max protein seq length is', np.max(length_list))
-
-    ensemble_predictions = []
-    for protein_idx, i in enumerate(length_list):
-        new_pred = ''
-        for j in range(i):
-            new_pred += labels[np.argmax(summed_probs[protein_idx, j, :])]
-        ensemble_predictions.append(new_pred)
-
-    # calculating accuracy: compare to cb513test_solution
-    gt_all = [line.strip().split(',')[3] for line in open('cb513test_solution.csv').readlines()]
-    acc_list = []
-    equal_counter = 0
-    total = 0
-
-    for gt, pred in zip(gt_all, ensemble_predictions):
-        if len(gt) == len(pred):
-            acc = get_acc(gt, pred)
-            acc_list.append(acc)
-            equal_counter += 1
-        else:
-            acc = get_acc(gt, pred)
-            acc_list.append(acc)
-        total += 1
-    print('the accuracy is', np.mean(acc_list))
-    print(str(equal_counter) + ' from ' + str(total) + ' proteins are of equal length')
-    return acc_list
-
 def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
-
-def train_val_split(hmm, embedding, X_train_aug, y_train, perc = None):
-    n_samples = len(y_train)
-    np.random.seed(0)
-    if perc is None:
-        perc = 0.1
-    size = int(n_samples * perc)
-
-    validation_idx = np.random.choice(np.arange(n_samples), size=size, replace=False)
-    training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
-
-    y_val = y_train[validation_idx]
-    y_train = y_train[training_idx]
-
-    if hmm:
-        '''
-        X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[validation_idx]
-        X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[training_idx]
-        '''
-        X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
-        X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
-    else:
-        X_val_aug = X_train_aug[validation_idx]
-        X_train_aug = X_train_aug[training_idx]
-
-    return X_train_aug, y_train, X_val_aug, y_val
-
-
-def telegram_me(m, s, model_name, test_acc = None, hmm=False, standardize=False, normalize = False, no_input = False, embedding=False):
-    Token = "806663548:AAEJIMIBEQ9eKdyF8_JYnxUhUsDQZls1w7w"
-    chat_ID = "69661085"
-    bot = telegram.Bot(token=Token)
-    msg = '{} ist erfolgreich durchgelaufen! :) \n\n' \
-          '(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s)
-    if hmm:
-        verb = ''
-        if standardize:
-            verb += 'standardisierte '
-        if normalize:
-            verb += 'und normalisierte '
-        msg+='\nEs wurden '+verb+'HMM Profile verwendet.'
-    if no_input:
-        msg+='\n Es wurden nur HMM Profile als Input verwendet.'
-    if embedding:
-        msg+='\n Die Input-Daten wurden ins 1024-dim. eingebettet.'
-    if test_acc is not None:
-        for name, value in test_acc.items():
-            msg += '\n'+name+' test accuracy: {:.3%}'.format(value)
-    bot.send_message(chat_id=chat_ID, text=msg)
-
-def message_me(model_name, m, s):
-    username = 'charlie.gpu'
-    password = '19cee1Et742'
-    recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
-    client = fbchat.Client(username, password)
-    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F973 '
-                       '\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s))
-
-    sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
-    client.logout()
 
 def save_cv(weights_file, cv_scores, file_scores, file_scores_mean, n_folds):
     # print results and save them to logfiles
@@ -572,5 +345,85 @@ def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True,
     f.close()
 
 
+def build_and_train (model, batch_size, epochs,
+                     X_train_aug, y_train, X_val_aug, y_val,
+                     load_file, callbacks = None, patience=None):
+
+    if patience is None:
+        patience = np.max(int(epochs/10), 2)
+
+    if callbacks is None:
+        callbacks = []
+
+        earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
+        checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
+                                       mode='max')
+
+        callbacks.append(earlyStopping)
+        callbacks.append(checkpointer)
+
+    model = model
+
+    # Training the model on the training data and validating using the validation set
+    history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
+                        epochs=epochs, batch_size=batch_size, callbacks=callbacks,
+                        verbose=1, shuffle=True)
+
+    return model, history
 
 
+def evaluate_model(model, load_file, file_test):
+    test_accs = []
+    names = []
+    for test in file_test:
+        X_test_aug, y_test = get_data(test, hmm, normalize, standardize)
+        model.load_weights(load_file)
+        print("\nevaluate " + test +":")
+        score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
+        print(test +' test loss:', score[0])
+        print(test +' test accuracy:', score[2])
+        test_accs.append(score[2])
+        names.append(test)
+    return dict(zip(names, test_accs))
+
+def crossValidation(model, batch_size, epochs, load_file,
+                    X_train_aug, y_train,
+                    n_folds, file_test):
+
+    X_train, X_aug_train = X_train_aug
+    # Instantiate the cross validator
+    kfold_splits = n_folds
+    kf = KFold(n_splits=kfold_splits, shuffle=True)
+
+    cv_scores = defaultdict(list)
+    model_history = []
+
+    # Loop through the indices the split() method returns
+    for index, (train_indices, val_indices) in enumerate(kf.split(X_train, y_train)):
+        print('\n\n-----------------------')
+        print("Training on fold " + str(index + 1) + "/" + str(kfold_splits) +"...")
+        print('-----------------------\n')
+
+        # Generate batches from indices
+        X_train_fold, X_val_fold = X_train[train_indices], X_train[val_indices]
+        X_aug_train_fold, X_aug_val_fold = X_aug_train[train_indices], X_aug_train[val_indices]
+        y_train_fold, y_val_fold = y_train[train_indices], y_train[val_indices]
+
+        print("Training new iteration on " + str(X_train_fold.shape[0]) + " training samples, " + str(
+            X_val_fold.shape[0]) + " validation samples...")
+
+        model, history = build_and_train(model, batch_size, epochs,[X_train_fold, X_aug_train_fold], y_train_fold,
+                                  [X_val_fold, X_aug_val_fold], y_val_fold, load_file)
+
+        print(history.history)
+
+        test_acc = evaluate_model(model, load_file, file_test)
+
+        cv_scores['val_accuracy'].append(max(history.history['val_accuracy']))
+
+        for k, v in test_acc.items():
+            cv_scores[k].append(v)
+
+        model_history.append(model)
+
+    return cv_scores, model_history

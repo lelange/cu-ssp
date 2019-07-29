@@ -21,6 +21,7 @@ from keras.regularizers import l1, l2
 import tensorflow as tf
 import keras
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
+
 import os
 import time
 import dill as pickle
@@ -237,8 +238,6 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 best_weights = "model/mod_1-CB513-2019_07_23-17_11.h5"
 save_pred_file = "_pred_1.npy"
 
-
-
 def accuracy2(y_true, y_predicted):
     print("understand metric:")
     #turn onehot to seq
@@ -259,8 +258,6 @@ def accuracy2(y_true, y_predicted):
     print(len(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)).eval()))
 
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
-
-
 
 #--------------------------------- main ---------------------------------
 
