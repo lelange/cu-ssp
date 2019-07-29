@@ -119,7 +119,6 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         input_aug = embed_seq
     q8 = np.load(data_root + filename + '_q9.npy')
     outputs.append(q8)
-    print(input_aug.shape)
 
     return input_aug, q8
 
