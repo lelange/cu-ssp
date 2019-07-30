@@ -630,13 +630,6 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         plt.savefig('./plots/'+model_name+ datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy.png')
         plt.clf()
         '''
-        plt.title('Accuracy')
-        plt.boxplot(q3_accs, label='Q3')
-        plt.boxplot(q8_accs, label='Q8')
-        plt.legend()
-        plt.show()
-        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
-        plt.clf()
 
         if test == 'cb513_700':
             print('MASKED RESULTS:')
@@ -648,12 +641,13 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs_mask)))
             print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs_mask)))
 
-        plt.title('Accuracy mask')
-        plt.boxplot(q3_accs_mask, label='Q3 masked')
-        plt.boxplot(q8_accs_mask, label='Q8 masked')
-        plt.legend()
+        plt.title('Accuracy')
+        fig, ax = plt.subplots()
+        plotdata = [q3_accs, q3_accs_mask, q8_accs, q8_accs_mask]
+        ax.boxplot(plotdata)
+        ax.set_xticklabels(['q3', 'q3_mask', 'q8', 'q8_mask'])
         plt.show()
-        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_masked_boxplot.png')
+        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
 
     '''
         #save results to file
