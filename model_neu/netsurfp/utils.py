@@ -420,7 +420,7 @@ def get_acc(gt, pred, mask=None):
             if mask[i] == 1:
                 if gt[i] == pred[i]:
                     correct += 1
-            length=np.sum(mask)
+            length=np.sum(np.array(mask))
 
         else:
             if gt[i] == pred[i]:
@@ -439,7 +439,7 @@ def get_acc2(gt, pred, mask = None):
             if mask[i] == 1:
                 if gt[i] == pred[i]:
                     correct += 1
-            length = np.sum(mask)
+            length=np.sum(np.array(mask))
 
         else:
             if gt[i] == pred[i]:
@@ -625,14 +625,20 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         if test == 'cb513_700':
             print('MASKED RESULTS:')
             print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
+            print(q3_len_mask)
             print("Q3 " + test + " test accuracy: " + str(q3_pred_mask / q3_len_mask))
             print("Q8 " + test + " test accuracy: " + str(q8_pred_mask / q8_len_mask))
             print("\nAccuracy mean(#correct per protein/#len_protein):")
             print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs_mask)))
             print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs_mask)))
 
+        plt.title('Accuracy')
+        plt.hist(q3_accs_mask, label='Q3 masked', alpha=0.5)
+        plt.hist(q8_accs_mask, label='Q8 masked', alpha=0.5)
+        plt.legend()
+        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy.png')
 
-        '''
+    '''
         #save results to file
         f.write("Results for " + model_name + " and weights " + best_weights+" on "+test+".")
         f.write("\n\n")
