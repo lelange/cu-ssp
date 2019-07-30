@@ -417,14 +417,16 @@ def get_acc(gt, pred, mask=None):
     correct = 0
     for i in range(len(gt)):
         if mask is not None:
-            if mask[i] == 0:
+            if mask[i] == 1:
                 if gt[i] == pred[i]:
                     correct += 1
+            length=np.sum(mask)
 
         else:
             if gt[i] == pred[i]:
                 correct += 1
-    return (1.0 * correct), len(gt)
+            length = len(gt)
+    return (1.0 * correct), length
 
 def get_acc2(gt, pred, mask = None):
     '''
@@ -434,14 +436,16 @@ def get_acc2(gt, pred, mask = None):
     correct = 0
     for i in range(len(gt)):
         if mask is not None:
-            if mask[i]==0:
+            if mask[i] == 1:
                 if gt[i] == pred[i]:
                     correct += 1
+            length = np.sum(mask)
 
         else:
             if gt[i] == pred[i]:
                 correct += 1
-    return (1.0 * correct)/len(gt)
+            length = len(gt)
+    return (1.0 * correct)/length
 
 
 
@@ -612,8 +616,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
 
         plt.title('Accuracy')
-        plt.hist(q3_accs, label='Q3')
-        plt.hist(q8_accs, label='Q8')
+        plt.hist(q3_accs, label='Q3', alpha = 0.5)
+        plt.hist(q8_accs, label='Q8', alpha = 0.5)
         plt.legend()
         plt.savefig('./plots/'+model_name+ datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy.png')
 
