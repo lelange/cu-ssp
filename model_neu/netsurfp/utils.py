@@ -582,24 +582,24 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("worst Q3 and true:" + str(np.min(q3_accs)))
         print(pred_q3[np.argmin(q3_accs)])
         print(true_q3[np.argmin(q3_accs)])
-        print(mask[np.argmin(q3_accs)])
+        print([str(i) for i in mask[np.argmin(q3_accs)]])
         print("worst Q8 and true:" + str(np.min(q8_accs)))
         print(pred_q8[np.argmin(q8_accs)])
         print(true_q8[np.argmin(q8_accs)])
-        print(mask[np.argmin(q3_accs)])
+        print([str(i) for i in mask[np.argmin(q3_accs)]])
 
-        print("all under 50% accuracy:")
-        bads_q3 = np.argwhere(np.array(q3_accs)<0.5)
+        print("all under 50% or 70% accuracy:")
+        bads_q3 = np.argwhere(np.array(q3_accs)<0.7)
         bads_q8 = np.argwhere(np.array(q8_accs) < 0.5)
         print("Q3: "+str(len(bads_q3)))
         for i in bads_q3:
-            print("Accuracy: "+q3_accs[i])
+            print("Accuracy: "+str(q3_accs[i]))
             print(pred_q3[i])
             print(true_q3[i])
 
         print("Q8: " + str(len(bads_q8)))
         for i in bads_q8:
-            print("Accuracy: "+q8_accs[i])
+            print("Accuracy: "+str(q8_accs[i]))
             print(pred_q8[i])
             print(true_q8[i])
 
