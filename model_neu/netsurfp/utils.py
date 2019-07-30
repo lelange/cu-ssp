@@ -588,9 +588,26 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print(true_q8[np.argmin(q8_accs)])
         print(mask[np.argmin(q3_accs)])
 
+        print("all under 50% accuracy:")
+        bads_q3 = np.argwhere(q3_accs<0.5)
+        bads_q8 = np.argwhere(q8_accs < 0.5)
+        print("Q3: "+str(len(bads_q3)))
+        for i in bads_q3:
+            print("Accuracy: "+q3_accs[i])
+            print(pred_q3[i])
+            print(true_q3[i])
+
+        print("Q8: " + str(len(bads_q8)))
+        for i in bads_q8:
+            print("Accuracy: "+q8_accs[i])
+            print(pred_q8[i])
+            print(true_q8[i])
+
+
+
         plt.title('Accuracy')
-        plt.plot(q3_accs, label='Q3')
-        plt.plot(q8_accs, label='Q8')
+        plt.hist(q3_accs, label='Q3')
+        plt.hist(q8_accs, label='Q8')
         plt.legend()
         plt.savefig('./plots/'+model_name+ datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy.png')
 
