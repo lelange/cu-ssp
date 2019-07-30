@@ -13,7 +13,7 @@ import telegram
 import sys
 import os, pickle
 import random
-import mathplotlib as plt
+import matplotlib as plt
 from datetime import datetime
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
