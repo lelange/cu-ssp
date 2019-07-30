@@ -13,7 +13,7 @@ import telegram
 import sys
 import os, pickle
 import random
-import matplotlib as plt
+import matplotlib.pyplot as plt
 from datetime import datetime
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
@@ -573,16 +573,20 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("best Q3 and true:"+str(np.max(q3_accs)))
         print(pred_q3[np.argmax(q3_accs)])
         print(true_q3[np.argmax(q3_accs)])
+        print(mask[np.argmax(q3_accs)])
         print("best Q8 and true:"+str(np.max(q8_accs)))
         print(pred_q8[np.argmax(q8_accs)])
         print(true_q8[np.argmax(q8_accs)])
+        print(mask[np.argmax(q3_accs)])
 
-        print("best Q3 and true:" + str(np.min(q3_accs)))
+        print("worst Q3 and true:" + str(np.min(q3_accs)))
         print(pred_q3[np.argmin(q3_accs)])
         print(true_q3[np.argmin(q3_accs)])
-        print("best Q8 and true:" + str(np.min(q8_accs)))
+        print(mask[np.argmin(q3_accs)])
+        print("worst Q8 and true:" + str(np.min(q8_accs)))
         print(pred_q8[np.argmin(q8_accs)])
         print(true_q8[np.argmin(q8_accs)])
+        print(mask[np.argmin(q3_accs)])
 
         plt.title('Accuracy')
         plt.plot(q3_accs, label='Q3')
