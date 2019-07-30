@@ -414,8 +414,14 @@ def get_acc(gt, pred, mask=None):
     '''
     correct = 0
     for i in range(len(gt)):
-        if gt[i] == pred[i]:
-            correct += 1
+        if mask is not None:
+            if mask[i] == 1:
+                if gt[i] == pred[i]:
+                    correct += 1
+
+        else:
+            if gt[i] == pred[i]:
+                correct += 1
     return (1.0 * correct), len(gt)
 
 def get_acc2(gt, pred, mask = None):
@@ -425,8 +431,14 @@ def get_acc2(gt, pred, mask = None):
     '''
     correct = 0
     for i in range(len(gt)):
-        if gt[i] == pred[i]:
-            correct += 1
+        if mask is not None:
+            if mask[i]==1:
+                if gt[i] == pred[i]:
+                    correct += 1
+
+        else:
+            if gt[i] == pred[i]:
+                correct += 1
     return (1.0 * correct)/len(gt)
 
 
@@ -472,6 +484,14 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         q8_accs=[]
         q3_accs=[]
 
+        q3_pred_mask = 0
+        q8_pred_mask = 0
+        q3_len_mask = 0
+        q8_len_mask = 0
+
+        q8_accs_mask = []
+        q3_accs_mask = []
+
         pred_q3 = []
         pred_q8 = []
         true_q3 = []
@@ -480,8 +500,14 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         g = open(PRED_DIR +'Q8/' +"q9_pred_mod_1.txt", "w+")
         h = open(PRED_DIR +'Q3/'+ "q4_pred_mod_1.txt", "w+")
 
+
+        if test == 'cb513_700':
+            mask = np.load(data_root+"cb513_700_evaluation_mask.npy")
+        else:
+            mask = None
+
         #calculate q8, q3 representations from one hot encoding and calculate accuracy
-        for true, pred in zip(y_test, y_test_pred):
+        for m, true, pred in zip(mask, y_test, y_test_pred):
             seq3 = onehot_to_seq(pred, q3_list)
             seq8 = onehot_to_seq(pred, q8_list)
             seq_true_3 = onehot_to_seq(true, q3_list)
@@ -490,6 +516,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             pred_q8.append(seq8)
             true_q3.append(seq_true_3)
             true_q8.append(seq_true_8)
+
 
             if i:
                 print('Q3 prediction, first pred then true: ')
@@ -517,6 +544,16 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             q8_pred += corr8
             q3_len += len3
             q8_len += len8
+
+            corr3, len3 = get_acc(seq_true_3, seq3,m)
+            corr8, len8 = get_acc(seq_true_8, seq8,m)
+            q8_accs_mask.append(get_acc2(seq_true_8, seq8,m))
+            q3_accs_mask.append(get_acc2(seq_true_3, seq3,m))
+            q3_pred_mask += corr3
+            q8_pred_mask += corr8
+            q3_len_mask += len3
+            q8_len_mask += len8
+
         g.close()
         h.close()
 
@@ -539,15 +576,14 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print(true_q8[np.argmax(q8_accs)])
 
         if test == 'cb513_700':
-            mask = np.load(data_root+"cb513_700_evaluation_mask.npy")
+            print('MASKED RESULTS:')
+            print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
+            print("Q3 " + test + " test accuracy: " + str(q3_pred_mask / q3_len_mask))
+            print("Q8 " + test + " test accuracy: " + str(q8_pred_mask / q8_len_mask))
+            print("\nAccuracy mean(#correct per protein/#len_protein):")
+            print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs_mask)))
+            print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs_mask)))
 
-            mq3_accs = ma.masked_array(q3_accs, mask=1-mask)
-            mq8_accs = ma.masked_array(q8_accs, mask=1-mask)
-            print("Q3 " + test + " test accuracy: " + str(np.mean(mq3_accs)))
-            print("Q8 " + test + " test accuracy: " + str(np.mean(mq8_accs)))
-
-        else:
-            mask = None
 
         '''
         #save results to file
