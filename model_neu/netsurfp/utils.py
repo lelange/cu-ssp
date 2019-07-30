@@ -13,6 +13,8 @@ import telegram
 import sys
 import os, pickle
 import random
+import mathplotlib as plt
+from datetime import datetime
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
@@ -574,6 +576,20 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("best Q8 and true:"+str(np.max(q8_accs)))
         print(pred_q8[np.argmax(q8_accs)])
         print(true_q8[np.argmax(q8_accs)])
+
+        print("best Q3 and true:" + str(np.min(q3_accs)))
+        print(pred_q3[np.argmin(q3_accs)])
+        print(true_q3[np.argmin(q3_accs)])
+        print("best Q8 and true:" + str(np.min(q8_accs)))
+        print(pred_q8[np.argmin(q8_accs)])
+        print(true_q8[np.argmin(q8_accs)])
+
+        plt.title('Accuracy')
+        plt.plot(q3_accs, label='Q3')
+        plt.plot(q8_accs, label='Q8')
+        plt.legend()
+        plt.savefig('./plots/'+model_name+ datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy.png')
+
 
         if test == 'cb513_700':
             print('MASKED RESULTS:')
