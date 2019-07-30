@@ -484,8 +484,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         for true, pred in zip(y_test, y_test_pred):
             seq3 = onehot_to_seq(pred, q3_list)
             seq8 = onehot_to_seq(pred, q8_list)
-            seq_true_3 = onehot_to_seq2(true, q3_list)
-            seq_true_8 = onehot_to_seq2(true, q8_list)
+            seq_true_3 = onehot_to_seq(true, q3_list)
+            seq_true_8 = onehot_to_seq(true, q8_list)
             pred_q3.append(seq3)
             pred_q8.append(seq8)
             true_q3.append(seq_true_3)
@@ -531,10 +531,10 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
         print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
 
-        print("best Q3 and true:")
+        print("best Q3 and true:"+str(np.max(q3_accs)))
         print(pred_q3[np.argmax(q3_accs)])
         print(true_q3[np.argmax(q3_accs)])
-        print("best Q8 and true:")
+        print("best Q8 and true:"+str(np.max(q8_accs)))
         print(pred_q8[np.argmax(q8_accs)])
         print(true_q8[np.argmax(q8_accs)])
 
