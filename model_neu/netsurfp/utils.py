@@ -415,7 +415,7 @@ def get_acc(gt, pred, mask=None):
     correct = 0
     for i in range(len(gt)):
         if mask is not None:
-            if mask[i] == 1:
+            if mask[i] == 0:
                 if gt[i] == pred[i]:
                     correct += 1
 
@@ -432,7 +432,7 @@ def get_acc2(gt, pred, mask = None):
     correct = 0
     for i in range(len(gt)):
         if mask is not None:
-            if mask[i]==1:
+            if mask[i]==0:
                 if gt[i] == pred[i]:
                     correct += 1
 
