@@ -445,7 +445,14 @@ def get_acc2(gt, pred, mask = None):
             if gt[i] == pred[i]:
                 correct += 1
             length = len(gt)
-    return (1.0 * correct)/length
+        if length ==0:
+            out = 0
+            print(mask)
+            print(pred)
+            print(gt)
+        else:
+            out = (1.0 * correct)/length
+    return out
 
 
 
@@ -626,7 +633,6 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print('MASKED RESULTS:')
             print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
             print(q3_len_mask)
-            print(q3_accs_mask)
             print("Q3 " + test + " test accuracy: " + str(q3_pred_mask / q3_len_mask))
             print("Q8 " + test + " test accuracy: " + str(q8_pred_mask / q8_len_mask))
             print("\nAccuracy mean(#correct per protein/#len_protein):")
