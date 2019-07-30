@@ -262,7 +262,7 @@ def accuracy2(y_true, y_predicted):
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME,[file_test[0]])
     test_acc = None
     time_data = time.time() - start_time
     save_results = False

@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.ma as ma
 from numpy import array
 import pandas as pd
 from keras.preprocessing import text, sequence
@@ -252,28 +253,6 @@ def load_augmented_data(npy_path, max_len):
     train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'expected': q8_str_list})
     return train_df, profile_padded
 
-def get_acc(gt, pred):
-    '''
-         if len(gt)!=len(pred):
-        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
-    '''
-    correct = 0
-    for i in range(len(gt)):
-        if gt[i] == pred[i]:
-            correct += 1
-    return (1.0 * correct), len(gt)
-
-def get_acc2(gt, pred):
-    '''
-         if len(gt)!=len(pred):
-        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
-    '''
-    correct = 0
-    for i in range(len(gt)):
-        if gt[i] == pred[i]:
-            correct += 1
-    return (1.0 * correct)/len(gt)
-
 def evaluate_acc(y_predicted):
     print('Analyse accuracy')
 
@@ -428,7 +407,31 @@ def save_cv(weights_file, cv_scores, file_scores, file_scores_mean, n_folds):
     return test_acc
 
 
-def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['ts115_700']):
+def get_acc(gt, pred, mask=None):
+    '''
+         if len(gt)!=len(pred):
+        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
+    '''
+    correct = 0
+    for i in range(len(gt)):
+        if gt[i] == pred[i]:
+            correct += 1
+    return (1.0 * correct), len(gt)
+
+def get_acc2(gt, pred, mask = None):
+    '''
+         if len(gt)!=len(pred):
+        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
+    '''
+    correct = 0
+    for i in range(len(gt)):
+        if gt[i] == pred[i]:
+            correct += 1
+    return (1.0 * correct)/len(gt)
+
+
+
+def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700']):
     if model is None:
         model = build_model()
 
@@ -469,15 +472,24 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         q8_accs=[]
         q3_accs=[]
 
+        pred_q3 = []
+        pred_q8 = []
+        true_q3 = []
+        true_q8 = []
+
         g = open(PRED_DIR +'Q8/' +"q9_pred_mod_1.txt", "w+")
         h = open(PRED_DIR +'Q3/'+ "q4_pred_mod_1.txt", "w+")
 
         #calculate q8, q3 representations from one hot encoding and calculate accuracy
-        for true, pred in zip(y_test, y_test_pred):
+        for i, true, pred in enumerate(zip(y_test, y_test_pred)):
             seq3 = onehot_to_seq(pred, q3_list)
             seq8 = onehot_to_seq(pred, q8_list)
             seq_true_3 = onehot_to_seq2(true, q3_list)
             seq_true_8 = onehot_to_seq2(true, q8_list)
+            pred_q3.append(seq3)
+            pred_q8.append(seq8)
+            true_q3.append(seq_true_3)
+            true_q8.append(seq_true_8)
 
             if i:
                 print('Q3 prediction, first pred then true: ')
@@ -490,10 +502,12 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
                 i = False
 
+            '''
             h.write(seq3)
             g.write(seq8)
             h.write("\n")
             g.write("\n")
+            '''
 
             corr3, len3 = get_acc(seq_true_3, seq3)
             corr8, len8 = get_acc(seq_true_8, seq8)
@@ -505,6 +519,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             q8_len += len8
         g.close()
         h.close()
+
         print('Saved Q8 sequences to '+PRED_DIR +'Q8/' +"q9_pred_mod_1.txt")
         print('Saved Q3 sequences to ' + PRED_DIR + 'Q3/' + "q4_pred_mod_1.txt")
 
@@ -516,6 +531,25 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
         print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
 
+        print("best Q3 and true:")
+        print(pred_q3[np.argmax(q3_accs)])
+        print(true_q3[np.argmax(q3_accs)])
+        print("best Q8 and true:")
+        print(pred_q8[np.argmax(q8_accs)])
+        print(true_q8[np.argmax(q8_accs)])
+
+        if test == 'cb513_700':
+            mask = np.load(data_root+"cb513_700_evaluation_mask.npy")
+
+            mq3_accs = ma.masked_array(q3_accs, mask=1-mask)
+            mq8_accs = ma.masked_array(q8_accs, mask=1-mask)
+            print("Q3 " + test + " test accuracy: " + str(np.mean(mq3_accs)))
+            print("Q8 " + test + " test accuracy: " + str(np.mean(mq8_accs)))
+
+        else:
+            mask = None
+
+        '''
         #save results to file
         f.write("Results for " + model_name + " and weights " + best_weights+" on "+test+".")
         f.write("\n\n")
@@ -537,7 +571,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
         f.write("Predictions are saved to: " + PRED_DIR + test + save_pred_file)
         f.write("\n----------------------------\n\n")
-
+        
+        '''
     f.write("----------------------------\n\n\n")
     f.close()
 
