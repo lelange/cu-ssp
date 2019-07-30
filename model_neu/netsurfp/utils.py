@@ -573,18 +573,17 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("best Q3 and true:"+str(np.max(q3_accs)))
         print(pred_q3[np.argmax(q3_accs)])
         print(true_q3[np.argmax(q3_accs)])
-        print(mask[np.argmax(q3_accs)])
+
         print("best Q8 and true:"+str(np.max(q8_accs)))
         print(pred_q8[np.argmax(q8_accs)])
         print(true_q8[np.argmax(q8_accs)])
-        print(mask[np.argmax(q3_accs)])
 
         print("worst Q3 and true:" + str(np.min(q3_accs)))
         print(pred_q3[np.argmin(q3_accs)])
         print(true_q3[np.argmin(q3_accs)])
         mst = ""
         for i in mask[np.argmin(q3_accs)]:
-            mst += int(i)
+            mst += str(int(i))
 
         print(mst)
 
