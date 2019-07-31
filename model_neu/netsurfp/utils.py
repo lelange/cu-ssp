@@ -454,9 +454,10 @@ def get_acc2(gt, pred, mask = None):
 
 #name2label = {j:i  for i,j in enumerate(labels[:-1])}
 
-def get_confusion_matrix(true_q, pred_q, labels=q8_list):
-    classes = len(labels)
+def get_confusion_matrix(true_q, pred_q, labels_full=q8_list):
+    labels=np.unique(labels_full)
     labels = list(labels)
+    classes = len(labels)
     conf_matrix = np.zeros((classes, classes))
     for gt, pred in zip(true_q, pred_q):
         if len(gt) < len(pred):
@@ -465,6 +466,42 @@ def get_confusion_matrix(true_q, pred_q, labels=q8_list):
             conf_matrix[labels.index(p), labels.index(g)] += 1
     conf = pd.DataFrame(conf_matrix, columns=labels)
     print(conf)
+    recall_list = np.zeros((classes,))
+    precision_list = np.zeros((classes,))
+    for i in range(classes):
+        if np.sum(conf_matrix[:, i]) != 0:
+            recall_list[i] = conf_matrix[i, i] / float(np.sum(conf_matrix[:, i]))
+        else:
+            recall_list[i] = 0
+
+        if np.sum(conf_matrix[i, :]) != 0:
+            precision_list[i] = conf_matrix[i, i] / float(np.sum(conf_matrix[i, :]))
+        else:
+            precision_list[i] = 0
+
+    fscore = np.zeros((classes,))
+
+    for i in range(classes):
+        if precision_list[i] + recall_list[i] != 0:
+            fscore[i] = 2.0 * precision_list[i] * recall_list[i] / (precision_list[i] + recall_list[i])
+        else:
+            fscore[i] = 0
+
+    for i in range(classes):
+        print('precision of class', labels[i], precision_list[i])
+    print('average precision', np.mean(precision_list))
+
+    for i in range(classes):
+        print('recall of class', labels[i], recall_list[i])
+    print('average recall', np.mean(recall_list))
+
+    for i in range(classes):
+        print('fscore of class', labels[i], fscore[i])
+    print('average f-score', np.mean(fscore))
+
+
+
+
     return conf
 
 
@@ -638,7 +675,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
 
         get_confusion_matrix(true_q8, pred_q8)
-        get_confusion_matrix(true_q3, pred_q3, np.unique(q3_list))
+        get_confusion_matrix(true_q3, pred_q3, q3_list)
         '''
         plt.hist(q3_accs, label='Q3', alpha = 0.5)
         plt.hist(q8_accs, label='Q8', alpha = 0.5)
