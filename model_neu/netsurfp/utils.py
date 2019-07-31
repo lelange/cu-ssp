@@ -571,6 +571,9 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("Q3 " + test + " test accuracy: " + str(np.nanmean(q3_accs)))
         print("Q8 " + test + " test accuracy: " + str(np.nanmean(q8_accs)))
 
+        print('_______________________')
+        print('_______________________')
+
         print("best Q3 and true:"+str(np.max(q3_accs)))
         print(pred_q3[np.argmax(q3_accs)])
         print(true_q3[np.argmax(q3_accs)])
@@ -578,6 +581,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("best Q8 and true:"+str(np.max(q8_accs)))
         print(pred_q8[np.argmax(q8_accs)])
         print(true_q8[np.argmax(q8_accs)])
+
+        print('_______________________')
 
         print("worst Q3 and true:" + str(np.min(q3_accs)))
         print(pred_q3[np.argmin(q3_accs)])
@@ -588,6 +593,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
                 mst += str(int(i))
 
         print(mst[:len(pred_q3[np.argmin(q3_accs)])])
+
+        print('_______________________')
 
         print("worst Q8 and true:" + str(np.min(q8_accs)))
         print(pred_q8[np.argmin(q8_accs)])
@@ -604,6 +611,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print(pred_q3[i])
             print(true_q3[i])
 
+        print('_______________________')
+
         print("Q8: " + str(len(bads_q8)))
         for i in bads_q8:
             i = int(i)
@@ -612,15 +621,21 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print(true_q8[i])
 
 
-        '''
-        plt.title('Accuracy')
+
+
         plt.hist(q3_accs, label='Q3', alpha = 0.5)
         plt.hist(q8_accs, label='Q8', alpha = 0.5)
         plt.legend()
         plt.show()
-        plt.savefig('./plots/'+model_name+ datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy.png')
+        plt.savefig('./plots/'+model_name+ datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_hist.png')
         plt.clf()
-        '''
+
+        plt.plot(q3_accs, label='Q3', alpha=0.5)
+        plt.plot(q8_accs, label='Q8', alpha=0.5)
+        plt.legend()
+        plt.show()
+        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_plot.png')
+        plt.clf()
 
         if test == 'cb513_700':
             print('MASKED RESULTS:')
@@ -632,16 +647,16 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print("Q3 " + test + " test accuracy: " + str(np.nanmean(q3_accs_mask)))
             print("Q8 " + test + " test accuracy: " + str(np.nanmean(q8_accs_mask)))
 
-        '''
-        plt.title('Accuracy')
+
+
         fig, ax = plt.subplots()
-        plotdata = [q3_accs, q3_accs_mask, q8_accs, q8_accs_mask]
+        plotdata = [q3_accs, q8_accs]
         ax.boxplot(plotdata)
-        ax.set_xticklabels(['q3', 'q3_mask', 'q8', 'q8_mask'])
+        ax.set_xticklabels(['q3', 'q8'])
         plt.show()
         plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
 
-        '''
+
 
 
     '''
