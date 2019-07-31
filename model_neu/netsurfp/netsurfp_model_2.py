@@ -34,7 +34,7 @@ MODEL_NAME = 'mod_2'
 save_pred_file = "_pred_2.npy"
 
 N_FOLDS = 10 # for cross validation
-MAXLEN_SEQ = 608 # only use sequences to this length and pad to this length, choose from 600, 608, 700
+MAXLEN_SEQ = 768 # only use sequences to this length and pad to this length, choose from 600, 608, 700
 NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
 NB_CLASSES_Q3 = 3 # number Q3 classes
 NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
@@ -129,32 +129,31 @@ def build_model():
     conv1 = conv_block(merged_input, 128, droprate)
     pool1 = MaxPooling1D(pool_size=2)(conv1)
 
-
-    conv2 = conv_block(pool1, 152, droprate)
+    conv2 = conv_block(pool1, 192, droprate)
     pool2 = MaxPooling1D(pool_size=2)(conv2)
 
-    conv3 = conv_block(pool2, 304, droprate)
+    conv3 = conv_block(pool2, 384, droprate)
     pool3 = MaxPooling1D(pool_size=2)(conv3)
 
-    conv4 = conv_block(pool3, 608, droprate)
+    conv4 = conv_block(pool3, 768, droprate)
     pool4 = MaxPooling1D(pool_size=2)(conv4)
 
-    conv5 = conv_block(pool4, 1212, droprate)
+    conv5 = conv_block(pool4, 1536, droprate)
 
-    up4 = up_block(conv5, 608)
-    up4 = concatenate([conv4, up4])
-    up4 = conv_block(up4, 608, droprate)
+    up4 = up_block(conv5, 768)
+    up4 = concatenate([conv4, up4], axis=2)
+    up4 = conv_block(up4, 768, droprate)
 
-    up3 = up_block(up4, 304)
-    up3 = concatenate([conv3, up3])
-    up3 = conv_block(up3, 304, droprate)
+    up3 = up_block(up4, 384)
+    up3 = concatenate([conv3, up3], axis=2)
+    up3 = conv_block(up3, 384, droprate)
 
-    up2 = up_block(up3, 152)
-    up2 = concatenate([conv2, up2])
-    up2 = conv_block(up2, 152, droprate)
+    up2 = up_block(up3, 192)
+    up2 = concatenate([conv2, up2], axis=2)
+    up2 = conv_block(up2, 192, droprate)
 
     up1 = up_block(up2, 128)
-    up1 = concatenate([conv1, up1])
+    up1 = concatenate([conv1, up1], axis=2)
     up1 = conv_block(up1, 128, droprate)
 
     up1 = BatchNormalization()(up1)

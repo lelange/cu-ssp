@@ -3,7 +3,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 import pickle
 
-maxlen_seq = 608 ###! change back!
+maxlen_seq = 768 ###! change back!
 minlen_seq= 100
 
 # [0:20] Amino Acids (sparse encoding)
@@ -88,7 +88,6 @@ def get_and_save_data(data, filename):
     var_len_input_seq = create_var_length_list(input_seq, np.sum(new_mask, axis = 1))
     var_len_hmm = create_var_length_list(hmm, np.sum(new_mask, axis = 1))
     var_len_q9 = create_var_length_list(q9, np.sum(new_mask, axis = 1))
-    #np.save(data_root+filename+'_input.npy', input_seq)
 
     #np.save(data_root + filename + '_var_len_input.npy', var_len_input_seq)
     #np.save(data_root + filename + '_var_len_hmm.npy', var_len_hmm)
@@ -97,8 +96,9 @@ def get_and_save_data(data, filename):
     #pickle.dump(var_len_hmm, open(data_root + filename + '_var_len_hmm.txt', "wb"))
     #pickle.dump(var_len_q9, open(data_root + filename + '_var_len_q9.txt', "wb"))
 
-    #np.save(data_root+filename+'_q9.npy', q9)
-    #np.save(data_root+filename+'_hmm.npy', hmm)
+    np.save(data_root+filename+'_input.npy', input_seq)
+    np.save(data_root+filename+'_q9.npy', q9)
+    np.save(data_root+filename+'_hmm.npy', hmm)
     np.save(data_root + filename + '_mask.npy', new_mask)
     print(filename+' is saved.')
 
