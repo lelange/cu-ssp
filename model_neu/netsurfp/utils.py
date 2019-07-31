@@ -456,6 +456,7 @@ def get_acc2(gt, pred, mask = None):
 
 def get_confusion_matrix(true_q, pred_q, labels=q8_list):
     classes = len(labels)
+    labels = list(labels)
     conf_matrix = np.zeros((classes, classes))
     for gt, pred in zip(true_q, pred_q):
         if len(gt) < len(pred):
@@ -463,10 +464,8 @@ def get_confusion_matrix(true_q, pred_q, labels=q8_list):
         for g, p in zip(gt, pred):
             conf_matrix[labels.index(p), labels.index(g)] += 1
     conf = pd.DataFrame(conf_matrix, columns=labels)
-    try:
-        conf.set_index(labels)
-    except:
-        print('not working#############################################')
+    conf = conf.set_index(labels)
+
     print(conf)
     return conf
 
