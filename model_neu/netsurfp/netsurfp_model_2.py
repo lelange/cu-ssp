@@ -43,7 +43,7 @@ NB_FEATURES = 30 # feature dimension
 
 start_time = time.time()
 
-args = parse_arguments(default_epochs=20)
+args = parse_arguments(default_epochs=40)
 
 normalize = args.normalize
 standardize = args.standardize
@@ -238,7 +238,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     return cv_scores, model_history
 
 
-best_weights = "model/mod_2-CB513-2019_07_23-10_35.h5"
+best_weights = "model/mod_2-CB513-2019_07_31-17_53.h5"
 #--------------------------------- main ---------------------------------
 
 if predict_only:
