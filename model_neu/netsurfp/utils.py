@@ -462,7 +462,7 @@ def get_confusion_matrix(true_q, pred_q, labels=q8_list):
             pred = pred[:len(gt)]
             print('ja')
         for g, p in zip(gt, pred):
-            conf_matrix[labels.index(p)-1, labels.index(g)-1] += 1.0
+            conf_matrix[labels.index(p), labels.index(g)] += 1.0
     conf = pd.DataFrame(conf_matrix, columns=labels)
     conf.set_index(labels)
     print(conf)
