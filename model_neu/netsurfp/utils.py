@@ -452,6 +452,21 @@ def get_acc2(gt, pred, mask = None):
 
     return (1.0 * correct)/length
 
+def get_confusion_matrix(true_q, pred_q, labels=q8_list[1:]):
+    classes = len(labels)
+    if len(true_q)<len(pred_q):
+        pred_q=pred_q[:len(true_q)]
+
+    conf_matrix = np.zeros((classes, classes))
+    for gt, pred in zip(true_q, pred_q):
+        for g, p in zip(gt, pred):
+            conf_matrix[p, g] += 1.0
+    conf = pd.DataFrame(conf_matrix, columns=labels)
+    conf.set_index(labels)
+    print(conf)
+    return conf
+
+
 
 
 def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700']):
@@ -621,8 +636,9 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print(true_q8[i])
 
 
-
-
+        get_confusion_matrix(true_q8, pred_q8)
+        get_confusion_matrix(true_q3, pred_q3, q3_list[1:])
+        '''
         plt.hist(q3_accs, label='Q3', alpha = 0.5)
         plt.hist(q8_accs, label='Q8', alpha = 0.5)
         plt.legend()
@@ -637,6 +653,15 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_plot.png')
         plt.clf()
 
+        fig, ax = plt.subplots()
+        plotdata = [q3_accs, q8_accs]
+        ax.boxplot(plotdata)
+        ax.set_xticklabels(['q3', 'q8'])
+        plt.show()
+        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
+
+        '''
+
         if test == 'cb513_700':
             print('MASKED RESULTS:')
             print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
@@ -646,16 +671,6 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print("\nAccuracy mean(#correct per protein/#len_protein):")
             print("Q3 " + test + " test accuracy: " + str(np.nanmean(q3_accs_mask)))
             print("Q8 " + test + " test accuracy: " + str(np.nanmean(q8_accs_mask)))
-
-
-
-        fig, ax = plt.subplots()
-        plotdata = [q3_accs, q8_accs]
-        ax.boxplot(plotdata)
-        ax.set_xticklabels(['q3', 'q8'])
-        plt.show()
-        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
-
 
 
 
