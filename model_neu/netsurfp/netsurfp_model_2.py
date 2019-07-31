@@ -167,10 +167,9 @@ def build_model():
     model = Model(inp, y)
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
 
-    optim = RMSprop(lr=0.002)
+    optim = RMSprop(lr=0.001)
 
     model.compile(optimizer=optim, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
-    model.summary()
 
     return model
 
@@ -180,19 +179,19 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
 
     ####callbacks for fitting
     def scheduler(i, lr):
-        if i in [60]:
+        if i in [50]:
             return lr * 0.5
         return lr
-    reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
-    # reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
-    #                             patience=8, min_lr=0.0005, verbose=1)
+    #reduce_lr = LearningRateScheduler(schedule=scheduler, verbose=1)
+    reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
+                                  patience=10, min_lr=0.0005, verbose=1)
 
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=15, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
                                    mode='max')
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, reduce_lr, earlyStopping],
+                        epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, reduce_lr],
                         verbose=1, shuffle=True)
 
     # plot accuracy during training
