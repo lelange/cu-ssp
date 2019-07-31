@@ -592,8 +592,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print(mst[:len(pred_q8[np.argmin(q8_accs)])])
 
         print("all under 50% or 70% accuracy:")
-        bads_q3 = np.argwhere(np.array(q3_accs)<0.5)
-        bads_q8 = np.argwhere(np.array(q8_accs) < 0.7)
+        bads_q3 = np.argwhere(np.array(q3_accs)<0.7)
+        bads_q8 = np.argwhere(np.array(q8_accs) < 0.5)
         print("Q3: "+str(len(bads_q3)))
         for i in bads_q3:
             i = int(i)
