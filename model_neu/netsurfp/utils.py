@@ -459,8 +459,10 @@ def get_acc2(gt, pred, mask = None):
 def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700']):
     if model is None:
         model = build_model()
-
-    file_test = ['cb513_700'] ### uncomment later!!
+    if model_name == "mod_2":
+        file_test = ['cb513_608']  ### uncomment later!!
+    else:
+        file_test = ['cb513_700'] ### uncomment later!!
 
     # save all accuracys from Q8 and Q3 preditions
     f = open(PRED_DIR + "prediction_accuracy.txt", "a+")
