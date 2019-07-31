@@ -536,18 +536,6 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             true_q3.append(seq_true_3)
             true_q8.append(seq_true_8)
 
-
-            if i:
-                print('Q3 prediction, first pred then true: ')
-                print(seq3[:60])
-                print(seq_true_3[:60])
-
-                print('Q8 prediction, first pred then true: ')
-                print(seq8[:60])
-                print(seq_true_8[:60])
-
-                i = False
-
             '''
             h.write(seq3)
             g.write(seq8)
@@ -602,16 +590,16 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         for i in mask[np.argmin(q3_accs)]:
             mst += str(int(i))
 
-        print(mst)
+        print(mst[:len(pred_q3[np.argmin(q3_accs)])])
 
         print("worst Q8 and true:" + str(np.min(q8_accs)))
         print(pred_q8[np.argmin(q8_accs)])
         print(true_q8[np.argmin(q8_accs)])
-        print(mst)
+        print(mst[:len(pred_q8[np.argmin(q8_accs)])])
 
         print("all under 50% or 70% accuracy:")
-        bads_q3 = np.argwhere(np.array(q3_accs)<0.7)
-        bads_q8 = np.argwhere(np.array(q8_accs) < 0.5)
+        bads_q3 = np.argwhere(np.array(q3_accs)<0.5)
+        bads_q8 = np.argwhere(np.array(q8_accs) < 0.7)
         print("Q3: "+str(len(bads_q3)))
         for i in bads_q3:
             i = int(i)
@@ -647,6 +635,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs_mask)))
             print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs_mask)))
 
+        '''
         plt.title('Accuracy')
         fig, ax = plt.subplots()
         plotdata = [q3_accs, q3_accs_mask, q8_accs, q8_accs_mask]
@@ -654,6 +643,9 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         ax.set_xticklabels(['q3', 'q3_mask', 'q8', 'q8_mask'])
         plt.show()
         plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
+
+        '''
+
 
     '''
         #save results to file
