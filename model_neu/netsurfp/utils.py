@@ -454,7 +454,7 @@ def get_acc2(gt, pred, mask = None):
 
 #name2label = {j:i  for i,j in enumerate(labels[:-1])}
 
-def get_confusion_matrix(true_q, pred_q, labels=q8_list[1:]):
+def get_confusion_matrix(true_q, pred_q, labels=q8_list):
     classes = len(labels)
     conf_matrix = np.zeros((classes, classes))
     for gt, pred in zip(true_q, pred_q):
@@ -639,7 +639,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
 
         get_confusion_matrix(true_q8, pred_q8)
-        get_confusion_matrix(true_q3, pred_q3, q3_list[1:])
+        get_confusion_matrix(true_q3, pred_q3, q3_list)
         '''
         plt.hist(q3_accs, label='Q3', alpha = 0.5)
         plt.hist(q8_accs, label='Q8', alpha = 0.5)
