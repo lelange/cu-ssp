@@ -423,8 +423,11 @@ def get_acc(gt, pred, mask=None):
             length=np.sum(mask)
 
         else:
-            if gt[i] == pred[i]:
-                correct += 1
+            try:
+                if gt[i] == pred[i]:
+                    correct += 1
+            except:
+                print(i)
             length = len(gt)
     return (1.0 * correct), length
 
