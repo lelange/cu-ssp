@@ -464,9 +464,9 @@ def get_confusion_matrix(true_q, pred_q, labels=q8_list):
             conf_matrix[labels.index(p), labels.index(g)] += 1
     conf = pd.DataFrame(conf_matrix, columns=labels)
     try:
-        conf.set_index(pd.Index(labels))
+        conf.set_index(labels)
     except:
-        print('not working')
+        print('not working#############################################')
     print(conf)
     return conf
 
@@ -641,7 +641,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
 
         get_confusion_matrix(true_q8, pred_q8)
-        get_confusion_matrix(true_q3, pred_q3, q3_list)
+        get_confusion_matrix(true_q3, pred_q3, np.unique(q3_list))
         '''
         plt.hist(q3_accs, label='Q3', alpha = 0.5)
         plt.hist(q8_accs, label='Q8', alpha = 0.5)
