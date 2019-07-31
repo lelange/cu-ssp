@@ -521,7 +521,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         if test == 'cb513_700':
             mask = np.load(data_root+"cb513_700_evaluation_mask.npy")
         else:
-            mask = None
+            mask = [None]*len(y_test_pred)
 
         #calculate q8, q3 representations from one hot encoding and calculate accuracy
         for m, true, pred in zip(mask, y_test, y_test_pred):
