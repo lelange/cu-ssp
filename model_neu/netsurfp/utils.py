@@ -300,7 +300,7 @@ def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
 
-def train_val_split(hmm, embedding, X_train_aug, y_train, perc = None):
+def train_val_split(hmm, X_train_aug, y_train, perc = None):
     n_samples = len(y_train)
     np.random.seed(0)
     if perc is None:

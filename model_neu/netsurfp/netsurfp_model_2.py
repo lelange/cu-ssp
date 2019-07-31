@@ -257,6 +257,7 @@ else:
     else:
         print("X train shape: ", X_train_aug.shape)
     print("y train shape: ", y_train.shape)
+    print(type(y_train))
 
     time_data = time.time() - start_time
     save_results = True
