@@ -437,13 +437,19 @@ def get_acc2(gt, pred, mask = None):
     for i in range(len(gt)):
         if mask is not None:
             if mask[i] == 1:
-                if gt[i] == pred[i]:
-                    correct += 1
+                if gt[i]=="C":
+                    correct+=1
+                else:
+                    if gt[i] == pred[i]:
+                        correct += 1
             length=np.sum(mask)
 
         else:
-            if gt[i] == pred[i]:
+            if gt[i] == "C":
                 correct += 1
+            else:
+                if gt[i] == pred[i]:
+                    correct += 1
             length = len(gt)
         if length ==0:
             out = 0
