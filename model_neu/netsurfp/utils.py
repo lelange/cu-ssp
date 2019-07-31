@@ -523,8 +523,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
         #calculate q8, q3 representations from one hot encoding and calculate accuracy
         for m, true, pred in zip(mask, y_test, y_test_pred):
-            seq3 = onehot_to_seq2(pred, q3_list)
-            seq8 = onehot_to_seq2(pred, q8_list)
+            seq3 = onehot_to_seq(pred, q3_list)
+            seq8 = onehot_to_seq(pred, q8_list)
             seq_true_3 = onehot_to_seq2(true, q3_list)
             seq_true_8 = onehot_to_seq2(true, q8_list)
             pred_q3.append(seq3)
