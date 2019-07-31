@@ -62,7 +62,7 @@ NB_FEATURES = 30 # feature dimension
 
 start_time = time.time()
 
-args = parse_arguments(default_epochs=20)
+args = parse_arguments(default_epochs=25)
 
 normalize = args.normalize
 standardize = args.standardize
@@ -241,14 +241,14 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
 
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
-    reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=1, verbose=1, mode='max', cooldown = 2)
+    reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=5, verbose=1, mode='max', cooldown = 2)
 
     #tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=batch_size, write_graph=True, write_grads=False,
                              # write_images=False, embeddings_freq=0, embeddings_layer_names=None,
                              # embeddings_metadata=None, embeddings_data=None, update_freq='batch')
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
+            epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, reduce_lr], verbose=1, shuffle=True)
 
     # plot accuracy during training
     if plot:

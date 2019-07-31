@@ -506,7 +506,7 @@ def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
     print('average f-score', np.mean(fscore))
 
     if save:
-        with open('logs/metrics_cb513' + model_name + '_.csv', 'a+') as f:
+        with open('logs/metrics_cb513_' + model_name + '.csv', 'a+') as f:
             f.write('confusion matrix \n')
             conf.to_csv(f)
             f.write('\n')
@@ -694,14 +694,14 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         plt.hist(q8_accs, label='Q8', alpha = 0.5)
         plt.legend()
         plt.show()
-        plt.savefig('./plots/'+model_name+ datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_hist.png')
+        plt.savefig('./plots/'+model_name+'_'+datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_hist.png')
         plt.clf()
 
         plt.plot(q3_accs, label='Q3', alpha=0.5)
         plt.plot(q8_accs, label='Q8', alpha=0.5)
         plt.legend()
         plt.show()
-        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_plot.png')
+        plt.savefig('./plots/' + model_name+'_' + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_plot.png')
         plt.clf()
 
         fig, ax = plt.subplots()
@@ -709,7 +709,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         ax.boxplot(plotdata)
         ax.set_xticklabels(['q3', 'q8'])
         plt.show()
-        plt.savefig('./plots/' + model_name + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
+        plt.savefig('./plots/' + model_name+'_' + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
 
         '''
 
