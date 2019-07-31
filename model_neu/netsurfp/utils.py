@@ -455,6 +455,7 @@ def get_acc2(gt, pred, mask = None):
 #name2label = {j:i  for i,j in enumerate(labels[:-1])}
 
 def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
+    save=False
     labels=np.unique(labels_full)
     labels = list(labels)
     classes = len(labels)
@@ -468,10 +469,9 @@ def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
                 print(pred)
             else:
                 conf_matrix[labels.index(p), labels.index(g)] += 1
-    conf = pd.DataFrame(conf_matrix, columns=labels)
+    conf = pd.DataFrame(conf_matrix, columns=labels, index=labels)
     print(conf)
-    with open('logs/metrics_cb513'+model_name+'.csv', 'a+') as f:
-        conf.to_csv(f)
+
     recall_list = np.zeros((classes,))
     precision_list = np.zeros((classes,))
     for i in range(classes):
@@ -493,31 +493,34 @@ def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
         else:
             fscore[i] = 0
 
-    for i in range(classes):
-        print('precision of class', labels[i], precision_list[i])
-    print('average precision', np.mean(precision_list))
+    if save:
+        with open('logs/metrics_cb513' + model_name + '_.csv', 'a+') as f:
+            conf.to_csv(f)
+            f.write('\n')
 
-    for i in range(classes):
-        print('recall of class', labels[i], recall_list[i])
-    print('average recall', np.mean(recall_list))
-
-    for i in range(classes):
-        print('fscore of class', labels[i], fscore[i])
-    print('average f-score', np.mean(fscore))
-
-    with open('logs/metrics_cb513'+model_name+'.csv', 'a+') as f:
-        f.write('secondary structure, precision, recall, f-score' + '\n')
         for i in range(classes):
-            f.write(str(labels[i]) + ',' + str(precision_list[i]) + ',' + str(recall_list[i]) + ',' + str(
-                fscore[i]) + '\n')
+            print('precision of class', labels[i], precision_list[i])
+        print('average precision', np.mean(precision_list))
 
-        f.write('mean,' + str(np.mean(precision_list)) + ',' + str(np.mean(recall_list)) + ',' + str(
-            np.mean(fscore)) + '\n')
+        for i in range(classes):
+            print('recall of class', labels[i], recall_list[i])
+        print('average recall', np.mean(recall_list))
+
+        for i in range(classes):
+            print('fscore of class', labels[i], fscore[i])
+        print('average f-score', np.mean(fscore))
+
+        with open('logs/metrics_cb513' + model_name + '.csv', 'a+') as f:
+            f.write('secondary structure, precision, recall, f-score' + '\n')
+            for i in range(classes):
+                f.write(str(labels[i]) + ',' + str(precision_list[i]) + ',' + str(recall_list[i]) + ',' + str(
+                    fscore[i]) + '\n')
+
+            f.write('mean,' + str(np.mean(precision_list)) + ',' + str(np.mean(recall_list)) + ',' + str(
+                np.mean(fscore)) + '\n')
+            f.write('\n')
 
     return conf
-
-
-
 
 def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700']):
     if model is None:
