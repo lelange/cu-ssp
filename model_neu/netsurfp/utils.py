@@ -456,11 +456,10 @@ def get_acc2(gt, pred, mask = None):
 
 def get_confusion_matrix(true_q, pred_q, labels=q8_list[1:]):
     classes = len(labels)
-    if len(true_q)<len(pred_q):
-        pred_q=pred_q[:len(true_q)]
-
     conf_matrix = np.zeros((classes, classes))
     for gt, pred in zip(true_q, pred_q):
+        if len(gt) < len(pred):
+            pred = pred[:len(gt)]
         for g, p in zip(gt, pred):
             conf_matrix[labels.index(p)-1, labels.index(g)-1] += 1.0
     conf = pd.DataFrame(conf_matrix, columns=labels)
