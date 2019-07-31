@@ -455,7 +455,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
     if model is None:
         model = build_model()
     if model_name == "mod_2":
-        file_test = ['cb513_608']  ### uncomment later!!
+        file_test = ['cb513_768']  ### uncomment later!!
     else:
         file_test = ['cb513_700'] ### uncomment later!!
 
