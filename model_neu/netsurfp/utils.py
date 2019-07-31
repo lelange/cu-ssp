@@ -454,7 +454,7 @@ def get_acc2(gt, pred, mask = None):
 
 #name2label = {j:i  for i,j in enumerate(labels[:-1])}
 
-def get_confusion_matrix(true_q, pred_q, labels_full=q8_list[1:]):
+def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
     labels=np.unique(labels_full)
     labels = list(labels)
     classes = len(labels)
@@ -470,6 +470,8 @@ def get_confusion_matrix(true_q, pred_q, labels_full=q8_list[1:]):
                 conf_matrix[labels.index(p), labels.index(g)] += 1
     conf = pd.DataFrame(conf_matrix, columns=labels)
     print(conf)
+    with open('logs/metrics_cb513'+model_name+'.csv', 'a+') as f:
+        conf.to_csv(f)
     recall_list = np.zeros((classes,))
     precision_list = np.zeros((classes,))
     for i in range(classes):
@@ -502,6 +504,15 @@ def get_confusion_matrix(true_q, pred_q, labels_full=q8_list[1:]):
     for i in range(classes):
         print('fscore of class', labels[i], fscore[i])
     print('average f-score', np.mean(fscore))
+
+    with open('logs/metrics_cb513'+model_name+'.csv', 'a+') as f:
+        f.write('secondary structure, precision, recall, f-score' + '\n')
+        for i in range(classes):
+            f.write(str(labels[i]) + ',' + str(precision_list[i]) + ',' + str(recall_list[i]) + ',' + str(
+                fscore[i]) + '\n')
+
+        f.write('mean,' + str(np.mean(precision_list)) + ',' + str(np.mean(recall_list)) + ',' + str(
+            np.mean(fscore)) + '\n')
 
     return conf
 
@@ -675,8 +686,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print(true_q8[i])
 
 
-        get_confusion_matrix(true_q8, pred_q8)
-        get_confusion_matrix(true_q3, pred_q3, q3_list[1:])
+        get_confusion_matrix(true_q8, pred_q8, model_name)
+        get_confusion_matrix(true_q3, pred_q3, model_name, q3_list[1:])
         '''
         plt.hist(q3_accs, label='Q3', alpha = 0.5)
         plt.hist(q8_accs, label='Q8', alpha = 0.5)
