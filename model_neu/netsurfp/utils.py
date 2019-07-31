@@ -451,14 +451,8 @@ def get_acc2(gt, pred, mask = None):
                 if gt[i] == pred[i]:
                     correct += 1
             length = len(gt)
-        if length ==0:
-            out = 0
-            print(mask)
-            print(pred)
-            print(gt)
-        else:
-            out = (1.0 * correct)/length
-    return out
+
+    return (1.0 * correct)/length
 
 
 
@@ -572,8 +566,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print("Q3 " + test + " test accuracy: " + str(q3_pred / q3_len))
         print("Q8 " + test + " test accuracy: " + str(q8_pred / q8_len))
         print("\nAccuracy mean(#correct per protein/#len_protein):")
-        print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs)))
-        print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs)))
+        print("Q3 " + test + " test accuracy: " + str(np.nanmean(q3_accs)))
+        print("Q8 " + test + " test accuracy: " + str(np.nanmean(q8_accs)))
 
         print("best Q3 and true:"+str(np.max(q3_accs)))
         print(pred_q3[np.argmax(q3_accs)])
@@ -632,8 +626,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print("Q3 " + test + " test accuracy: " + str(q3_pred_mask / q3_len_mask))
             print("Q8 " + test + " test accuracy: " + str(q8_pred_mask / q8_len_mask))
             print("\nAccuracy mean(#correct per protein/#len_protein):")
-            print("Q3 " + test + " test accuracy: " + str(np.mean(q3_accs_mask)))
-            print("Q8 " + test + " test accuracy: " + str(np.mean(q8_accs_mask)))
+            print("Q3 " + test + " test accuracy: " + str(np.nanmean(q3_accs_mask)))
+            print("Q8 " + test + " test accuracy: " + str(np.nanmean(q8_accs_mask)))
 
         '''
         plt.title('Accuracy')
