@@ -583,7 +583,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         print(pred_q3[np.argmin(q3_accs)])
         print(true_q3[np.argmin(q3_accs)])
         mst = ""
-        if not mask is None:
+        if not mask[0] is None:
             for i in mask[np.argmin(q3_accs)]:
                 mst += str(int(i))
 
