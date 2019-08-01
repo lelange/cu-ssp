@@ -321,7 +321,6 @@ best_weights = "model/mod_3-CB513-2019_08_01-15_55.h5"
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    save_pred_file = False
     build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test, save_eval=False)
     test_acc = None
     time_data = time.time() - start_time
