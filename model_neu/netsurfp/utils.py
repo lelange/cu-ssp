@@ -176,14 +176,19 @@ def accuracy(y_true, y_predicted):
 
 
 def cohens_kappa(y_true, y_pred):
+    tf.print(y_true)
     y_true_classes = tf.argmax(y_true, 1)
     print('Shape:')
     print(tf.shape(y_true_classes))
+    tf.print(y_true_classes)
     y_pred_classes = tf.argmax(y_pred, 1)
     return tf.contrib.metrics.cohen_kappa(y_true_classes, y_pred_classes, 9)[1]
 
 def tf_pearson(y_true, y_pred):
     return tf.contrib.metrics.streaming_pearson_correlation(y_pred, y_true)[1]
+
+def tf_f1score(y_true, y_pred):
+    return tf.contrib.metrics.f1_score(y_true, y_pred)[1]
 
 def tf_accuracy(y_true, y_pred):
     y_true_classes = tf.argmax(y_true, 1)
