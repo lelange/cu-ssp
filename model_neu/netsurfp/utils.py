@@ -174,6 +174,14 @@ def accuracy(y_true, y_predicted):
     mask = tf.greater(y, 0)
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
+
+def cohens_kappa(y_true, y_pred):
+    y_true_classes = tf.argmax(y_true, axis =- 1)
+    y_pred_classes = tf.argmax(y_pred, axis =- 1)
+    mask = tf.greater(y_true_classes, 0)
+    return tf.contrib.metrics.cohen_kappa(tf.boolean_mask(y_true_classes, mask), tf.boolean_mask(y_pred_classes, mask), 8)[1]
+
+
 # Convert probabilities to secondary structure
 def to_seq(y):
     seqs=[]
@@ -507,7 +515,6 @@ def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
 
     if save:
         with open('logs/metrics_cb513_' + model_name + '.csv', 'a+') as f:
-            f.write('confusion matrix \n')
             conf.to_csv(f)
             f.write('\n')
             f.write('secondary structure, precision, recall, f-score' + '\n')

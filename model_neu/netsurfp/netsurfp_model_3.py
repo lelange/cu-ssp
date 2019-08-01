@@ -36,8 +36,7 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-from utils import parse_arguments, get_data, train_val_split, \
-    save_cv, telegram_me, accuracy, get_acc, build_and_predict, save_results_to_file
+from utils import *
 
 from collections import defaultdict
 from datetime import datetime
@@ -94,7 +93,6 @@ file_train = 'train_' + str(MAXLEN_SEQ)
 file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
 
 
-
 def build_model():
     model = None
 
@@ -142,8 +140,8 @@ def build_model():
     #model.summary()
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
-    adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
-    model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
+    #adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
+    model.compile(optimizer=Adam, loss="categorical_crossentropy", metrics=["accuracy", accuracy, cohens_kappa])
     return model
 
 
