@@ -181,6 +181,8 @@ def cohens_kappa(y_true, y_pred):
     y_pred_classes = tf.argmax(y_pred, -1)
     tf.reshape(y_true_classes, [-1])
     tf.reshape(y_pred_classes, [-1])
+    tf.transpose(y_true_classes)
+    tf.transpose(y_pred_classes)
     return tf.contrib.metrics.cohen_kappa(y_true_classes, y_pred_classes, 9)[1]
 
 def tf_pearson(y_true, y_pred):
