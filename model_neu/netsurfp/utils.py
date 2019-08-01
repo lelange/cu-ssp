@@ -181,6 +181,9 @@ def cohens_kappa(y_true, y_pred):
     mask = tf.greater(y_true_classes, 0)
     return tf.contrib.metrics.cohen_kappa(y_true_classes, y_pred_classes, 9)[1]
 
+def tf_pearson(y_true, y_pred):
+    return tf.contrib.metrics.streaming_pearson_correlation(y_pred, y_true)[1]
+
 
 # Convert probabilities to secondary structure
 def to_seq(y):

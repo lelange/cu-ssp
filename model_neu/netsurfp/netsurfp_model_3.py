@@ -141,7 +141,7 @@ def build_model():
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
     #adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
-    model.compile(optimizer="Adam", loss="categorical_crossentropy", metrics=["accuracy", accuracy, cohens_kappa])
+    model.compile(optimizer="Adam", loss="categorical_crossentropy", metrics=["accuracy", accuracy, tf_pearson])
     return model
 
 
@@ -246,7 +246,7 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
                              # embeddings_metadata=None, embeddings_data=None, update_freq='batch')
     # Training the model on the training data and validating using the validation set
     K.get_session().run(tf.local_variables_initializer())
-    
+
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
             epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, reduce_lr], verbose=1, shuffle=True)
 
