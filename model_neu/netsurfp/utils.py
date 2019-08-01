@@ -176,9 +176,8 @@ def accuracy(y_true, y_predicted):
 
 
 def cohens_kappa(y_true, y_pred):
-    y_true_classes = tf.argmax(y_true, axis=-1)
-    y_pred_classes = tf.argmax(y_pred, axis=-1)
-    mask = tf.greater(y_true_classes, 0)
+    y_true_classes = tf.argmax(y_true, 1)
+    y_pred_classes = tf.argmax(y_pred, 1)
     return tf.contrib.metrics.cohen_kappa(y_true_classes, y_pred_classes, 9)[1]
 
 def tf_pearson(y_true, y_pred):
