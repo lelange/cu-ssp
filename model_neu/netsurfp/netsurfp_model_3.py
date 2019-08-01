@@ -245,6 +245,8 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
                              # write_images=False, embeddings_freq=0, embeddings_layer_names=None,
                              # embeddings_metadata=None, embeddings_data=None, update_freq='batch')
     # Training the model on the training data and validating using the validation set
+    K.get_session().run(tf.local_variables_initializer())
+    
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
             epochs=epochs, batch_size=batch_size, callbacks=[checkpointer, reduce_lr], verbose=1, shuffle=True)
 
