@@ -477,8 +477,7 @@ def get_acc2(gt, pred, mask = None):
 
 #name2label = {j:i  for i,j in enumerate(labels[:-1])}
 
-def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
-    save=False
+def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:], save=True):
     labels=np.unique(labels_full)
     labels = list(labels)
     classes = len(labels)
@@ -542,7 +541,7 @@ def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
             f.write('\n')
     return conf
 
-def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700']):
+def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700'], save_eval=True):
     if model is None:
         model = build_model()
     if model_name == "mod_2":
@@ -709,8 +708,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print(true_q8[i])
 
 
-        get_confusion_matrix(true_q8, pred_q8, model_name)
-        get_confusion_matrix(true_q3, pred_q3, model_name, q3_list[1:])
+        get_confusion_matrix(true_q8, pred_q8, model_name, save_eval)
+        get_confusion_matrix(true_q3, pred_q3, model_name, q3_list[1:], save_eval)
 
 
         plt.hist(q3_accs, label='Q3', alpha = 0.5)

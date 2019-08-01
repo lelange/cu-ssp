@@ -316,12 +316,13 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     return cv_scores, model_history
 
 # write best weight models in file and look for model (eg. mod_1) name in weight name
-best_weights = "model/mod_3-CB513-2019_07_31-23_37.h5"
+best_weights = "model/mod_3-CB513-2019_08_01-14_31.h5"
 
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
+    save_pred_file = False
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test, save_eval=False)
     test_acc = None
     time_data = time.time() - start_time
     save_results = False
