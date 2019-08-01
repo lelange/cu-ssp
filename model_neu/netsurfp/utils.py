@@ -455,7 +455,7 @@ def get_acc2(gt, pred, mask = None):
 #name2label = {j:i  for i,j in enumerate(labels[:-1])}
 
 def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:]):
-    save=True
+    save=False
     labels=np.unique(labels_full)
     labels = list(labels)
     classes = len(labels)
@@ -689,7 +689,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
         get_confusion_matrix(true_q8, pred_q8, model_name)
         get_confusion_matrix(true_q3, pred_q3, model_name, q3_list[1:])
-        '''
+
+
         plt.hist(q3_accs, label='Q3', alpha = 0.5)
         plt.hist(q8_accs, label='Q8', alpha = 0.5)
         plt.legend()
@@ -711,7 +712,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         plt.show()
         plt.savefig('./plots/' + model_name+'_' + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
 
-        '''
+
 
         if test == 'cb513_700':
             print('MASKED RESULTS:')
