@@ -179,7 +179,7 @@ def cohens_kappa(y_true, y_pred):
     y_true_classes = tf.argmax(y_true, axis =- 1)-1
     y_pred_classes = tf.argmax(y_pred, axis =- 1)-1
     mask = tf.greater(y_true_classes, 0)
-    return tf.contrib.metrics.cohen_kappa(y_true_classes, y_pred_classes,8, weights=mask)[1]
+    return tf.contrib.metrics.cohen_kappa(y_true_classes, y_pred_classes,8)[1]
 
 
 # Convert probabilities to secondary structure
