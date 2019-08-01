@@ -708,7 +708,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print(true_q8[i])
 
 
-        get_confusion_matrix(true_q8, pred_q8, model_name, save_eval)
+        get_confusion_matrix(true_q8, pred_q8, model_name, q8_list[1:] ,save_eval)
         get_confusion_matrix(true_q3, pred_q3, model_name, q3_list[1:], save_eval)
 
 
