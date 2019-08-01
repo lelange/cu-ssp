@@ -184,6 +184,11 @@ def cohens_kappa(y_true, y_pred):
 def tf_pearson(y_true, y_pred):
     return tf.contrib.metrics.streaming_pearson_correlation(y_pred, y_true)[1]
 
+def tf_accuracy(y_true, y_pred):
+    y_true_classes = tf.argmax(y_true, 1)
+    y_pred_classes = tf.argmax(y_pred, 1)
+    # preds and targets are switched in tf.contrib.metrics.accuracy
+    return tf.contrib.metrics.accuracy(y_pred_classes, y_true_classes)
 
 # Convert probabilities to secondary structure
 def to_seq(y):
