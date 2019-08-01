@@ -141,7 +141,7 @@ def build_model():
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
     #adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
-    model.compile(optimizer="Adam", loss="categorical_crossentropy", metrics=["accuracy", accuracy, tf_pearson, tf_accuracy,cohens_kappa])
+    model.compile(optimizer="Adam", loss="categorical_crossentropy", metrics=["accuracy", accuracy, tf_pearson, tf_accuracy])
     return model
 
 
@@ -237,9 +237,9 @@ def build_model_ho_3(params):
 def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     model = build_model()
 
-    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
-    checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
-    reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=5, verbose=1, mode='max', cooldown = 2)
+    earlyStopping = EarlyStopping(monitor='val_tf_pearson', patience=3, verbose=1, mode='max')
+    checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_tf_pearson', verbose = 1, save_best_only=True, mode='max')
+    reduce_lr = ReduceLROnPlateau(monitor='val_tf_pearson', factor=0.5, patience=10, verbose=1, mode='max', cooldown = 2)
 
     #tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=batch_size, write_graph=True, write_grads=False,
                              # write_images=False, embeddings_freq=0, embeddings_layer_names=None,
