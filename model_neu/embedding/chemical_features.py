@@ -40,11 +40,12 @@ def get_netsurf_data(filename, max_len=None):
         seq = onehot_to_seq(oh, seq_list)
         prim_seq.append(seq)
 
-    out = pd.DataFrame({'input_AA': prim_seq, 'input_onehot': input_onehot,
-                        'output_onehot': q8_onehot,
-                        })
+    np.save(path+filename + '_q9_AA_str.npy', prim_seq)
+    print('saved AA '+filename+' to disk.')
+    #prim_seq=np.load(path+filename + '_q9_AA_str.npy')
 
-    return out, profiles
+
+    return prim_seq, input_onehot,q8_onehot, profiles
 
 sifat = pd.read_pickle(data_root+'chemical_features.pkl')
 sifat['Molekülmasse']=normal(sifat['Molekülmasse'])
