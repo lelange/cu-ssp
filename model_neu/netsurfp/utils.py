@@ -98,7 +98,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     if not no_input:
         input_seq_features = np.load(data_root + filename + '_input_features.npy')
         input_seq = np.load(data_root + filename + '_input.npy')
-        input_seq = np.concatenate(input_seq, input_seq_features)
+        input_seq = np.concatenate((input_seq, input_seq_features), axis=2)
 
     else:
         input_seq = np.load(data_root + filename + '_hmm.npy')
