@@ -53,9 +53,9 @@ sifat['Volumen']=normal(sifat['Volumen'])
 
 def get_input_features(filename):
 
-    data,_ = get_netsurf_data(filename)
+    data = get_netsurf_data(filename)
 
-    input_data = data['input_AA']
+    input_data = data[0]
 
     input_features = np.zeros((len(input_data), 700, len(sifat.columns)))
 
