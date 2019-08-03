@@ -824,7 +824,7 @@ def evaluate_model(model, load_file, test_ind = None, hmm=True,
         names.append(file_test[i])
 
     replace = 'mod'
-    withstring = test_accs[0]+'mod'
+    withstring = str(test_accs[0])+'mod'
     newstr, found, endpart = load_file.partition(replace)
 
     if found:
