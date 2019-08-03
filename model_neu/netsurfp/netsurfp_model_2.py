@@ -252,11 +252,12 @@ else:
 
     if hmm:
         print("X train shape: ", X_train_aug[0].shape)
+        NB_AS = X_train_aug[0].shape[2]
         print("X aug train shape: ", X_train_aug[1].shape)
     else:
         print("X train shape: ", X_train_aug.shape)
+        NB_AS = X_train_aug.shape[2]
     print("y train shape: ", y_train.shape)
-    print(type(y_train))
 
     time_data = time.time() - start_time
     save_results = True
