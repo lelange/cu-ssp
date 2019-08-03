@@ -90,8 +90,8 @@ def get_princeton_data(filename, max_len=700):
 
     out = pd.DataFrame({'input_AA': residue_str_list, 'input_onehot':residue_onehot,
                         'output_AA': q8_str_list, 'output_onehot':residue_q8_onehot,
-                        'pssm':profile_padded})
-    return out
+                        })
+    return out, profile_padded
 
 def get_netsurf_data(filename, max_len=None):
     # filename =

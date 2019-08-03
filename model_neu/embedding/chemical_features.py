@@ -42,9 +42,9 @@ def get_netsurf_data(filename, max_len=None):
 
     out = pd.DataFrame({'input_AA': prim_seq, 'input_onehot': input_onehot,
                         'output_onehot': q8_onehot,
-                        'hmm': profiles})
+                        })
 
-    return out
+    return out, profiles
 
 sifat = pd.read_pickle(data_root+'chemical_features.pkl')
 sifat['Molekülmasse']=normal(sifat['Molekülmasse'])
@@ -52,7 +52,7 @@ sifat['Volumen']=normal(sifat['Volumen'])
 
 def get_input_features(filename):
 
-    data = get_netsurf_data(filename)
+    data,_ = get_netsurf_data(filename)
 
     input_data = data['input_AA']
 
