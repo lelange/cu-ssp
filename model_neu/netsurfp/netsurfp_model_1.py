@@ -174,7 +174,7 @@ def build_model():
     model.compile(
         optimizer="Nadam",
         loss="categorical_crossentropy",
-        metrics=["accuracy", accuracy])
+        metrics=["accuracy", accuracy, "matthews_correlation", "precision", "recall", "fbeta_score"])
 
     return model
 
