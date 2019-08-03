@@ -196,24 +196,6 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
 
     return model, history
 
-def evaluate_model(model, load_file, test_ind = None):
-    if test_ind is None:
-        test_ind = range(len(file_test))
-    test_accs = []
-    names = []
-    for i in test_ind:
-        X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
-        model.load_weights(load_file)
-        print("####evaluate" + file_test[i] +":")
-        score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-        print(file_test[i] +' test loss:', score[0])
-        print(file_test[i] +' test accuracy:', score[2])
-        test_accs.append(score[2])
-        names.append(file_test[i])
-    K.clear_session()
-    del model
-    return dict(zip(names, test_accs))
-
 
 def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     X_train, X_aug_train = X_train_aug
