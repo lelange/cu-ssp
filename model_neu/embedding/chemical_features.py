@@ -46,7 +46,7 @@ def get_netsurf_data(filename, max_len=None):
 
     return out
 
-sifat = np.load(data_root+'chemical_features.npy')
+sifat = pd.read_pickle(data_root+'chemical_features.pkl')
 sifat['Molekülmasse']=normal(sifat['Molekülmasse'])
 sifat['Volumen']=normal(sifat['Volumen'])
 
