@@ -25,6 +25,7 @@ import time
 import dill as pickle
 from collections import defaultdict
 from datetime import datetime
+import multiprocessing
 
 data_root = '/nosave/lange/cu-ssp/data/'
 
@@ -34,7 +35,10 @@ NB_NEG = 5
 NB_ITER = 10
 
 def seq2ngrams(seqs, n = 3):
-    return np.array( [[seq[i:i+n] for i in range(int(len(seq)-2))] for seq in seqs])
+    if n==1:
+        return seqs
+    else:
+        return np.array( [[seq[i:i+n] for i in range(int(len(seq)-2))] for seq in seqs])
 
 
 def onehot_to_seq(oh_seq, index):
@@ -131,7 +135,7 @@ def load_data(dataname, mode):
         if mode == 'test':
             filename= 'cb513'
         return get_princeton_data(filename)
-    if dataname == 'netsurf':
+    if dataname == 'netsurfp':
         if mode == 'train':
             filename = 'train_full'
         if mode == 'test':
@@ -143,16 +147,17 @@ def load_data(dataname, mode):
 
 
 
-def embed_data(dataname, mode):
+def embed_data(dataname='netsurfp', mode='train', data=None):
     ''' should work for train and test '''
     # load input data
 
-    data = load_data(dataname, mode)
+    if data is None:
+        data = load_data(dataname, mode)
 
     #onehot2AA
     seqs = data['input_AA']
     #create n-grams from AA sequence
-    ngram_seq = seq2ngrams(seqs, n=3)
+    ngram_seq = seq2ngrams(seqs, n=1)
 
 
     #tokenize n-gram sequences (indices according to frequency)
@@ -160,10 +165,15 @@ def embed_data(dataname, mode):
     #
 
 
-    w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE, negative=NB_NEG, iter= NB_ITER)
+    w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
+                   negative=NB_NEG, iter= NB_ITER,
+                   workers = multiprocessing.cpu_count())
     word_vectors = w2v.wv
     embedding_matrix = word_vectors.vectors
+    return embedding_matrix
 
+
+datanames = ['princeton', 'netsurfp', 'qzlshy']
 
 
 
