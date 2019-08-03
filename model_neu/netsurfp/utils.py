@@ -823,7 +823,7 @@ def evaluate_model(model, load_file, test_ind = None, hmm=True,
         test_accs.append(score[2])
         names.append(file_test[i])
 
-    replace = 'mod'
+    replace = 'mod_'
     withstring = str(test_accs[0][:6])+'mod_'
     newstr, found, endpart = load_file.partition(replace)
 
