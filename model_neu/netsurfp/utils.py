@@ -96,7 +96,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     outputs=[]
 
     if not no_input:
-        input_seq = np.load(data_root + filename + '_input.npy')
+        input_seq = np.load(data_root + filename + '_input_features.npy')
 
     else:
         input_seq = np.load(data_root + filename + '_hmm.npy')
