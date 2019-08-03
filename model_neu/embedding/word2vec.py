@@ -99,7 +99,7 @@ def get_netsurf_data(filename, max_len=None):
     path = data_root+'netsurfp/'
 
     input_onehot = np.load(path+filename + '_input.npy')
-    q8_onehot = np.load(path+filename + '_q8.npy')
+    q8_onehot = np.load(path+filename + '_q9.npy')
     profiles = np.load(path+filename + '_hmm.npy')
 
     prim_seq = []

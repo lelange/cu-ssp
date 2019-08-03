@@ -32,7 +32,7 @@ def get_netsurf_data(filename, max_len=None):
     path = data_root+'netsurfp/'
 
     input_onehot = np.load(path+filename + '_input.npy')
-    q8_onehot = np.load(path+filename + '_q8.npy')
+    q8_onehot = np.load(path+filename + '_q9.npy')
     profiles = np.load(path+filename + '_hmm.npy')
 
     prim_seq = []
@@ -68,6 +68,11 @@ def get_input_features(filename):
 
 get_input_features('train_700')
 get_input_features('cb513_700')
+get_input_features('ts115_700')
+get_input_features('casp12_700')
+
+
+
 
 
 
