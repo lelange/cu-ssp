@@ -805,6 +805,37 @@ def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True,
     f.write("\n\n")
     f.close()
 
+def evaluate_model(model, load_file, test_ind = None,
+                   normalize=False, standardize=True, file_test=None):
+    if file_test is None:
+        file_test = ['cb513_700', 'ts115_700', 'casp12_700']
+    if test_ind is None:
+        test_ind = range(len(file_test))
+    test_accs = []
+    names = []
+    for i in test_ind:
+        X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
+        model.load_weights(load_file)
+        print("####evaluate " + file_test[i] +":")
+        score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
+        print(file_test[i] +' test loss:', score[0])
+        print(file_test[i] +' test accuracy:', score[2])
+        test_accs.append(score[2])
+        names.append(file_test[i])
+
+    replace = 'mod'
+    withstring = test_accs[0]+'mod'
+    newstr, found, endpart = load_file.partition(replace)
+
+    if found:
+        newstr += withstring + endpart
+        print(newstr)
+    else:
+        print("%r string is not in %r" % (replace, load_file))
+
+    os.rename(load_file, newstr)
+    print('Weights are now saved to '+newstr)
+    return dict(zip(names, test_accs))
 
 
 
