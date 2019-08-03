@@ -199,7 +199,7 @@ else:
         y_val = None
         '''
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
-        test_acc = evaluate_model(model, load_file)
+        test_acc = evaluate_model(model, load_file, None, hmm, normalize, standardize, file_test)
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)

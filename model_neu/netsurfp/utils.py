@@ -805,7 +805,7 @@ def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True,
     f.write("\n\n")
     f.close()
 
-def evaluate_model(model, load_file, test_ind = None,
+def evaluate_model(model, load_file, test_ind = None, hmm=True,
                    normalize=False, standardize=True, file_test=None):
     if file_test is None:
         file_test = ['cb513_700', 'ts115_700', 'casp12_700']
