@@ -192,11 +192,11 @@ def build_and_train(hype_space, save_best_weights=True):
 
     # TensorBoard logging callback (see model 6):
     log_path = None
-    emb_dim = hype_space['embed_dim']
-    window_size = hype_space['window_size']
-    nb_neg = hype_space['negative']
-    nb_iter = hype_space['iter']
-    n_gram = hype_space['n_gram']
+    emb_dim = int(hype_space['embed_dim'])
+    window_size = int(hype_space['window_size'])
+    nb_neg = int(hype_space['negative'])
+    nb_iter = int(hype_space['iter'])
+    n_gram = int(hype_space['n_gram'])
 
     #standardize train and val profiles
 
@@ -291,7 +291,7 @@ def build_model(hype_space):
 
         return cnn
 
-    input = Input(shape=(MAXLEN_SEQ, hype_space['embed_dim']))
+    input = Input(shape=(MAXLEN_SEQ, int(hype_space['embed_dim']) ))
     profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES))
     x = concatenate([input, profiles_input])
     inp = [input, profiles_input]
