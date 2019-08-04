@@ -116,8 +116,6 @@ def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
         l.append(item[0])
     index2embedding={}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
-        print(item)
-        print(l.index(word_vectors[item][0]))
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
     return index2embedding
 
