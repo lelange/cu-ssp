@@ -107,7 +107,7 @@ if maxlen_seq is None:
 else:
     ending = str(maxlen_seq)
 
-get_and_save_data(data_train, 'train_'+ending)
+#get_and_save_data(data_train, 'train_'+ending)
 get_and_save_data(data_cb513, 'cb513_'+ending)
 get_and_save_data(data_ts115, 'ts115_'+ending)
 get_and_save_data(data_casp12, 'casp12_'+ending)
