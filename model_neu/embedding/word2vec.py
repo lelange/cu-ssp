@@ -88,30 +88,21 @@ def get_princeton_data(filename, max_len=700):
         x = ''.join(vec[vec != 'NoSeq'])
         q8_str_list.append(x)
 
-    out = pd.DataFrame({'input_AA': residue_str_list, 'input_onehot':residue_onehot,
-                        'output_AA': q8_str_list, 'output_onehot':residue_q8_onehot,
-                        })
-    return out, profile_padded
+
+    return residue_str_list, residue_onehot, q8_str_list, residue_q8_onehot, profile_padded
+
 
 def get_netsurf_data(filename, max_len=None):
     # filename =
     seq_list = list('ACDEFGHIKLMNPQRSTVWY')
-    path = data_root+'netsurfp/'
+    path = data_root + 'netsurfp/'
 
-    input_onehot = np.load(path+filename + '_input.npy')
-    q8_onehot = np.load(path+filename + '_q9.npy')
-    profiles = np.load(path+filename + '_hmm.npy')
+    input_onehot = np.load(path + filename + '_input.npy')
+    q8_onehot = np.load(path + filename + '_q9.npy')
+    profiles = np.load(path + filename + '_hmm.npy')
+    prim_seq = np.load(path + filename + '_q9_AA_str.npy')
 
-    prim_seq = []
-    for i, oh in enumerate(input_onehot):
-        seq = onehot_to_seq(oh, seq_list)
-        prim_seq.append(seq)
-
-    out = pd.DataFrame({'input_AA': prim_seq, 'input_onehot': input_onehot,
-                        'output_onehot': q8_onehot,
-                        'hmm': profiles})
-
-    return out
+    return prim_seq, input_onehot, q8_onehot, profiles
 
 def get_qzlshy_data(filename, maxlen=700):
     ### filename = train or test
@@ -119,14 +110,10 @@ def get_qzlshy_data(filename, maxlen=700):
 
     pssm = np.load(path+filename+'_pssm.npy')
     hmm = np.load(path+filename+'_hmm.npy')
-    input = np.load(path+filename+'_input.npy')
-    q8 = np.load(path+filename+'_q8.npy')
+    input_AA = np.load(path+filename+'_input.npy')
+    q8_AA = np.load(path+filename+'_q8.npy')
 
-    out = pd.DataFrame({'input_AA': input,
-                        'output_AA': q8,
-                        'pssm': pssm,
-                        'hmm':hmm})
-    return out
+    return input_AA, q8_AA, pssm, hmm
 
 def load_data(dataname, mode):
     if dataname=='princeton':
@@ -143,8 +130,6 @@ def load_data(dataname, mode):
         return get_netsurf_data(filename)
     if dataname == 'qzlshy':
         return get_qzlshy_data(mode)
-
-
 
 
 def embed_data(dataname='netsurfp', mode='train', data=None):

@@ -45,11 +45,7 @@ def get_netsurf_data(filename, max_len=None):
     #print('saved AA '+filename+' to disk.')
         
     '''
-
-
-
     prim_seq=np.load(path+filename + '_q9_AA_str.npy')
-
 
     return prim_seq, input_onehot,q8_onehot, profiles
 
