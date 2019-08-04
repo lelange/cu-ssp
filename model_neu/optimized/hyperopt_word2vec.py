@@ -35,7 +35,11 @@ SAVE_RESULTS = "results_mod1_w2v.pkl" # save trials of optimization
 SAVE_BEST_PLOT = "model_1_w2v_best" # save best NN graph
 
 space = {
-
+    'embed_dim': hp.quniform('embed_dim', 20, 300, 10),
+    'window_size': hp.quniform('window_size', 3, 50, 1),
+    'negative': hp.quniform('negative', 1, 10, 1),
+    'iter': hp.quniform('iter', 3, 30, 1),
+    'n_gram': hp.quniform('n_gram', 1, 6, 1)
 }
 
 
@@ -60,7 +64,7 @@ def plot_best_model():
 
     print("Best hyperspace yet:")
     print_json(space_best_model)
-    plot(space_best_model, SAVE_BEST_PLOT)
+    #plot(space_best_model, SAVE_BEST_PLOT)
 
 def optimize_model(hyperspace):
     """Build model 1 and train it."""
@@ -137,6 +141,6 @@ if __name__ == "__main__":
             traceback_str = str(traceback.format_exc())
             print(traceback_str)
 
-        print("PLOTTING BEST MODEL:")
+        print("BEST MODEL:")
         plot_best_model()
 
