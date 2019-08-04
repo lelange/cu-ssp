@@ -561,6 +561,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
         i = True
         X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
+        print(X_test_aug.shape)
+        print(y_test.shape)
         model.load_weights(best_weights)
 
         print("\nPredict " + test + "...")
