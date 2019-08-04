@@ -166,11 +166,12 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
 
 datanames = ['princeton', 'netsurfp', 'qzlshy']
 
-w2v_input = embed_data()
+w2v_input = embed_data(mode='test')
 
-np.save(data_root+'netsurfp/embedding/train_input_full_700_word2vec.npy', w2v_input)
+np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec.npy', w2v_input)
+#train_full_700_input_word2vec.npy
 
-print('Data has been saved to '+data_root+'netsurfp/embedding/train_input_full_700_word2vec.npy')
+print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec.npy')
 
 
 
