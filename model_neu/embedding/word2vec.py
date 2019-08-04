@@ -1,30 +1,6 @@
 from gensim.models import Word2Vec
 
 import numpy as np
-from numpy import array
-import pandas as pd
-from keras.preprocessing import text, sequence
-from keras.preprocessing.text import Tokenizer
-from keras.utils import to_categorical
-from keras.models import Model, Input
-from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, GRU, Conv1D, CuDNNLSTM, concatenate
-from sklearn.model_selection import train_test_split
-from keras.metrics import categorical_accuracy
-from keras import backend as K
-import tensorflow as tf
-from keras import optimizers, initializers, constraints, regularizers
-from keras.engine.topology import Layer
-from tensorflow.keras.layers import Activation
-from tensorflow.layers import Flatten
-from keras.callbacks import EarlyStopping ,ModelCheckpoint
-from keras.callbacks import TensorBoard, LearningRateScheduler, ReduceLROnPlateau
-
-import sys
-import os
-import time
-import dill as pickle
-from collections import defaultdict
-from datetime import datetime
 import multiprocessing
 
 data_root = '/nosave/lange/cu-ssp/data/'
@@ -138,15 +114,17 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
 
     if data is None:
         data = load_data(dataname, mode)
-
+    print('Load data..')
     #onehot2AA
     seqs = data[0]
     #create n-grams from AA sequence
+    print('Create n-grams...')
     ngram_seq = seq2ngrams(seqs, n=1)
 
     #tokenize n-gram sequences (indices according to frequency)
 
     #
+    print('Perform Word2Vec embedding...')
 
     w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
                    negative=NB_NEG, iter= NB_ITER,
@@ -162,7 +140,7 @@ w2v_matrix = embed_data()
 
 np.save(data_root+'netsurfp/embedding/train_input_700_word2vec.npy', w2v_matrix)
 
-
+print('Data has been saved to '+data_root+'netsurfp/embedding/train_input_700_word2vec.npy')
 
 
 
