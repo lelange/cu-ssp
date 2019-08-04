@@ -154,7 +154,7 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
     embed_seq = np.zeros((len(seqs), 700, EMB_DIM))
 
     for i, grams in enumerate(ngram_seq):
-        for j, g in enumerate(grams):
+        for j, g in enumerate(grams[:700]):
             embed_seq[i, j, :] = index2embedding[g]
 
     print(embed_seq.shape)
