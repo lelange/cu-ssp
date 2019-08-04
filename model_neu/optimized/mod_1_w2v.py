@@ -91,7 +91,7 @@ def get_netsurf_data(filename):
     profiles = np.load(path + filename + '_hmm.npy')
     prim_seq = np.load(path + filename + '_q9_AA_str.npy')
 
-    return prim_seq, q8_onehot, profiles
+    return prim_seq, q8_onehot, profiles[:,:MAXLEN_SEQ,:]
 
 def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
                   filename=None, seqs=None):
