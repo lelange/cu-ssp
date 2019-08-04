@@ -138,9 +138,14 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
                    negative=NB_NEG, iter= NB_ITER,
                    workers = multiprocessing.cpu_count())
     word_vectors = w2v.wv
-    print(word_vectors.shape)
+    for item in list('ACDEFGHIKLMNPQRSTVWY'):
+        print(item)
+        print(word_vectors[item])
+    #print(word_vectors.shape)
     embedding_matrix = word_vectors.vectors
-    print(embedding_matrix.shape)
+    print('Embedding matrix:')
+    print(embedding_matrix)
+    #print(embedding_matrix.shape)
     return embedding_matrix
 
 
