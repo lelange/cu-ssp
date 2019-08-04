@@ -144,14 +144,21 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
     for item in embedding_matrix:
         l.append(item[0])
     index2position={}
+    index2embedding={}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
         print(item)
         print(l.index(word_vectors[item][0]))
         index2position.update({item:l.index(word_vectors[item][0])})
+        index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
 
-    f = open('index2position.okl', 'w+')
+    f = open('index2position.pkl', 'w+')
     pickle.dump(index2position, f)
     f.close()
+    g= open('index2embedding.pkl', 'w+')
+    pickle.dump(index2embedding, g)
+    g.close()
+
+
     #print(word_vectors.shape)
 
     #print(embedding_matrix.shape)
