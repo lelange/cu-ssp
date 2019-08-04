@@ -140,13 +140,13 @@ OPTIMIZER_STR_TO_CLASS = {
     'RMSprop': RMSprop
 }
 
-def evaluate_model(model, load_file, emb_dim, window_size, nb_neg, nb_iter, n_gram):
+def evaluate_model(model, load_file, emb_dim, n_gram, index2embed):
     file_test = ['cb513_full', 'ts115_full', 'casp12_full']
     test_accs = []
     names = []
-    for i in test_ind:
-        X_test, y_test, X_aug = get_netsurf_data(file_test[i])
-        X_embed = embed_data(emb_dim, window_size, nb_neg, nb_iter, n_gram, X_test)
+    for test in file_test:
+        X_test, y_test, X_aug = get_netsurf_data(test)
+        X_embed = embed_data(X_test, index2embed, emb_dim, n_gram)
         X_test_aug = [X_embed, X_aug]
         model.load_weights(load_file)
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
@@ -219,7 +219,8 @@ def build_and_train(hype_space, save_best_weights=True):
 
     # Test net:
     K.set_learning_phase(0)
-    score = evaluate_model(model, weights_save_path, emb_dim, window_size, nb_neg, nb_iter, n_gram)
+    score = evaluate_model(model, weights_save_path,
+                           emb_dim, n_gram, index2embed)
     print("\n\n")
     max_acc = max(history['val_accuracy'])
 

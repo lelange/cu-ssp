@@ -157,6 +157,7 @@ def embed_data(seqs, index2embedding):
 
 datanames = ['princeton', 'netsurfp', 'qzlshy']
 
+'''
 w2v_dict = get_embedding(mode='train')
 
 w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
@@ -166,6 +167,11 @@ print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_inp
 w2v_input = embed_data(get_netsurf_data('cb513_full')[0], w2v_dict)
 np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec.npy', w2v_input)
 print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec.npy')
+
+'''
+
+get_netsurf_data('casp12_full')
+get_netsurf_data('ts115_full')
 
 
 
