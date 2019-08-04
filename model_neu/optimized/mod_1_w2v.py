@@ -150,9 +150,8 @@ def evaluate_model(model, load_file, emb_dim, n_gram, index2embed):
         X_test_aug = [X_embed, X_aug]
         model.load_weights(load_file)
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-        #print(file_test[i] +' test accuracy: ' + str(score[1]))
         test_accs.append(score[1])
-        names.append(file_test[i])
+        names.append(test)
     return dict(zip(names, test_accs))
 
 def build_and_train(hype_space, save_best_weights=True):
