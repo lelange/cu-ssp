@@ -35,33 +35,9 @@ SAVE_RESULTS = "results_mod1_w2v.pkl" # save trials of optimization
 SAVE_BEST_PLOT = "model_1_w2v_best" # save best NN graph
 
 space = {
-    # This loguniform scale will multiply the learning rate, so as to make
-    # it vary exponentially, in a multiplicative fashion rather than in
-    # a linear fashion, to handle his exponentialy varying nature:
-    'lr_rate_mult': hp.loguniform('lr_rate_mult', -0.5, 0.5),
-    # L2 weight decay:
-    'batch_size': hp.quniform('batch_size', 100, 450, 2),
-    # Choice of optimizer:
-    'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
-    # Kernel size for convolutions:
-    'super_conv_filter_size': hp.quniform('super_conv_filter_size', 8, 128, 8),
-    # LSTM units:
-    'GRU_units_mult': hp.loguniform('GRU_units_mult', -0.6, 0.6),
-    # Number of super_conv+conv layers stacked:
-    'nb_conv_super_layers': hp.choice('nb_conv_super_layers', [2, 3, 4]),
-    # Uniform distribution in finding appropriate dropout values, conv layers
-    'dropout': hp.uniform('dropout', 0.0, 0.7),
 
 }
 
-'''
-     # Use batch normalisation at more places?
-    'use_BN': hp.choice('use_BN', [False, True]),
-    # Uniform distribution in finding appropriate dropout values, conv layers
-    'conv_dropout_drop_proba': hp.uniform('conv_dropout_proba', 0.0, 0.35),
-    # Uniform distribution in finding appropriate dropout values, FC layers
-    'fc_dropout_drop_proba': hp.uniform('fc_dropout_proba', 0.0, 0.6),
-    '''
 
 def plot(hyperspace, file_name_prefix):
     """Plot a model from it's hyperspace."""

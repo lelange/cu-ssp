@@ -94,7 +94,6 @@ def embed_data(emb_dim, window_size, nb_neg, nb_iter, filename=None, seqs=None):
     #create n-grams from AA sequence
     print('Create n-grams...')
     ngram_seq = seq2ngrams(seqs, n=1)
-
     print('Perform Word2Vec embedding...')
 
     w2v = Word2Vec(ngram_seq, size=emb_dim, window=window_size,
@@ -105,23 +104,14 @@ def embed_data(emb_dim, window_size, nb_neg, nb_iter, filename=None, seqs=None):
     l =[]
     for item in embedding_matrix:
         l.append(item[0])
-    #index2position={}
     index2embedding={}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
         print(item)
         print(l.index(word_vectors[item][0]))
-        #index2position.update({item:l.index(word_vectors[item][0])})
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
+    return index2embedding
 
-    embed_seq = np.zeros((len(seqs), 700, emb_dim))
-
-    for i, grams in enumerate(ngram_seq):
-        for j, g in enumerate(grams[:700]):
-            embed_seq[i, j, :] = index2embedding[g]
-
-    return embed_seq, index2embedding
-
-def embed_test(seqs, index2embedding, emb_dim):
+def embed_data(seqs, index2embedding, emb_dim):
 
     embed_seq = np.zeros((len(seqs), 700, emb_dim))
 
