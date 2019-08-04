@@ -76,7 +76,15 @@ def get_netsurf_data(filename, max_len=None):
     input_onehot = np.load(path + filename + '_input.npy')
     q8_onehot = np.load(path + filename + '_q9.npy')
     profiles = np.load(path + filename + '_hmm.npy')
-    prim_seq = np.load(path + filename + '_q9_AA_str.npy')
+    #prim_seq = np.load(path + filename + '_q9_AA_str.npy')
+
+    prim_seq = []
+    for i, oh in enumerate(input_onehot):
+        seq = onehot_to_seq(oh, seq_list)
+        prim_seq.append(seq)
+
+    # np.save(path+filename + '_q9_AA_str.npy', prim_seq)
+    # print('saved AA '+filename+' to disk.')
 
     return prim_seq, input_onehot, q8_onehot, profiles
 
@@ -138,9 +146,9 @@ datanames = ['princeton', 'netsurfp', 'qzlshy']
 
 w2v_matrix = embed_data()
 
-np.save(data_root+'netsurfp/embedding/train_input_700_word2vec.npy', w2v_matrix)
+np.save(data_root+'netsurfp/embedding/train_input_full_word2vec.npy', w2v_matrix)
 
-print('Data has been saved to '+data_root+'netsurfp/embedding/train_input_700_word2vec.npy')
+print('Data has been saved to '+data_root+'netsurfp/embedding/train_input_full_word2vec.npy')
 
 
 
