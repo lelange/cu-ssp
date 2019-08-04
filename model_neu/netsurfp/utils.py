@@ -556,8 +556,6 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         file_test = ['cb513_full'] ### uncomment later!!
 
     input_mask = np.load(data_root+'cb513_700_seq_range.npy')
-    print(len(input_mask))
-    print(input_mask)
 
     # save all accuracys from Q8 and Q3 preditions
     f = open(PRED_DIR + "prediction_accuracy.txt", "a+")
