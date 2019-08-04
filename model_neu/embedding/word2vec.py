@@ -143,36 +143,34 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
     l =[]
     for item in embedding_matrix:
         l.append(item[0])
-    index2position={}
+    #index2position={}
     index2embedding={}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
         print(item)
         print(l.index(word_vectors[item][0]))
-        index2position.update({item:l.index(word_vectors[item][0])})
+        #index2position.update({item:l.index(word_vectors[item][0])})
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
 
+    embed_seq = np.zeros((len(seqs), 700, EMB_DIM))
 
-    print(index2position)
-    print(index2embedding)
+    for i, grams in enumerate(ngram_seq):
+        for j, g in enumerate(grams):
+            embed_seq[i, j, :] = index2embedding[g]
+
+    print(embed_seq.shape)
+
+    return embed_seq
 
 
-    print('Keys:')
-    print(index2embedding.keys())
-    print('Values:')
-    print(index2embedding.values())
-    #print(word_vectors.shape)
-
-    #print(embedding_matrix.shape)
-    return embedding_matrix
 
 
 datanames = ['princeton', 'netsurfp', 'qzlshy']
 
-w2v_matrix = embed_data()
+w2v_input = embed_data()
 
-#np.save(data_root+'netsurfp/embedding/train_input_full_word2vec.npy', w2v_matrix)
+np.save(data_root+'netsurfp/embedding/train_input_full_700_word2vec.npy', w2v_input)
 
-print('Data has been saved to '+data_root+'netsurfp/embedding/train_input_full_word2vec.npy')
+print('Data has been saved to '+data_root+'netsurfp/embedding/train_input_full_700_word2vec.npy')
 
 
 
