@@ -222,7 +222,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 
 
 # write best weight models in file and look for model (eg. mod_1) name in weight name
-best_weights = "model/mod_1-CB513-2019_08_04-21_22.h5"
+best_weights = "model/702964_mod_1-CB513-2019_08_04-21_22.h5"
 save_pred_file = "_pred_1.npy"
 
 def accuracy2(y_true, y_predicted):
