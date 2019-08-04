@@ -84,8 +84,8 @@ def get_netsurf_data(filename, max_len=None):
         seq = onehot_to_seq(oh, seq_list)
         prim_seq.append(seq)
 
-    # np.save(path+filename + '_q9_AA_str.npy', prim_seq)
-    # print('saved AA '+filename+' to disk.')
+    np.save(path+filename + '_q9_AA_str.npy', prim_seq)
+    print('saved AA '+filename+' to disk.')
 
     return prim_seq, input_onehot, q8_onehot, profiles
 
@@ -117,10 +117,8 @@ def load_data(dataname, mode):
         return get_qzlshy_data(mode)
 
 
-def embed_data(dataname='netsurfp', mode='train', data=None):
-    ''' should work for train and test '''
+def get_embedding(dataname='netsurfp', mode='train', data=None):
     # load input data
-
     if data is None:
         data = load_data(dataname, mode)
     print('Load data..')
@@ -130,11 +128,7 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
     print('Create n-grams...')
     ngram_seq = seq2ngrams(seqs, n=1)
 
-    #tokenize n-gram sequences (indices according to frequency)
-
-    #
     print('Perform Word2Vec embedding...')
-
     w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
                    negative=NB_NEG, iter= NB_ITER,
                    workers = multiprocessing.cpu_count())
@@ -143,34 +137,34 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
     l =[]
     for item in embedding_matrix:
         l.append(item[0])
-    #index2position={}
     index2embedding={}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
         print(item)
         print(l.index(word_vectors[item][0]))
-        #index2position.update({item:l.index(word_vectors[item][0])})
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
+    return index2embedding
+
+def embed_data(seqs, index2embedding):
 
     embed_seq = np.zeros((len(seqs), 700, EMB_DIM))
 
-    for i, grams in enumerate(ngram_seq):
+    for i, grams in enumerate(seqs):
         for j, g in enumerate(grams[:700]):
             embed_seq[i, j, :] = index2embedding[g]
 
     print(embed_seq.shape)
-
     return embed_seq
-
-
-
 
 datanames = ['princeton', 'netsurfp', 'qzlshy']
 
-w2v_input = embed_data(mode='test')
+w2v_dict = get_embedding(mode='train')
 
+w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
+np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec.npy', w2v_input)
+print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec.npy')
+
+w2v_input = embed_data(get_netsurf_data('cb513_full')[0], w2v_dict)
 np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec.npy', w2v_input)
-#train_full_700_input_word2vec.npy
-
 print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec.npy')
 
 
