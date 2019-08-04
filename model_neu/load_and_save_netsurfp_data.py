@@ -3,7 +3,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 import pickle
 
-maxlen_seq = 768 ###! change back!
+maxlen_seq = 700 ###! change back!
 minlen_seq= 100
 
 # [0:20] Amino Acids (sparse encoding)
@@ -96,10 +96,10 @@ def get_and_save_data(data, filename):
     #pickle.dump(var_len_hmm, open(data_root + filename + '_var_len_hmm.txt', "wb"))
     #pickle.dump(var_len_q9, open(data_root + filename + '_var_len_q9.txt', "wb"))
 
-    np.save(data_root+filename+'_input.npy', input_seq)
-    np.save(data_root+filename+'_q9.npy', q9)
-    np.save(data_root+filename+'_hmm.npy', hmm)
-    np.save(data_root + filename + '_mask.npy', new_mask)
+    #np.save(data_root+filename+'_input.npy', input_seq)
+    #np.save(data_root+filename+'_q9.npy', q9)
+    #np.save(data_root+filename+'_hmm.npy', hmm)
+    np.save(data_root + filename + '_seq_range.npy', seq_range)
     print(filename+' is saved.')
 
 if maxlen_seq is None:
