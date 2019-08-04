@@ -565,8 +565,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
         i = True
         X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
-        X_test_aug = [X_test_aug[0][input_mask],X_test_aug[1][input_mask]]
-        y_test = y_test[input_mask]
+        #X_test_aug = [X_test_aug[0][input_mask],X_test_aug[1][input_mask]]
+        #y_test = y_test[input_mask]
         print(X_test_aug[0].shape)
         print(X_test_aug[1].shape)
         print(y_test.shape)
