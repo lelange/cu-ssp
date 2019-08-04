@@ -32,7 +32,7 @@ WEIGHTS_DIR = "weights/"
 
 MAXLEN_SEQ = 700
 NB_CLASSES_Q8 = 9
-NB_FEATURES = 50
+NB_FEATURES = 30
 MODEL_NAME = "mod_1_w2v"
 epochs = 75
 batch_size = 128
@@ -121,11 +121,11 @@ def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
 
 def embed_data(seqs, index2embedding, emb_dim, n_gram):
 
-    embed_seq = np.zeros((len(seqs), 700, emb_dim))
+    embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emb_dim))
     ngram_seq = seq2ngrams(seqs, n=n_gram)
 
     for i, grams in enumerate(ngram_seq):
-        for j, g in enumerate(grams[:700]):
+        for j, g in enumerate(grams[:MAXLEN_SEQ]):
             embed_seq[i, j, :] = index2embedding[g]
 
     return embed_seq
@@ -199,11 +199,11 @@ def build_and_train(hype_space, save_best_weights=True):
     index2embed = get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
                  seqs=X_train)
 
-    X_train = embed_data(X_train, index2embed, emb_dim, n_gram)
-    X_val = embed_data(X_val, index2embed, emb_dim, n_gram)
+    X_train_embed = embed_data(X_train, index2embed, emb_dim, n_gram)
+    X_val_embed = embed_data(X_val, index2embed, emb_dim, n_gram)
 
-    X_train_aug = [X_train, X_aug]
-    X_val_aug = [X_val, X_aug_val]
+    X_train_aug = [X_train_embed, X_aug]
+    X_val_aug = [X_val_embed, X_aug_val]
 
     # Train net:
     history = model.fit(
