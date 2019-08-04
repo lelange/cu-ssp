@@ -138,7 +138,9 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
                    negative=NB_NEG, iter= NB_ITER,
                    workers = multiprocessing.cpu_count())
     word_vectors = w2v.wv
+    print(word_vectors.shape)
     embedding_matrix = word_vectors.vectors
+    print(embedding_matrix.shape)
     return embedding_matrix
 
 
@@ -146,7 +148,7 @@ datanames = ['princeton', 'netsurfp', 'qzlshy']
 
 w2v_matrix = embed_data()
 
-np.save(data_root+'netsurfp/embedding/train_input_full_word2vec.npy', w2v_matrix)
+#np.save(data_root+'netsurfp/embedding/train_input_full_word2vec.npy', w2v_matrix)
 
 print('Data has been saved to '+data_root+'netsurfp/embedding/train_input_full_word2vec.npy')
 
