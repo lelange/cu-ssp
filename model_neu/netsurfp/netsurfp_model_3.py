@@ -305,7 +305,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
     return cv_scores, model_history
 
 # write best weight models in file and look for model (eg. mod_1) name in weight name
-best_weights = "model/mod_3-CB513-2019_08_04-19_52.h5"
+best_weights = "model/644417_mod_3-CB513-2019_08_04-19_52.h5"
 
 #--------------------------------- main ---------------------------------
 
