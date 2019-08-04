@@ -93,8 +93,6 @@ def get_netsurf_data(filename):
 
     return prim_seq, q8_onehot, profiles
 
-
-
 def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
                   filename=None, seqs=None):
     if seqs is None:
@@ -159,9 +157,6 @@ def evaluate_model(model, load_file, emb_dim, window_size, nb_neg, nb_iter, n_gr
         names.append(file_test[i])
     return dict(zip(names, test_accs))
 
-X_train, y_train, X_aug = get_netsurf_data('train_full')
-X_train, y_train, X_aug, X_val, y_val, X_aug_val = train_val_split_(X_train, y_train, X_aug)
-
 def build_and_train(hype_space, save_best_weights=True):
     """Build the model and train it."""
 
@@ -199,7 +194,8 @@ def build_and_train(hype_space, save_best_weights=True):
     n_gram = int(hype_space['n_gram'])
 
     #standardize train and val profiles
-
+    X_train, y_train, X_aug = get_netsurf_data('train_full')
+    X_train, y_train, X_aug, X_val, y_val, X_aug_val = train_val_split_(X_train, y_train, X_aug)
 
     ## load data and get embedding form train data, embed train+val
     index2embed = get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
