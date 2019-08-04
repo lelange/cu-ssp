@@ -96,7 +96,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     outputs=[]
 
     if not no_input:
-        input_seq = np.load(data_root + filename + '_input.npy')
+        input_seq = np.load(data_root+'embedding/train_input_full_700_word2vec.npy')
         #input_seq = np.load(data_root + filename + '_input_features.npy')
         #input_seq=standard(input_seq)
         #input_seq_features = np.load(data_root + filename + '_input_features.npy')
@@ -111,7 +111,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
             input_seq = standard(input_seq)
 
     if hmm:
-        profiles = np.load(data_root+filename+'_hmm.npy')
+        profiles = np.load(data_root+filename+'_hmm.npy')[:,:700,:]
         if normalize:
             print('Normalize...')
             profiles = normal(profiles)
@@ -125,7 +125,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     if embedding:
         embed_seq = np.load(data_root + filename + '_word2vec_3D_input.npy')
         input_aug = embed_seq
-    q8 = np.load(data_root + filename + '_q9.npy')
+    q8 = np.load(data_root + filename + '_q9.npy')[:,:700,:]
     outputs.append(q8)
 
     return input_aug, q8
