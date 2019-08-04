@@ -142,7 +142,7 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
         print(item)
         l = list(embedding_matrix)
-        print(l.index(word_vectors[item]))
+        print(l.index(word_vectors[item][0]))
     #print(word_vectors.shape)
 
     #print(embedding_matrix.shape)
