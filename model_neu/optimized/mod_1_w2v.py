@@ -34,7 +34,7 @@ MAXLEN_SEQ = 700
 NB_CLASSES_Q8 = 9
 NB_FEATURES = 30
 MODEL_NAME = "mod_1_w2v"
-epochs = 75
+epochs = 1
 batch_size = 128
 
 def train_val_split_(X_train, y_train, X_aug):
@@ -219,7 +219,7 @@ def build_and_train(hype_space, save_best_weights=True):
 
     # Test net:
     K.set_learning_phase(0)
-    score = evaluate_model(model, weights_save_path)
+    score = evaluate_model(model, weights_save_path, emb_dim, window_size, nb_neg, nb_iter, n_gram)
     print("\n\n")
     max_acc = max(history['val_accuracy'])
 
