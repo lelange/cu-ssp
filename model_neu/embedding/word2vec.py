@@ -30,7 +30,7 @@ import multiprocessing
 data_root = '/nosave/lange/cu-ssp/data/'
 
 EMB_DIM = 50
-WINDOW_SIZE = 5
+WINDOW_SIZE = 20
 NB_NEG = 5
 NB_ITER = 10
 
@@ -140,15 +140,13 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
         data = load_data(dataname, mode)
 
     #onehot2AA
-    seqs = data['input_AA']
+    seqs = data[0]
     #create n-grams from AA sequence
     ngram_seq = seq2ngrams(seqs, n=1)
-
 
     #tokenize n-gram sequences (indices according to frequency)
 
     #
-
 
     w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
                    negative=NB_NEG, iter= NB_ITER,
@@ -159,6 +157,10 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
 
 
 datanames = ['princeton', 'netsurfp', 'qzlshy']
+
+w2v_matrix = embed_data()
+
+np.save(data_root+'netsurfp/embedding/train_input_700_word2vec.npy', w2v_matrix)
 
 
 
