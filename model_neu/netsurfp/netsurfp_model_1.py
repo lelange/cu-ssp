@@ -31,7 +31,7 @@ from bson import json_util
 from datetime import datetime
 
 from utils import parse_arguments, get_data, train_val_split, \
-    save_cv, telegram_me, accuracy, get_acc, build_and_predict, save_results_to_file
+    save_cv, telegram_me, accuracy, get_acc, build_and_predict, save_results_to_file, evaluate_model
 
 
 from collections import defaultdict
@@ -221,7 +221,7 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 
 
 # write best weight models in file and look for model (eg. mod_1) name in weight name
-best_weights = "model/mod_1-CB513-2019_07_23-17_11.h5"
+best_weights = "model/mod_1-CB513-2019_08_04-11_05.h5"
 save_pred_file = "_pred_1.npy"
 
 def accuracy2(y_true, y_predicted):
@@ -248,6 +248,7 @@ def accuracy2(y_true, y_predicted):
 #--------------------------------- main ---------------------------------
 
 if predict_only:
+    NB_AS=25
     build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME,[file_test[0]])
     test_acc = None
     time_data = time.time() - start_time
@@ -287,3 +288,4 @@ if save_results:
     save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc)
 
 telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
+
