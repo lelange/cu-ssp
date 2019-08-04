@@ -555,7 +555,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
     else:
         file_test = ['cb513_full'] ### uncomment later!!
 
-    input_mask = np.load(data_root+'cb513_700_mask.npy')
+    input_mask = np.load(data_root+'cb513_full_mask.npy')
     print(len(input_mask))
 
     # save all accuracys from Q8 and Q3 preditions
@@ -564,6 +564,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
 
         i = True
         X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
+        X_test_aug = X_test_aug[input_mask>0]
+        y_test = y_test[input_mask>0]
         print(X_test_aug[0].shape)
         print(X_test_aug[1].shape)
         print(y_test.shape)
