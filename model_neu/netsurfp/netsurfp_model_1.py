@@ -82,6 +82,7 @@ else:
 
 file_train = 'train_' + ending
 file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
+
 '''
 p = {'activation1':[relu, softmax],
      'activation2':[relu, softmax],
