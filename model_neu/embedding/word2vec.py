@@ -1,6 +1,7 @@
 from gensim.models import Word2Vec
 
 import numpy as np
+import pickle
 import multiprocessing
 
 data_root = '/nosave/lange/cu-ssp/data/'
@@ -142,12 +143,15 @@ def embed_data(dataname='netsurfp', mode='train', data=None):
     l =[]
     for item in embedding_matrix:
         l.append(item[0])
+    index2position={}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
         print(item)
         print(l.index(word_vectors[item][0]))
-        print('')
+        index2position.update({item:l.index(word_vectors[item][0])})
 
-    print(embedding_matrix)
+    f = open('index2position.okl', 'w+')
+    pickle.dump(index2position, f)
+    f.close()
     #print(word_vectors.shape)
 
     #print(embedding_matrix.shape)
