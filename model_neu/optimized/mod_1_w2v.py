@@ -34,7 +34,7 @@ MAXLEN_SEQ = 700
 NB_CLASSES_Q8 = 9
 NB_FEATURES = 30
 MODEL_NAME = "mod_1_w2v"
-epochs = 75
+epochs = 1
 batch_size = 128
 
 def train_val_split_(X_train, y_train, X_aug):
@@ -230,17 +230,10 @@ def build_and_train(hype_space, save_best_weights=True):
         validation_data=(X_val_aug, y_val)
     ).history
 
-    # Test net:
-    #K.set_learning_phase(0)
-    X_test, y_test, X_aug = get_netsurf_data('train_full')
-    X_embed = embed_data(X_test, index2embed, emb_dim, n_gram)
-    X_test_aug = [X_embed, X_aug]
-    score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-    print('Evaluate in place: ')
-    print(score)
-
     score = evaluate_model(model, weights_save_path,
                            emb_dim, n_gram, index2embed)
+
+    K.set_learning_phase(0)
     print("\n\n")
     min_loss = min(history['val_loss'])
     max_acc = max(history['val_accuracy'])
@@ -249,8 +242,6 @@ def build_and_train(hype_space, save_best_weights=True):
     model_name = MODEL_NAME+"_{}_{}".format(str(max_acc), time_str)
     print("Model name: {}".format(model_name))
 
-    print(history.keys())
-    print(history)
     print('Score: ', score)
     result = {
         # We plug "-val_accuracy" as a minimizing metric named 'loss' by Hyperopt.

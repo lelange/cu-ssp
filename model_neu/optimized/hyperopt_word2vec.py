@@ -29,10 +29,28 @@ from utils import *
 from keras.utils import plot_model
 from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
-from mod_1_w2v import build_and_train, build_model, MODEL_NAME
+def parse_arguments():
+    """
+    :return: command line arguments
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-model', help='which model should be optimized', type=int, required=True)
+    return parser.parse_args()
 
-SAVE_RESULTS = "results_mod1_w2v.pkl" # save trials of optimization
-SAVE_BEST_PLOT = "model_1_w2v_best" # save best NN graph
+args = parse_arguments()
+model = args.model
+
+if model == 1:
+    from mod_1_w2v import build_and_train, build_model, MODEL_NAME
+
+    SAVE_RESULTS = "results_mod1_w2v.pkl" # save trials of optimization
+    SAVE_BEST_PLOT = "model_1_w2v_best" # save best NN graph
+
+if model == 3:
+    from mod_3_w2v import build_and_train, build_model, MODEL_NAME
+
+    SAVE_RESULTS = "results_mod3_w2v.pkl" # save trials of optimization
+    SAVE_BEST_PLOT = "model_3_w2v_best" # save best NN graph
 
 space = {
     'embed_dim': hp.quniform('embed_dim', 20, 300, 10),
@@ -113,6 +131,7 @@ def run_a_trial():
     except:
         # empty results.pkl
         trials = Trials()
+        #max_evals = 20
         print("Starting from scratch: new trials.")
 
     best = fmin(
