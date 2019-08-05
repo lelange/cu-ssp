@@ -120,6 +120,8 @@ def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
     l =[]
     for item in embedding_matrix:
         l.append(item[0])
+    if len(np.unique(l))!=len(list('ACDEFGHIKLMNPQRSTVWY')):
+        print('ERRRRRRRRRRRRROR!_________________________________________________')
     index2embedding={}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
@@ -223,14 +225,14 @@ def build_and_train(hype_space, save_best_weights=True):
         batch_size=batch_size,
         epochs=epochs,
         shuffle=True,
-        verbose=1,
+        verbose=2,
         callbacks=callbacks,
         validation_data=(X_val_aug, y_val)
     ).history
 
     # Test net:
     #K.set_learning_phase(0)
-    X_test, y_test, X_aug = get_netsurf_data('cb513_full')
+    X_test, y_test, X_aug = get_netsurf_data('train_full')
     X_embed = embed_data(X_test, index2embed, emb_dim, n_gram)
     X_test_aug = [X_embed, X_aug]
     score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
