@@ -6,10 +6,17 @@ import multiprocessing
 
 data_root = '/nosave/lange/cu-ssp/data/'
 
+'''
 EMB_DIM = 50
 WINDOW_SIZE = 20
 NB_NEG = 5
 NB_ITER = 10
+
+'''
+EMB_DIM = 20
+WINDOW_SIZE = 6
+NB_NEG = 7
+NB_ITER = 21
 
 def seq2ngrams(seqs, n = 3):
     if n==1:
@@ -157,22 +164,22 @@ def embed_data(seqs, index2embedding):
 
 datanames = ['princeton', 'netsurfp', 'qzlshy']
 
-'''
+
 w2v_dict = get_embedding(mode='train')
 
 w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
 np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec.npy', w2v_input)
-print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec.npy')
+print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec_2.npy')
 
 w2v_input = embed_data(get_netsurf_data('cb513_full')[0], w2v_dict)
 np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec.npy', w2v_input)
-print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec.npy')
+print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_2.npy')
 
 '''
 
 get_netsurf_data('casp12_full')
 get_netsurf_data('ts115_full')
 
-
+'''
 
 

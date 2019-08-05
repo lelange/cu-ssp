@@ -221,6 +221,7 @@ def build_and_train(hype_space, save_best_weights=True):
     score = evaluate_model(model, weights_save_path,
                            emb_dim, n_gram, index2embed)
     print("\n\n")
+    min_loss = min(history['val_loss'])
     max_acc = max(history['val_accuracy'])
 
     model_name = MODEL_NAME+"_{}_{}".format(str(max_acc), time_str)
@@ -232,6 +233,10 @@ def build_and_train(hype_space, save_best_weights=True):
     result = {
         # We plug "-val_accuracy" as a minimizing metric named 'loss' by Hyperopt.
         'loss': -max_acc,
+        'real_loss': min_loss,
+        'cb513': score['cb513_full'],
+        'casp12':score['casp12_full'],
+        'ts115':score['ts115_full'],
         # Misc:
         'model_name': model_name,
         'space': hype_space,
