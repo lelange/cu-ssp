@@ -84,8 +84,8 @@ def get_netsurf_data(filename, max_len=None):
     input_onehot = np.load(path + filename + '_input.npy')
     q8_onehot = np.load(path + filename + '_q9.npy')
     profiles = np.load(path + filename + '_hmm.npy')
-    #prim_seq = np.load(path + filename + '_q9_AA_str.npy')
-
+    prim_seq = np.load(path + filename + '_q9_AA_str.npy')
+    '''
     prim_seq = []
     for i, oh in enumerate(input_onehot):
         seq = onehot_to_seq(oh, seq_list)
@@ -93,6 +93,8 @@ def get_netsurf_data(filename, max_len=None):
 
     np.save(path+filename + '_q9_AA_str.npy', prim_seq)
     print('saved AA '+filename+' to disk.')
+    '''
+
 
     return prim_seq, input_onehot, q8_onehot, profiles
 

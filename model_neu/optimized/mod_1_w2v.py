@@ -89,8 +89,14 @@ def get_netsurf_data(filename):
     input_onehot = np.load(path + filename + '_input.npy')
     q8_onehot = np.load(path + filename + '_q9.npy')
     profiles = np.load(path + filename + '_hmm.npy')
-    prim_seq = np.load(path + filename + '_q9_AA_str.npy')
 
+    if filename == 'train_full':
+        prim_seq = np.load(path + filename + '_q9_AA_str.npy')
+    else:
+        prim_seq = []
+        for i, oh in enumerate(input_onehot):
+            seq = onehot_to_seq(oh, seq_list)
+            prim_seq.append(seq)
     return prim_seq, q8_onehot[:,:MAXLEN_SEQ,:], profiles[:,:MAXLEN_SEQ,:]
 
 def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
@@ -182,7 +188,7 @@ def build_and_train(hype_space, save_best_weights=True):
 
     callbacks.append(EarlyStopping(
         monitor='val_accuracy',
-        patience=10, verbose=1, mode='max'))
+        patience=10, verbose=2, mode='max'))
 
     # TensorBoard logging callback (see model 6):
     log_path = None
@@ -194,11 +200,12 @@ def build_and_train(hype_space, save_best_weights=True):
 
     #standardize train and val profiles
     X_train, y_train, X_aug = get_netsurf_data('train_full')
-    X_train, y_train, X_aug, X_val, y_val, X_aug_val = train_val_split_(X_train, y_train, X_aug)
 
     ## load data and get embedding form train data, embed train+val
     index2embed = get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
-                 seqs=X_train)
+                                seqs=X_train)
+
+    X_train, y_train, X_aug, X_val, y_val, X_aug_val = train_val_split_(X_train, y_train, X_aug)
 
     X_train_embed = embed_data(X_train, index2embed, emb_dim, n_gram)
     X_val_embed = embed_data(X_val, index2embed, emb_dim, n_gram)
@@ -213,7 +220,7 @@ def build_and_train(hype_space, save_best_weights=True):
         batch_size=batch_size,
         epochs=epochs,
         shuffle=True,
-        verbose=2,
+        verbose=1,
         callbacks=callbacks,
         validation_data=(X_val_aug, y_val)
     ).history

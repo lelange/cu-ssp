@@ -122,7 +122,9 @@ def run_a_trial():
         trials=trials,
         max_evals=max_evals
     )
-    pickle.dump(trials, open(SAVE_RESULTS, "wb"))
+
+    ######!!!uncomment later
+    #pickle.dump(trials, open(SAVE_RESULTS, "wb"))
 
     print("\nOPTIMIZATION STEP COMPLETE.\n")
 
