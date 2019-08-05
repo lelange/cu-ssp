@@ -96,7 +96,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     outputs=[]
 
     if not no_input:
-        input_seq = np.load(data_root+'embedding/'+filename+'_700_input_word2vec.npy')
+        input_seq = np.load(data_root+'embedding/'+filename+'_700_input_word2vec_2.npy')
         print(input_seq.shape)
         #input_seq = np.load(data_root + filename + '_input_features.npy')
         #input_seq=standard(input_seq)
@@ -553,7 +553,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
     if model_name == "mod_2":
         file_test = ['cb513_768']  ### uncomment later!!
     else:
-        file_test = ['cb513_full', 'casp12_full', 'ts115_full'] ### uncomment later!!
+        file_test = ['cb513_full'] ### uncomment later!!
 
     input_mask = np.load(data_root+'cb513_700_seq_range.npy')
 
