@@ -747,8 +747,6 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         plt.show()
         plt.savefig('./plots/' + model_name+'_' + datetime.now().strftime("%m_%d-%H_%M") + '_Q3Q8_accuracy_boxplot.png')
 
-
-
         if test == 'cb513_700':
             print('MASKED RESULTS:')
             print("Accuracy #sum(correct per proteins)/#sum(len_proteins):")
@@ -760,8 +758,6 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
             print("Q8 " + test + " test accuracy: " + str(np.nanmean(q8_accs_mask)))
 
 
-
-    '''
         #save results to file
         f.write("Results for " + model_name + " and weights " + best_weights+" on "+test+".")
         f.write("\n\n")
@@ -784,7 +780,7 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
         f.write("Predictions are saved to: " + PRED_DIR + test + save_pred_file)
         f.write("\n----------------------------\n\n")
         
-        '''
+
     f.write("----------------------------\n\n\n")
     f.close()
 
