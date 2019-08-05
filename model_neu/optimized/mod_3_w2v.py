@@ -37,7 +37,7 @@ NB_CLASSES_Q8 = 9
 NB_FEATURES = 30
 MODEL_NAME = "mod_3_w2v"
 
-epochs = 1
+epochs = 75
 batch_size = 128
 
 def build_and_train(hype_space, save_best_weights=True):
@@ -111,11 +111,11 @@ def build_and_train(hype_space, save_best_weights=True):
         validation_data=(X_val_aug, y_val)
     ).history
 
-    K.set_learning_phase(0)
 
     # Test net:
     score = evaluate_model(model, weights_save_path,
                            emb_dim, n_gram, index2embed)
+    K.set_learning_phase(0)
     print("\n\n")
     min_loss = min(history['val_loss'])
     max_acc = max(history['val_accuracy'])
