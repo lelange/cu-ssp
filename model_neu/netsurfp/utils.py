@@ -96,7 +96,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     outputs=[]
 
     if not no_input:
-        input_seq = np.load(data_root+'embedding/'+filename+'_700_input_word2vec_2.npy')
+        input_seq = np.load(data_root+'embedding/'+filename+'_700_input_word2vec_3.npy')
         print(input_seq.shape)
         #input_seq = np.load(data_root + filename + '_input_features.npy')
         #input_seq=standard(input_seq)

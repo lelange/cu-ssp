@@ -99,54 +99,40 @@ file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
 
 def build_model():
     model = None
-
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
-    inp = input
-    x1 = input
-    x2 = input
-
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
-        inp = [input, profiles_input]
         x1 = concatenate([input, profiles_input])
         x2 = concatenate([input, profiles_input])
+        inp = [input, profiles_input]
+    else:
+        x1 = input
+        x2 = input
+        inp = input
 
-    x1 = Dense(200, activation="relu")(x1)
-    print(x1._keras_shape)
+    x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
 
-    #x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
+    # x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
     # Defining a bidirectional LSTM using the embedded representation of the inputs
+    x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)
+    # x2 = Dropout(0.5)(x2)
     x2 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x2)
-    print(x2._keras_shape)
-    #x2 = Dropout(0.5)(x2)
-    x2 = Bidirectional(CuDNNGRU(units=50, return_sequences=True))(x2)
-    print(x2._keras_shape)
-    #x2 = Dropout(0.5)(x2)
-    #COMBO_MOVE = concatenate([x1, x2])
-    #print(COMBO_MOVE._keras_shape)
-    #w = Dense(24, activation="relu")(COMBO_MOVE)  #try 500
-    w = Dense(24, activation="relu")(x2)
-    print(w._keras_shape)
-    w = Dropout(0.2)(w)
-    #w = tcn.TCN(return_sequences=True)(w)
-    print(w._keras_shape)
-    #w = TimeDistributed(Dense(64, activation="relu"))(w)
-    #print(w._keras_shape)
-    #w2 = tcn.TCN(return_sequences=True)(x3)
-
-    #w2 = TimeDistributed(Dense(180, activation="relu"))(w2)
+    # x2 = Dropout(0.5)(x2)
+    COMBO_MOVE = concatenate([x1, x2])
+    w = Dense(500, activation="relu")(COMBO_MOVE)  # try 500
+    w = Dropout(0.4)(w)
+    w = tcn.TCN(return_sequences=True)(w)
 
     y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(w)
 
     # Defining the model as a whole and printing the summary
     model = Model(inp, y)
-    #model.summary()
+    # model.summary()
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
-    #adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
-    model.compile(optimizer="Adam", loss="categorical_crossentropy", metrics=["accuracy", accuracy])
-
+    adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
+    model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
     return model
 
 

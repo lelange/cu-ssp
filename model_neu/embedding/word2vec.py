@@ -179,8 +179,14 @@ print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_inp
 
 '''
 
-get_netsurf_data('casp12_full')
-get_netsurf_data('ts115_full')
+w2v_input = embed_data(get_netsurf_data('casp12_full')[0], w2v_dict)
+np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy', w2v_input)
+print('Data has been saved to '+data_root+'netsurfp/embedding/casp12_full_700_input_word2vec_3.npy')
+
+w2v_input = embed_data(get_netsurf_data('ts115_full')[0], w2v_dict)
+np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy', w2v_input)
+print('Data has been saved to '+data_root+'netsurfp/embedding/ts115_full_700_input_word2vec_3.npy')
+
 
 '''
 
