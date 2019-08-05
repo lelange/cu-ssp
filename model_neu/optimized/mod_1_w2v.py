@@ -34,7 +34,7 @@ MAXLEN_SEQ = 700
 NB_CLASSES_Q8 = 9
 NB_FEATURES = 30
 MODEL_NAME = "mod_1_w2v"
-epochs = 1
+epochs = 75
 batch_size = 128
 
 def train_val_split_(X_train, y_train, X_aug):
