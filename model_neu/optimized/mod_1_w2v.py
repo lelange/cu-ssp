@@ -182,13 +182,14 @@ def build_and_train(hype_space, save_best_weights=True):
             os.makedirs(WEIGHTS_DIR)
 
         callbacks.append(ModelCheckpoint(
-            weights_save_path,
+            filepath=weights_save_path,
             monitor='val_accuracy',
+            verbose = 1,
             save_best_only=True, mode='max'))
 
     callbacks.append(EarlyStopping(
         monitor='val_accuracy',
-        patience=10, verbose=2, mode='max'))
+        patience=10, verbose=1, mode='max'))
 
     # TensorBoard logging callback (see model 6):
     log_path = None
@@ -201,17 +202,19 @@ def build_and_train(hype_space, save_best_weights=True):
     #standardize train and val profiles
     X_train, y_train, X_aug = get_netsurf_data('train_full')
 
+    X_train, y_train, X_aug, X_val, y_val, X_aug_val = train_val_split_(X_train, y_train, X_aug)
+
     ## load data and get embedding form train data, embed train+val
     index2embed = get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
                                 seqs=X_train)
-
-    X_train, y_train, X_aug, X_val, y_val, X_aug_val = train_val_split_(X_train, y_train, X_aug)
 
     X_train_embed = embed_data(X_train, index2embed, emb_dim, n_gram)
     X_val_embed = embed_data(X_val, index2embed, emb_dim, n_gram)
 
     X_train_aug = [X_train_embed, X_aug]
     X_val_aug = [X_val_embed, X_aug_val]
+
+    print('We have '+str(len(callbacks))+' callbacks.')
 
     # Train net:
     history = model.fit(
@@ -226,7 +229,14 @@ def build_and_train(hype_space, save_best_weights=True):
     ).history
 
     # Test net:
-    K.set_learning_phase(0)
+    #K.set_learning_phase(0)
+    X_test, y_test, X_aug = get_netsurf_data('cb513_full')
+    X_embed = embed_data(X_test, index2embed, emb_dim, n_gram)
+    X_test_aug = [X_embed, X_aug]
+    score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
+    print('Evaluate in place')
+    print(score)
+
     score = evaluate_model(model, weights_save_path,
                            emb_dim, n_gram, index2embed)
     print("\n\n")
