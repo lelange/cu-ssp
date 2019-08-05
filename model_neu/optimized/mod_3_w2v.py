@@ -37,7 +37,7 @@ NB_CLASSES_Q8 = 9
 NB_FEATURES = 30
 MODEL_NAME = "mod_3_w2v"
 
-epochs = 75
+epochs = 1
 batch_size = 128
 
 def build_and_train(hype_space, save_best_weights=True):
