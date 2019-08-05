@@ -34,7 +34,7 @@ MAXLEN_SEQ = 700
 NB_CLASSES_Q8 = 9
 NB_FEATURES = 30
 MODEL_NAME = "mod_1_w2v"
-epochs = 75
+epochs = 1
 batch_size = 128
 
 def train_val_split_(X_train, y_train, X_aug):
@@ -150,6 +150,8 @@ def evaluate_model(model, load_file, emb_dim, n_gram, index2embed):
         X_test_aug = [X_embed, X_aug]
         model.load_weights(load_file)
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
+        print(model.metrics_names)
+        print(score)
         test_accs.append(score[1])
         names.append(test)
     return dict(zip(names, test_accs))
@@ -223,6 +225,7 @@ def build_and_train(hype_space, save_best_weights=True):
     print("\n\n")
     min_loss = min(history['val_loss'])
     max_acc = max(history['val_accuracy'])
+    number_of_epochs_it_ran = len(history['loss'])
 
     model_name = MODEL_NAME+"_{}_{}".format(str(max_acc), time_str)
     print("Model name: {}".format(model_name))
@@ -237,6 +240,7 @@ def build_and_train(hype_space, save_best_weights=True):
         'cb513': score['cb513_full'],
         'casp12':score['casp12_full'],
         'ts115':score['ts115_full'],
+        'nb_epochs': number_of_epochs_it_ran,
         # Misc:
         'model_name': model_name,
         'space': hype_space,
