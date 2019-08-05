@@ -36,8 +36,8 @@ SAVE_BEST_PLOT = "model_1_w2v_best" # save best NN graph
 
 space = {
     'embed_dim': hp.quniform('embed_dim', 20, 300, 10),
-    'window_size': hp.quniform('window_size', 3, 50, 1),
-    'negative': hp.quniform('negative', 1, 10, 1),
+    'window_size': hp.quniform('window_size', 3, 100, 1),
+    'negative': hp.quniform('negative', 1, 20, 1),
     'iter': hp.quniform('iter', 3, 30, 1),
     'n_gram': hp.quniform('n_gram', 1, 1, 1)
 }
