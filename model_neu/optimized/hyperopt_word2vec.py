@@ -132,6 +132,7 @@ def run_a_trial():
     except:
         # empty results.pkl
         trials = Trials()
+        max_evals=20
         print("Starting from scratch: new trials.")
 
     best = fmin(
