@@ -234,7 +234,7 @@ def build_and_train(hype_space, save_best_weights=True):
     X_embed = embed_data(X_test, index2embed, emb_dim, n_gram)
     X_test_aug = [X_embed, X_aug]
     score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-    print('Evaluate in place')
+    print('Evaluate in place: ')
     print(score)
 
     score = evaluate_model(model, weights_save_path,
