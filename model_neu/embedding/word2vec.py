@@ -142,6 +142,9 @@ def get_embedding(dataname='netsurfp', mode='train', data=None):
                    negative=NB_NEG, iter= NB_ITER,
                    workers = multiprocessing.cpu_count())
     word_vectors = w2v.wv
+
+    print(word_vectors.vocab)
+
     embedding_matrix = word_vectors.vectors
     l =[]
     for item in embedding_matrix:
@@ -169,13 +172,13 @@ datanames = ['princeton', 'netsurfp', 'qzlshy']
 
 w2v_dict = get_embedding(mode='train')
 
-w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
-np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy', w2v_input)
-print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy')
+#w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
+#np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy', w2v_input)
+#print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy')
 
-w2v_input = embed_data(get_netsurf_data('cb513_full')[0], w2v_dict)
-np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy', w2v_input)
-print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy')
+#w2v_input = embed_data(get_netsurf_data('cb513_full')[0], w2v_dict)
+#np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy', w2v_input)
+#print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy')
 
 '''
 
