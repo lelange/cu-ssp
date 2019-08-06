@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 import multiprocessing
 
+import time
 data_root = '/nosave/lange/cu-ssp/data/'
 
 '''
@@ -142,15 +143,14 @@ def get_embedding(dataname='netsurfp', mode='train', data=None):
                    negative=NB_NEG, iter= NB_ITER,
                    workers = multiprocessing.cpu_count())
     word_vectors = w2v.wv
-    print('We have '+str(len(word_vectors.vocab))+ ' n-grams:')
-    print(word_vectors.vocab.keys())
+    print('We have '+str(len(word_vectors.vocab))+ ' n-grams.')
 
     embedding_matrix = word_vectors.vectors
     l =[]
     for item in embedding_matrix:
         l.append(item[0])
     index2embedding={}
-    for item in list('ACDEFGHIKLMNPQRSTVWY'):
+    for item in list(word_vectors.vocab.keys()):
         print(item, l.index(word_vectors[item][0]))
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
     return index2embedding
@@ -168,12 +168,23 @@ def embed_data(seqs, index2embedding):
 
 datanames = ['princeton', 'netsurfp', 'qzlshy']
 
-
+start_time = time.time()
 w2v_dict = get_embedding(mode='train')
+time_end = start_time-time.time()
+m, s = divmod(time_end, 60)
 
-#w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
+print("The program needed {:.0f}min {:.0f}s to generate the embedding.".format(m, s))
+
+start_time = time.time()
+
+w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
 #np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy', w2v_input)
 #print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy')
+
+time_end = start_time-time.time()
+m, s = divmod(time_end, 60)
+
+print("The program needed {:.0f}min {:.0f}s to embed training data.".format(m, s))
 
 #w2v_input = embed_data(get_netsurf_data('cb513_full')[0], w2v_dict)
 #np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy', w2v_input)
