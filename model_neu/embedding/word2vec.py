@@ -151,8 +151,7 @@ def get_embedding(dataname='netsurfp', mode='train', data=None):
         l.append(item[0])
     index2embedding={}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
-        print(item)
-        print(l.index(word_vectors[item][0]))
+        print(item, l.index(word_vectors[item][0]))
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
     return index2embedding
 
