@@ -24,7 +24,16 @@ def seq2ngrams(seqs, n = 3):
     if n==1:
         return seqs
     else:
-        return np.array( [[seq[i:i+n] for i in range(int(len(seq)))] for seq in seqs])
+        result = []
+        for seq in seqs:
+            rest = np.mod(int(len(seq)),n)
+            print(rest)
+            seq = seq.append('C'*(n-rest))
+            rest = np.mod(int(len(seq)), n)
+            print(rest)
+            result.append([seq[i:i + n] for i in range(int(len(seq)))])
+
+        return np.array(result )
 
 
 def onehot_to_seq(oh_seq, index):
