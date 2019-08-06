@@ -135,15 +135,15 @@ def get_embedding(dataname='netsurfp', mode='train', data=None):
     seqs = data[0]
     #create n-grams from AA sequence
     print('Create n-grams...')
-    ngram_seq = seq2ngrams(seqs, n=1)
+    ngram_seq = seq2ngrams(seqs, n=3)
 
     print('Perform Word2Vec embedding...')
     w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
                    negative=NB_NEG, iter= NB_ITER,
                    workers = multiprocessing.cpu_count())
     word_vectors = w2v.wv
-
-    print(word_vectors.vocab)
+    print('We have '+str(len(word_vectors.vocab))+ ' n-grams:')
+    print(word_vectors.vocab.keys())
 
     embedding_matrix = word_vectors.vectors
     l =[]
