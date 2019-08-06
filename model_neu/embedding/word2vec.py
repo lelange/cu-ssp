@@ -29,7 +29,11 @@ def seq2ngrams(seqs, n = 3):
             rest = np.mod(int(len(seq)),n)
             if rest != 0:
                 seq +=('C'*(n-rest))
-                rest = np.mod(int(len(seq)), n)
+
+            rest = np.mod(int(len(seq)), n)
+            if rest != 0:
+                print('Neue Formel bitte')
+
             result.append([seq[i:i + n] for i in range(int(len(seq)))])
 
         return np.array(result )
