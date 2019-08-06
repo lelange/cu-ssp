@@ -162,6 +162,8 @@ def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM)
         l.append(item[0])
     index2embedding={}
     for item in list(word_vectors.vocab.keys()):
+        if len(item)!=n_gram:
+            print('Error!!!')
         #print(item, l.index(word_vectors[item][0]))
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
     return index2embedding
