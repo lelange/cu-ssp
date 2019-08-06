@@ -27,11 +27,9 @@ def seq2ngrams(seqs, n = 3):
         result = []
         for seq in seqs:
             rest = np.mod(int(len(seq)),n)
-            print(rest)
             if rest != 0:
                 seq +=('C'*(n-rest))
                 rest = np.mod(int(len(seq)), n)
-                print(rest)
             result.append([seq[i:i + n] for i in range(int(len(seq)))])
 
         return np.array(result )
