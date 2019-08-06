@@ -155,7 +155,6 @@ def get_netsurf_data(filename):
     # input_onehot = np.load(path + filename + '_input.npy')
     q8_onehot = np.load(path + filename + '_q9.npy')
     profiles = np.load(path + filename + '_hmm.npy')
-    profiles=standard(profiles)
     prim_seq = np.load(path + filename + '_q9_AA_str.npy')
 
     return prim_seq, q8_onehot[:, :MAXLEN_SEQ, :], profiles[:, :MAXLEN_SEQ, :]
@@ -208,6 +207,7 @@ def evaluate_model(model, load_file, emb_dim, n_gram, index2embed):
     names = []
     for test in file_test:
         X_test, y_test, X_aug = get_netsurf_data(test)
+        X_aug = standard(X_aug)
         print(X_test.shape)
         X_embed = embed_data(X_test, index2embed, emb_dim, n_gram)
         print(emb_dim)
