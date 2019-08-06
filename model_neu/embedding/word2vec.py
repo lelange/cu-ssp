@@ -18,12 +18,13 @@ EMB_DIM = 20
 WINDOW_SIZE = 64
 NB_NEG = 3
 NB_ITER = 22
+N_GRAM = 3
 
 def seq2ngrams(seqs, n = 3):
     if n==1:
         return seqs
     else:
-        return np.array( [[seq[i:i+n] for i in range(int(len(seq)-2))] for seq in seqs])
+        return np.array( [[seq[i:i+n] for i in range(int(len(seq)))] for seq in seqs])
 
 
 def onehot_to_seq(oh_seq, index):
@@ -127,7 +128,7 @@ def load_data(dataname, mode):
         return get_qzlshy_data(mode)
 
 
-def get_embedding(dataname='netsurfp', mode='train', data=None):
+def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM):
     # load input data
     if data is None:
         data = load_data(dataname, mode)
@@ -135,8 +136,8 @@ def get_embedding(dataname='netsurfp', mode='train', data=None):
     #onehot2AA
     seqs = data[0]
     #create n-grams from AA sequence
-    print('Create n-grams...')
-    ngram_seq = seq2ngrams(seqs, n=3)
+    print('Create n-grams for n = {}...'.format(n_gram))
+    ngram_seq = seq2ngrams(seqs, n=n_gram)
 
     print('Perform Word2Vec embedding...')
     w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
@@ -151,15 +152,16 @@ def get_embedding(dataname='netsurfp', mode='train', data=None):
         l.append(item[0])
     index2embedding={}
     for item in list(word_vectors.vocab.keys()):
-        print(item, l.index(word_vectors[item][0]))
+        #print(item, l.index(word_vectors[item][0]))
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
     return index2embedding
 
-def embed_data(seqs, index2embedding):
+def embed_data(seqs, index2embedding, n_gram=N_GRAM):
 
     embed_seq = np.zeros((len(seqs), 700, EMB_DIM))
+    ngram_seq = seq2ngrams(seqs, n=n_gram)
 
-    for i, grams in enumerate(seqs):
+    for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:700]):
             embed_seq[i, j, :] = index2embedding[g]
 
