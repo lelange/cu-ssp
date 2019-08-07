@@ -20,20 +20,6 @@ NB_NEG = 3
 NB_ITER = 22
 N_GRAM = 3
 
-def seq2ngrams(seqs, n = 3):
-    if n==1:
-        return seqs
-    else:
-        result = []
-        n_begin = int((n-1)/2)
-        n_end = (n-1) - n_begin
-        for seq in seqs:
-            seq = ('C'*n_begin)+seq+('C'*n_end)
-
-            result.append([seq[i:i + n] for i in range(int(len(seq))-(n-1))])
-
-        return np.array(result )
-
 
 def onehot_to_seq(oh_seq, index):
     s = ''
@@ -135,6 +121,20 @@ def load_data(dataname, mode):
     if dataname == 'qzlshy':
         return get_qzlshy_data(mode)
 
+def seq2ngrams(seqs, n = 3):
+    if n==1:
+        return seqs
+    else:
+        result = []
+        n_begin = int((n-1)/2)
+        n_end = (n-1) - n_begin
+        for seq in seqs:
+            seq = ('C'*n_begin)+seq+('C'*n_end)
+
+            result.append([seq[i:i + n] for i in range(int(len(seq)))])
+
+        return np.array(result)
+
 
 def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM):
     # load input data
@@ -170,11 +170,11 @@ def embed_data(seqs, model, n_gram=N_GRAM):
 
     embed_seq = np.zeros((len(seqs), 700, EMB_DIM))
     ngram_seq = seq2ngrams(seqs, n=n_gram)
-    new_model = model.train(ngram_seq)
+    #new_model = model.train(ngram_seq)
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:700]):
-            embed_seq[i, j, :] = new_model.wv[g]
+            embed_seq[i, j, :] = model.wv[g]
 
 
     print(embed_seq.shape)
