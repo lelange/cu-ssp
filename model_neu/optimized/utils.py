@@ -223,7 +223,10 @@ def embed_data(seqs, index2embedding, emb_dim, n_gram, tokens=1):
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:MAXLEN_SEQ]):
-            embed_seq[i, j, :] = index2embedding[g]
+            try:
+                embed_seq[i, j, :] = index2embedding[g]
+            except:
+                print('Model not trained for '+g)
 
     return embed_seq
 
