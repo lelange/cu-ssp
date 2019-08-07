@@ -159,7 +159,7 @@ def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM)
     seqs = data[0]
     #create n-grams from AA sequence
     print('Create n-grams for n = {}...'.format(n_gram))
-    ngram_seq = split_ngrams(seqs, n=n_gram)
+    ngram_seq = seq2ngrams(seqs, n=n_gram)
 
     print('Perform Word2Vec embedding...')
     w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
@@ -183,7 +183,7 @@ def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM)
 def embed_data(seqs, model, n_gram=N_GRAM):
 
     embed_seq = np.zeros((len(seqs), 700, EMB_DIM))
-    ngram_seq = split_ngrams(seqs, n=n_gram)
+    ngram_seq = seq2ngrams(seqs, n=n_gram)
     #new_model = model.train(ngram_seq)
 
     for i, grams in enumerate(ngram_seq):
