@@ -170,11 +170,11 @@ def embed_data(seqs, model, n_gram=N_GRAM):
 
     embed_seq = np.zeros((len(seqs), 700, EMB_DIM))
     ngram_seq = seq2ngrams(seqs, n=n_gram)
-    #model.train(ngram_seq)
+    new_model = model.train(ngram_seq)
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:700]):
-            embed_seq[i, j, :] = model.wv[g]
+            embed_seq[i, j, :] = new_model.wv[g]
 
 
     print(embed_seq.shape)
