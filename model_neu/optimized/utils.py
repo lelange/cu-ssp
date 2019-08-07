@@ -129,24 +129,25 @@ def standard(data):
     return data_
 
 
-def seq2ngrams(seqs, n=3):
+def seq2ngrams2(seqs, n=3):
     if n == 1:
         return seqs
     else:
         return np.array([[seq[i:i + n] for i in range(int(len(seq) - 2))] for seq in seqs])
 
-def split_ngrams(seq, n):
+def seq2ngrams(seqs, n):
     """
     'AGAMQSASM' => [['AGA', 'MQS', 'ASM'], ['GAM','QSA'], ['AMQ', 'SAS']]
     """
-    a, b, c = zip(*[iter(seq)]*n), zip(*[iter(seq[1:])]*n), zip(*[iter(seq[2:])]*n)
-    str_ngrams = []
-    for ngrams in [a,b,c]:
-        x = []
-        for ngram in ngrams:
-            x.append("".join(ngram))
-        str_ngrams.append(x)
-    return str_ngrams
+    result = []
+    for seq in seqs:
+        a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
+        str_ngrams = []
+        for ngrams in [a, b, c]:
+            for ngram in ngrams:
+                str_ngrams.append("".join(ngram))
+        result.append(str_ngrams)
+    return result
 
 
 def onehot_to_seq(oh_seq, index):

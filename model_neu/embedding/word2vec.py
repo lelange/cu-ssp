@@ -209,7 +209,7 @@ w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
 #np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy', w2v_input)
 #print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy')
 
-time_end = start_time-time.time()
+time_end = time.time()-start_time
 m, s = divmod(time_end, 60)
 
 print("The program needed {:.0f}min {:.0f}s to embed training data.".format(m, s))
