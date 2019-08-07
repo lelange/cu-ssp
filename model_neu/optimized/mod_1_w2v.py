@@ -200,6 +200,8 @@ def build_and_train(hype_space, save_best_weights=True):
     nb_neg = int(hype_space['negative'])
     nb_iter = int(hype_space['iter'])
     n_gram = int(hype_space['n_gram'])
+    model = int(hype_space['model'])
+    #tokens = int(hype_space['tokens'])
 
     #standardize train and val profiles
     X_train, y_train, X_aug = get_netsurf_data('train_full')
@@ -207,7 +209,7 @@ def build_and_train(hype_space, save_best_weights=True):
     X_train, y_train, X_aug, X_val, y_val, X_aug_val = train_val_split_(X_train, y_train, X_aug)
 
     ## load data and get embedding form train data, embed train+val
-    index2embed = get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
+    index2embed = get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram, model,
                                 seqs=X_train)
 
     X_train_embed = embed_data(X_train, index2embed, emb_dim, n_gram)

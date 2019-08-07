@@ -135,6 +135,19 @@ def seq2ngrams(seqs, n=3):
     else:
         return np.array([[seq[i:i + n] for i in range(int(len(seq) - 2))] for seq in seqs])
 
+def split_ngrams(seq, n):
+    """
+    'AGAMQSASM' => [['AGA', 'MQS', 'ASM'], ['GAM','QSA'], ['AMQ', 'SAS']]
+    """
+    a, b, c = zip(*[iter(seq)]*n), zip(*[iter(seq[1:])]*n), zip(*[iter(seq[2:])]*n)
+    str_ngrams = []
+    for ngrams in [a,b,c]:
+        x = []
+        for ngram in ngrams:
+            x.append("".join(ngram))
+        str_ngrams.append(x)
+    return str_ngrams
+
 
 def onehot_to_seq(oh_seq, index):
     s = ''
@@ -160,8 +173,8 @@ def get_netsurf_data(filename):
     return prim_seq, q8_onehot[:, :MAXLEN_SEQ, :], profiles[:, :MAXLEN_SEQ, :]
 
 
-def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
-                  filename=None, seqs=None):
+def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram, mod,
+                  filename=None, seqs=None, tokens=1):
     if seqs is None:
         data = get_netsurf_data(filename)
         print('Load data..')
@@ -170,11 +183,20 @@ def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
 
     # create n-grams from AA sequence
     print('Create n-grams...')
-    ngram_seq = seq2ngrams(seqs, n=n_gram)
+    if tokens==1:
+        ngram_seq = seq2ngrams(seqs, n=n_gram)
+    else:
+        ngram_seq = split_ngrams(seqs, n=n_gram)
+
     print('Perform Word2Vec embedding...')
 
-    w2v = Word2Vec(ngram_seq, size=emb_dim, window=window_size,
-                   negative=nb_neg, iter=nb_iter,
+    w2v = Word2Vec(ngram_seq,
+                   size=emb_dim,
+                   window=window_size,
+                   negative=nb_neg,
+                   iter=nb_iter,
+                   sg = mod,
+                   min_count=1,
                    workers=multiprocessing.cpu_count())
     word_vectors = w2v.wv
     embedding_matrix = word_vectors.vectors
@@ -186,12 +208,18 @@ def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram,
     index2embedding = {}
     for item in list('ACDEFGHIKLMNPQRSTVWY'):
         index2embedding.update({item: embedding_matrix[l.index(word_vectors[item][0])]})
-    return index2embedding
+    return w2v
 
 
-def embed_data(seqs, index2embedding, emb_dim, n_gram):
+def embed_data(seqs, index2embedding, emb_dim, n_gram, tokens=1):
+    print('Create n-grams...')
+    if tokens==1:
+        ngram_seq = seq2ngrams(seqs, n=n_gram)
+    else:
+        ngram_seq = split_ngrams(seqs, n=n_gram)
+
+    print('Perform Word2Vec embedding...')
     embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emb_dim))
-    ngram_seq = seq2ngrams(seqs, n=n_gram)
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:MAXLEN_SEQ]):

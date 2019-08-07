@@ -166,14 +166,16 @@ def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM)
         index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
     return w2v
 
-def embed_data(seqs, index2embedding, n_gram=N_GRAM):
+def embed_data(seqs, model, n_gram=N_GRAM):
 
     embed_seq = np.zeros((len(seqs), 700, EMB_DIM))
     ngram_seq = seq2ngrams(seqs, n=n_gram)
+    #model.train(ngram_seq)
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:700]):
-            embed_seq[i, j, :] = index2embedding.wv[g]
+            embed_seq[i, j, :] = model.wv[g]
+
 
     print(embed_seq.shape)
     return embed_seq
