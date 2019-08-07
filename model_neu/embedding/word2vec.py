@@ -163,8 +163,8 @@ def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM)
 
     print('Perform Word2Vec embedding...')
     w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
-                   negative=NB_NEG, iter= NB_ITER,
-                   workers = multiprocessing.cpu_count(), min_count=1, sg=1)
+                   negative=NB_NEG, iter= NB_ITER, min_count=1, sg=1,
+                   workers = multiprocessing.cpu_count())
     word_vectors = w2v.wv
     print('We have '+str(len(word_vectors.vocab))+ ' n-grams.')
 
