@@ -154,7 +154,8 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 
         print(history.history)
 
-        test_acc = evaluate_model(model, load_file, test_ind = [0, 1, 2])
+        test_acc = evaluate_model(model=model, load_file=load_file, file_test=file_test,
+                                  hmm=hmm, normalize=normalize, standardize=standardize, embedding=embedding)
 
         cv_scores['val_accuracy'].append(max(history.history['val_accuracy']))
 
