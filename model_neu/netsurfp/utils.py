@@ -15,7 +15,7 @@ import os, pickle
 import random
 import matplotlib.pyplot as plt
 from datetime import datetime
-from gensim.models import Word2Vec
+from gensim.models import Word2Vec, KeyedVectors
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
@@ -99,7 +99,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     outputs.append(input_aug)
     if embedding:
         print('Load word2vec model and embed input data...')
-        model = Word2Vec.load(data_root+'embedding/'+'protVec.model')
+        model = KeyedVectors.load_word2vec_format(data_root+'embedding/'+'protVec.model')
         embed_seq = embed_data(np.load(data_root + filename + '_q9_AA_str.npy'), model=model)
         input_aug = embed_seq
         if hmm: #try with normal input as well! (3 inputs)
@@ -110,7 +110,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     return input_aug, q8
 
 def embed_data(seqs, model, n_gram=1):
-    emd_dim = len(model.wv.vectors[0])
+    emd_dim = len(model.vectors[0])
 
     embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emd_dim))
     #ngram_seq = seq2ngrams(seqs, n=n_gram)
@@ -118,7 +118,7 @@ def embed_data(seqs, model, n_gram=1):
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:MAXLEN_SEQ]):
-            embed_seq[i, j, :] = model.wv[g]
+            embed_seq[i, j, :] = model[g]
 
     print(embed_seq.shape)
     return embed_seq
