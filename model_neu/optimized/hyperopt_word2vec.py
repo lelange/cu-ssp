@@ -65,7 +65,8 @@ space = {
     'window_size': hp.quniform('window_size', 3, 100, 1),
     'negative': hp.quniform('negative', 1, 30, 1),
     'iter': hp.quniform('iter', 3, 30, 1),
-    'n_gram': hp.quniform('n_gram', 1, 5, 1)
+    'n_gram': hp.quniform('n_gram', 1, 5, 1),
+    'model':hp.choice('model',(0,1))
 }
 
 

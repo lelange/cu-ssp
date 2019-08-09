@@ -81,9 +81,8 @@ def build_and_train(hype_space, save_best_weights=True):
     nb_neg = int(hype_space['negative'])
     nb_iter = int(hype_space['iter'])
     n_gram = int(hype_space['n_gram'])
-    #model = int(hype_space['model'])
+    mod = int(hype_space['model'])
     #tokens = int(hype_space['tokens'])
-    mod = 0
 
     #standardize train and val profiles
     X_train, y_train, X_aug = get_netsurf_data('train_full')
