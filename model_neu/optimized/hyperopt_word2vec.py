@@ -53,6 +53,13 @@ if model == 3:
     SAVE_RESULTS = "results_mod3_w2v.pkl" # save trials of optimization
     SAVE_BEST_PLOT = "model_3_w2v_best" # save best NN graph
 
+
+if model == 6:
+    from mod_6_w2v import build_and_train, build_model, MODEL_NAME
+
+    SAVE_RESULTS = "results_mod6_w2v.pkl" # save trials of optimization
+    SAVE_BEST_PLOT = "model_6_w2v_best" # save best NN graph
+
 space = {
     'embed_dim': hp.quniform('embed_dim', 20, 300, 10),
     'window_size': hp.quniform('window_size', 3, 100, 1),
