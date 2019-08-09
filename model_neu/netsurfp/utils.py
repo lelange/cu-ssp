@@ -110,7 +110,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     return input_aug, q8
 
 def embed_data(seqs, model, n_gram=1):
-    emd_dim = len(model.vectors[0])
+    emd_dim = len(model.wv.vectors[0])
 
     embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emd_dim))
     #ngram_seq = seq2ngrams(seqs, n=n_gram)
@@ -118,7 +118,7 @@ def embed_data(seqs, model, n_gram=1):
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:MAXLEN_SEQ]):
-            embed_seq[i, j, :] = model[g]
+            embed_seq[i, j, :] = model.wv[g]
 
     print(embed_seq.shape)
     return embed_seq
