@@ -187,7 +187,7 @@ if predict_only:
 else:
     # load data
     X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
-
+    EMB_DIM=230
     if hmm:
         print("X train shape: ", X_train_aug[0].shape)
         NB_AS=X_train_aug[0].shape[2]
