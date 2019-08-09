@@ -93,9 +93,9 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         if standardize:
             print('Standardize...')
             profiles = standard(profiles)
-        input_aug = [input_seq, profiles]
+        input_aug = [input_seq[:,:MAXLEN_SEQ,:], profiles]
     else:
-        input_aug = input_seq
+        input_aug = input_seq[:,:MAXLEN_SEQ,:]
     outputs.append(input_aug)
     if embedding:
         print('Load word2vec model and embed input data...')
@@ -539,7 +539,8 @@ def get_confusion_matrix(true_q, pred_q, model_name, labels_full=q8_list[1:], sa
             f.write('\n')
     return conf
 
-def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700'], save_eval=True):
+def build_and_predict(model, best_weights, save_pred_file, model_name, file_test=['cb513_700'],
+                      save_eval=True, hmm=True, standardize=True, normalize=False, embedding=True):
     if model is None:
         model = build_model()
     if model_name == "mod_2":
@@ -554,7 +555,8 @@ def build_and_predict(model, best_weights, save_pred_file, model_name, file_test
     for test in file_test:
 
         i = True
-        X_test_aug, y_test = get_data(test, hmm=True, normalize=False, standardize=True)
+        X_test_aug, y_test = get_data(test, hmm=hmm, normalize=normalize,
+                                      standardize=standardize, embedding=embedding)
         #X_test_aug = [X_test_aug[0][input_mask],X_test_aug[1][input_mask]]
         #y_test = y_test[input_mask]
         print(X_test_aug[0].shape)

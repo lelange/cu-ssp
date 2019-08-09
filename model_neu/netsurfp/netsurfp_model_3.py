@@ -298,7 +298,8 @@ best_weights = "model/mod_3-CB513-2019_08_09-16_40.h5"
 
 if predict_only:
     NB_AS=230
-    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test,
+                      hmm=hmm, normalize=normalize, standardize=standardize, embedding=embedding)
     test_acc = None
     time_data = time.time() - start_time
     save_results = False
