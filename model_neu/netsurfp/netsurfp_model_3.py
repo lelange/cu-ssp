@@ -297,14 +297,14 @@ best_weights = "model/644417_mod_3-CB513-2019_08_04-19_52.h5"
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    NB_AS=50
+    NB_AS=230
     build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
     test_acc = None
     time_data = time.time() - start_time
     save_results = False
 else:
     # load data
-    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
+    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
 
     if hmm:
         print("X train shape: ", X_train_aug[0].shape)
@@ -327,7 +327,8 @@ else:
     else:
         X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
-        test_acc = evaluate_model(model, load_file, file_test)
+        test_acc = evaluate_model(model=model, load_file=load_file, file_test=file_test,
+                                  hmm=hmm, normalize=normalize, standardize=standardize, embedding=embedding)
 
 
 time_end = time.time() - start_time

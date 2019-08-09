@@ -15,6 +15,7 @@ import os, pickle
 import random
 import matplotlib.pyplot as plt
 from datetime import datetime
+from gensim.models import Word2Vec
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
@@ -22,6 +23,7 @@ data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
 PRED_DIR = "preds/"
 q8_list = list('-GHIBESTC')
 q3_list = list('-HHHEECCC')
+MAXLEN_SEQ = 700
 
 def parse_arguments(default_epochs):
     """
@@ -56,39 +58,6 @@ def standard(data):
     return data_
 
 # for netsurf (hmm) data
-def get_data2(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False):
-
-    print('Load ' + filename + ' data...')
-    if embedding:
-        input_seq = np.load(data_root + filename + '_netsurfp_input_embedding_residue.npy')
-    else:
-        if no_input:
-            #input_seq = pickle.load(open(data_root + filename + '_hmm.txt', "rb")) #
-            input_seq= np.load(data_root + filename + '_hmm.npy', allow_pickle=True)
-            if normalize:
-                input_seq = normal(input_seq)
-            if standardize:
-                input_seq = standard(input_seq)
-
-        else:
-            #input_seq =  pickle.load(open(data_root + filename + '_input.txt', "rb"))#
-            input_seq = np.load(data_root+filename+'_input.npy', allow_pickle=True)
-    #q8 = pickle.load(open(data_root + filename + '_q9.txt', "rb"))#
-    q8 = np.load(data_root + filename + '_q9.npy', allow_pickle=True)
-    #q3 = np.load(data_root + filename + '_q3.npy')
-    if hmm:
-        #profiles = pickle.load(open(data_root + filename + '_hmm.txt', "rb"))#
-        profiles = np.load(data_root+filename+'_hmm.npy', allow_pickle=True)
-        if normalize:
-            print('Normalize...')
-            profiles = normal(profiles)
-        if standardize:
-            print('Standardize...')
-            profiles = standard(profiles)
-        input_aug = [input_seq, profiles]
-    else:
-        input_aug = input_seq
-    return input_aug, q8
 
 def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False, nb_components = 500):
 
@@ -96,7 +65,8 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     outputs=[]
 
     if not no_input:
-        input_seq = np.load(data_root+'embedding/'+filename+'_700_input_word2vec_4.npy')
+        print('Load input data..')
+        input_seq = np.load(data_root+filename+'_input.npy')
         print(input_seq.shape)
         #input_seq = np.load(data_root + filename + '_input_features.npy')
         #input_seq=standard(input_seq)
@@ -105,14 +75,18 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         #input_seq = np.concatenate((input_seq, input_seq_features), axis=2)
 
     else:
+        print('Load hmm as input data...')
         input_seq = np.load(data_root + filename + '_hmm.npy')
         if normalize:
+            print('Normalize...')
             input_seq = normal(input_seq)
         if standardize:
+            print('Standardize...')
             input_seq = standard(input_seq)
 
     if hmm:
-        profiles = np.load(data_root+filename+'_hmm.npy')[:,:700,:]
+        print('Load hmm profiles...')
+        profiles = np.load(data_root+filename+'_hmm.npy')[:,:MAXLEN_SEQ,:]
         if normalize:
             print('Normalize...')
             profiles = normal(profiles)
@@ -124,12 +98,30 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         input_aug = input_seq
     outputs.append(input_aug)
     if embedding:
-        embed_seq = np.load(data_root + filename + '_word2vec_3D_input.npy')
+        print('Load word2vec model and embed input data...')
+        model = Word2Vec.load(data_root+'embedding/'+'protVec.model')
+        embed_seq = embed_data(input_seq, model=model)
         input_aug = embed_seq
-    q8 = np.load(data_root + filename + '_q9.npy')[:,:700,:]
+        if hmm: #try with normal input as well! (3 inputs)
+            input_aug = [embed_seq, profiles]
+    q8 = np.load(data_root + filename + '_q9.npy')[:,:MAXLEN_SEQ,:]
     outputs.append(q8)
 
     return input_aug, q8
+
+def embed_data(seqs, model, n_gram=1):
+    emd_dim = len(model.wv.vectors[0])
+
+    embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emd_dim))
+    #ngram_seq = seq2ngrams(seqs, n=n_gram)
+    ngram_seq = seqs
+
+    for i, grams in enumerate(ngram_seq):
+        for j, g in enumerate(grams[:MAXLEN_SEQ]):
+            embed_seq[i, j, :] = model.wv[g]
+
+    print(embed_seq.shape)
+    return embed_seq
 
 # for pssm+hmm data
 def prepare_profiles(pssm, hmm, normalize, standardize):
@@ -813,8 +805,8 @@ def save_results_to_file(time_end, model_name, weights_file, test_acc, hmm=True,
     f.write("\n\n")
     f.close()
 
-def evaluate_model(model, load_file, test_ind = None, hmm=True,
-                   normalize=False, standardize=True, file_test=None):
+def evaluate_model(model, load_file, file_test = None, hmm=True,
+                   normalize=False, standardize=True, embedding=False, test_ind=None):
     if file_test is None:
         file_test = ['cb513_700', 'ts115_700', 'casp12_700']
     if test_ind is None:
@@ -822,7 +814,7 @@ def evaluate_model(model, load_file, test_ind = None, hmm=True,
     test_accs = []
     names = []
     for i in test_ind:
-        X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize)
+        X_test_aug, y_test = get_data(file_test[i], hmm, normalize, standardize, embedding)
         model.load_weights(load_file)
         print("####evaluate " + file_test[i] +":")
         score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
