@@ -78,10 +78,10 @@ file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
 
 def build_model():
     model = None
-    x = input
-    inp = [input]
 
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
+    x = input
+    inp = [input]
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x = concatenate([input, profiles_input], axis=2)
