@@ -198,7 +198,7 @@ datanames = ['princeton', 'netsurfp', 'qzlshy']
 
 start_time = time.time()
 w2v_dict = get_embedding(mode='train')
-time_end = start_time-time.time()
+time_end = time.time()-start_time
 m, s = divmod(time_end, 60)
 
 print("The program needed {:.0f}min {:.0f}s to generate the embedding.".format(m, s))

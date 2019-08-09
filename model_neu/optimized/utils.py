@@ -4,6 +4,7 @@ import os
 import numpy as np
 import tensorflow as tf
 import keras.backend as K
+import time
 
 import multiprocessing
 from gensim.models import Word2Vec
@@ -176,6 +177,7 @@ def get_netsurf_data(filename):
 
 def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram, mod,
                   filename=None, seqs=None, tokens=1):
+    start_time = time.time()
     if seqs is None:
         data = get_netsurf_data(filename)
         print('Load data..')
@@ -183,13 +185,13 @@ def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram, mod,
         seqs = data[0]
 
     # create n-grams from AA sequence
-    print('Create n-grams...')
+    print('Create n-grams for n = {}...'.format(n_gram))
     if tokens==1:
         ngram_seq = seq2ngrams(seqs, n=n_gram)
     else:
         ngram_seq = split_ngrams(seqs, n=n_gram)
 
-    print('Perform Word2Vec embedding...')
+    print('Word2Vec embedding...')
 
     w2v = Word2Vec(ngram_seq,
                    size=emb_dim,
@@ -199,40 +201,45 @@ def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram, mod,
                    sg = mod,
                    min_count=1,
                    workers=multiprocessing.cpu_count())
-    word_vectors = w2v.wv
-    embedding_matrix = word_vectors.vectors
-    l = []
-    for item in embedding_matrix:
-        l.append(item[0])
-    if len(np.unique(l)) != len(list('ACDEFGHIKLMNPQRSTVWY')):
-        print('ERRRRRRRRRRRRROR!_________________________________________________')
-    index2embedding = {}
-    for item in list('ACDEFGHIKLMNPQRSTVWY'):
-        index2embedding.update({item: embedding_matrix[l.index(word_vectors[item][0])]})
+
+    m, s = divmod(time.time() - start_time, 60)
+    print("Needed {:.0f}min {:.0f}s for W2V embedding.".format(m, s))
+
     return w2v
 
 
-def embed_data(seqs, index2embedding, emb_dim, n_gram, tokens=1):
-    print('Create n-grams...')
+def embed_data(seqs, w2v, emb_dim, n_gram, tokens=1):
+
+    print('Create n-grams for embedding...')
+
+    start_time= time.time()
+
     if tokens==1:
         ngram_seq = seq2ngrams(seqs, n=n_gram)
     else:
         ngram_seq = split_ngrams(seqs, n=n_gram)
+    n_time = time.time()-start_time
+    m, s = divmod(n_time, 60)
+    print("Needed {:.0f}min {:.0f}s to create n-grams.".format(m, s))
 
-    print('Perform Word2Vec embedding...')
+    print('Emded data...')
     embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emb_dim))
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:MAXLEN_SEQ]):
             try:
-                embed_seq[i, j, :] = index2embedding[g]
+                embed_seq[i, j, :] = w2v.wv[g]
             except:
                 print('Model not trained for '+g)
+
+    m,s = divmod(time.time()-n_time, 60)
+    print("Needed {:.0f}min {:.0f}s to embed data.".format(m, s))
 
     return embed_seq
 
 
 def evaluate_model(model, load_file, emb_dim, n_gram, index2embed):
+    start_time = time.time()
     print(load_file)
     file_test = ['cb513_full', 'ts115_full', 'casp12_full']
     test_accs = []
@@ -251,4 +258,8 @@ def evaluate_model(model, load_file, emb_dim, n_gram, index2embed):
         print(score)
         test_accs.append(score[1])
         names.append(test)
+
+    m, s = divmod(time.time() - start_time, 60)
+    print("Needed {:.0f}min {:.0f}s to evaluate model.".format(m, s))
+
     return dict(zip(names, test_accs))
