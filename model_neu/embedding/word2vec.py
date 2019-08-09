@@ -35,7 +35,7 @@ def onehot_to_seq(oh_seq, index):
 #def AA2index():
 
 #def index2AA():
-
+print('Program has started...')
 
 primary_list_princeton = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list_princeton = list('LBEGIHST') + ['NoSeq']
