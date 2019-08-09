@@ -113,8 +113,7 @@ def embed_data(seqs, model, n_gram=1):
     emd_dim = len(model.wv.vectors[0])
     print(model.wv.vocab.keys())
     embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emd_dim))
-    #ngram_seq = seq2ngrams(seqs, n=n_gram)
-    ngram_seq = seqs
+    ngram_seq = seq2ngrams(seqs, n=3)
 
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:MAXLEN_SEQ]):
@@ -246,8 +245,19 @@ def print_results(x, y_, revsere_decoder_index, counter,test_df, write_df=False,
         print("prediction: " + str(onehot_to_seq(y_, revsere_decoder_index).upper()))
 
 # Computes and returns the n-grams of a particular sequence, defaults to trigrams
-def seq2ngrams(seqs, n = 1):
-    return np.array([[seq[i : i + n] for i in range(len(seq))] for seq in seqs])
+def seq2ngrams(seqs, n):
+    """
+    'AGAMQSASM' => [['AGA', 'MQS', 'ASM'], ['GAM','QSA'], ['AMQ', 'SAS']]
+    """
+    result = []
+    for seq in seqs:
+        a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
+        str_ngrams = []
+        for ngrams in [a, b, c]:
+            for ngram in ngrams:
+                str_ngrams.append("".join(ngram))
+        result.append(str_ngrams)
+    return result
 
 def load_augmented_data(npy_path, max_len):
     data = np.load(npy_path)
