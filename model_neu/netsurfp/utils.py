@@ -78,7 +78,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
 
     if not no_input:
         print('Load input data..')
-        input_seq = np.load(data_root+filename+'_input.npy')
+        input_seq = np.load(data_root+filename+'_input.npy')[:,:MAXLEN_SEQ,:]
         print(input_seq.shape)
         #input_seq = np.load(data_root + filename + '_input_features.npy')
         #input_seq=standard(input_seq)
@@ -88,7 +88,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
 
     else:
         print('Load hmm as input data...')
-        input_seq = np.load(data_root + filename + '_hmm.npy')
+        input_seq = np.load(data_root + filename + '_hmm.npy')[:,:MAXLEN_SEQ,:]
         if normalize:
             print('Normalize...')
             input_seq = normal(input_seq)
@@ -105,13 +105,13 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         if standardize:
             print('Standardize...')
             profiles = standard(profiles)
-        input_aug = [input_seq[:,:MAXLEN_SEQ,:], profiles]
+        input_aug = [input_seq, profiles]
     else:
-        input_aug = input_seq[:,:MAXLEN_SEQ,:]
+        input_aug = input_seq
     outputs.append(input_aug)
     if embedding:
         print('Load word2vec model and embed input data...')
-        model = word2vec.Word2Vec.load(data_root+'embedding/'+'swissprot-reviewed-protvec.model')
+        model = word2vec.Word2Vec.load(data_root+'embedding/'+'word2vec4.model')
         embed_seq = embed_data(np.load(data_root + filename + '_q9_AA_str.npy'), model=model)
         input_aug = embed_seq
         if hmm: #try with normal input as well! (3 inputs)
