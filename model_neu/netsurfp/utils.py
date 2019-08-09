@@ -342,7 +342,7 @@ def weighted_accuracy(y_true, y_pred):
     return K.sum(K.equal(K.argmax(y_true, axis=-1),
                   K.argmax(y_pred, axis=-1)) * K.sum(y_true, axis=-1)) / K.sum(y_true)
 
-def train_val_split(hmm, X_train_aug, y_train, perc = None):
+def train_val_split(hmm, X_train_aug, y_train, perc = None, embedding = False):
     n_samples = len(y_train)
     np.random.seed(0)
     if perc is None:
@@ -355,16 +355,25 @@ def train_val_split(hmm, X_train_aug, y_train, perc = None):
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
 
-    if hmm:
+
+
+    if hmm or embedding:
         '''
         X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[validation_idx]
         X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[training_idx]
         '''
         X_val_aug = [X_train_aug[0][validation_idx], X_train_aug[1][validation_idx]]
         X_train_aug = [X_train_aug[0][training_idx], X_train_aug[1][training_idx]]
+
+        if embedding and hmm:
+            X_val_aug.append(X_train_aug[2][validation_idx])
+            X_train_aug.append(X_train_aug[2][training_idx])
+
     else:
+
         X_val_aug = X_train_aug[validation_idx]
         X_train_aug = X_train_aug[training_idx]
+
 
     return X_train_aug, y_train, X_val_aug, y_val
 
