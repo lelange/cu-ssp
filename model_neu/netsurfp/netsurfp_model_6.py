@@ -84,10 +84,14 @@ def build_model():
     inp = [input]
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
-        x = concatenate([input, profiles_input], axis=2)
+        x = concatenate([x, profiles_input], axis=2)
         inp.append(profiles_input)
+
     if embedding:
         emb_input = Input(shape=(MAXLEN_SEQ, EMB_DIM))
+        x = concatenate([x, emb_input], axis=2)
+        inp.append(emb_input)
+
     z = Conv1D(64, 11, strides=1, padding='same')(x)
     w = Conv1D(64, 7, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
@@ -97,6 +101,8 @@ def build_model():
     w = Conv1D(64, 3, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
+
+    
     x = Bidirectional(CuDNNLSTM(units=128, return_sequences=True))(x)
 
     y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(x)
