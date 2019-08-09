@@ -100,7 +100,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     if embedding:
         print('Load word2vec model and embed input data...')
         model = Word2Vec.load(data_root+'embedding/'+'word2vec4.model')
-        embed_seq = embed_data(input_seq, model=model)
+        embed_seq = embed_data(np.load(data_root + filename + '_q9_AA_str.npy'), model=model)
         input_aug = embed_seq
         if hmm: #try with normal input as well! (3 inputs)
             input_aug = [embed_seq, profiles]
