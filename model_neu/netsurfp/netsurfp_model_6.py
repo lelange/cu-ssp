@@ -192,7 +192,8 @@ else:
         NB_AS=X_train_aug[0].shape[2]
         print("X aug train shape: ", X_train_aug[1].shape)
         if hmm and embedding:
-            EMB_DIM = len(X_train_aug[2][0])
+            print("X embed train shape: ", X_train_aug[2].shape)
+            EMB_DIM = X_train_aug[2].shape[2]
 
     else:
         print("X train shape: ", X_train_aug.shape)
