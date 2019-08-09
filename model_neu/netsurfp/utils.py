@@ -111,7 +111,8 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
 
 def embed_data(seqs, model, n_gram=1):
     emd_dim = len(model.wv.vectors[0])
-    print(model.wv.vocab.keys())
+    print('Print some n-gram examples...')
+    print(model.wv.vocab.keys()[:5])
     embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emd_dim))
     ngram_seq = seq2ngrams(seqs, n=3)
 

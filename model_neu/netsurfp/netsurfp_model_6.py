@@ -34,7 +34,7 @@ MODEL_NAME = 'mod_6'
 save_pred_file = "_pred_6.npy"
 
 N_FOLDS = 10 # for cross validation
-MAXLEN_SEQ = 700 # only use sequences to this length and pad to this length, choose from 600, 608, 700
+MAXLEN_SEQ = None# only use sequences to this length and pad to this length, choose from 600, 608, 700
 NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
 NB_CLASSES_Q3 = 3 # number Q3 classes
 NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
@@ -67,8 +67,13 @@ load_file = "./model/"+weights_file
 file_scores = "logs/cv_results.txt"
 file_scores_mean = "logs/cv_results_mean.txt"
 
-file_train = 'train_' + str(MAXLEN_SEQ)
-file_test = ['cb513_'+ str(MAXLEN_SEQ), 'ts115_'+ str(MAXLEN_SEQ), 'casp12_'+ str(MAXLEN_SEQ)]
+if MAXLEN_SEQ is None:
+    ending = "full"
+else:
+    ending= str(MAXLEN_SEQ)
+
+file_train = 'train_' + ending
+file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
 
 
 def build_model():
@@ -109,7 +114,7 @@ def build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.2, patience=6, verbose=1, mode='max')
-    callbacks = [checkpointer]
+    callbacks = [checkpointer, earlyStopping]
 
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val), epochs=epochs, callbacks= callbacks, batch_size=batch_size, verbose=1, shuffle=True)
 
@@ -164,19 +169,20 @@ def crossValidation(load_file, X_train_aug, y_train, n_folds=N_FOLDS):
 best_weights = "model/mod_6-CB513-2019_07_23-11_31.h5"
 
 #--------------------------------- main ---------------------------------
-
 if predict_only:
-    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test)
+    NB_AS=100
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test,
+                      hmm=hmm, normalize=normalize, standardize=standardize, embedding=embedding)
     test_acc = None
     time_data = time.time() - start_time
     save_results = False
 else:
     # load data
-    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
+    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
 
     if hmm:
         print("X train shape: ", X_train_aug[0].shape)
-        NB_AS = X_train_aug[0].shape[2]
+        NB_AS=X_train_aug[0].shape[2]
         print("X aug train shape: ", X_train_aug[1].shape)
     else:
         print("X train shape: ", X_train_aug.shape)
@@ -194,12 +200,10 @@ else:
 
     else:
         X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
-        '''
-        X_val_aug = None
-        y_val = None
-        '''
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
-        test_acc = evaluate_model(model, load_file, None, hmm, normalize, standardize, file_test)
+        test_acc = evaluate_model(model=model, load_file=load_file, file_test=file_test,
+                                  hmm=hmm, normalize=normalize, standardize=standardize, embedding=embedding)
+
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
