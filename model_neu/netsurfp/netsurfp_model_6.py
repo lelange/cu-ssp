@@ -78,16 +78,16 @@ file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
 
 def build_model():
     model = None
+    x = input
+    inp = [input]
 
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x = concatenate([input, profiles_input], axis=2)
-        inp = [input, profiles_input]
-    else:
-        x = input
-        inp = input
-
+        inp = inp + profiles_input
+    if embedding:
+        emb_input = Input(shape=(MAXLEN_SEQ, EMB_DIM))
     z = Conv1D(64, 11, strides=1, padding='same')(x)
     w = Conv1D(64, 7, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
@@ -181,10 +181,13 @@ else:
     # load data
     X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
 
-    if hmm:
+    if hmm or embedding:
         print("X train shape: ", X_train_aug[0].shape)
         NB_AS=X_train_aug[0].shape[2]
         print("X aug train shape: ", X_train_aug[1].shape)
+        if hmm and embedding:
+            EMB_DIM = len(X_train_aug[2][0])
+
     else:
         print("X train shape: ", X_train_aug.shape)
         NB_AS = X_train_aug.shape[2]

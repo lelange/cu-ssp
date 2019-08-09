@@ -19,7 +19,7 @@ from gensim.models import word2vec
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
-data_root = '/nosave/lange/cu-ssp/data/netsurfp/'
+path = '/nosave/lange/cu-ssp/data/'
 PRED_DIR = "preds/"
 q8_list = list('-GHIBESTC')
 q3_list = list('-HHHEECCC')
@@ -59,8 +59,20 @@ def standard(data):
 
 # for netsurf (hmm) data
 
-def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False, no_input=False, nb_components = 500):
+def get_qzlshy_data(filename, maxlen=700):
+    ### filename = train or test
+    data_root = path+'data_qzlshy/'
 
+    pssm = np.load(data_root+filename+'_pssm.npy')
+    hmm = np.load(data_root+filename+'_hmm.npy')
+    input_AA = np.load(data_root+filename+'_input.npy')
+    q8_AA = np.load(data_root+filename+'_q8.npy')
+
+    return input_AA, q8_AA, pssm, hmm
+
+def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = False,
+             no_input=False, nb_components = 500, which_data='netsurfp/'):
+    data_root = path + which_data
     print('Load ' + filename + ' data...')
     outputs=[]
 
