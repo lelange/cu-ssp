@@ -99,7 +99,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     outputs.append(input_aug)
     if embedding:
         print('Load word2vec model and embed input data...')
-        model = KeyedVectors.load_word2vec_format(data_root+'embedding/'+'protVec.model')
+        model = KeyedVectors.load(data_root+'embedding/'+'protVec.model')
         embed_seq = embed_data(np.load(data_root + filename + '_q9_AA_str.npy'), model=model)
         input_aug = embed_seq
         if hmm: #try with normal input as well! (3 inputs)
