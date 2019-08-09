@@ -202,6 +202,9 @@ def get_embedding(emb_dim, window_size, nb_neg, nb_iter, n_gram, mod,
                    min_count=1,
                    workers=multiprocessing.cpu_count())
 
+    word_vectors = w2v.wv
+    print('We have ' + str(len(word_vectors.vocab)) + ' n-grams.')
+
     m, s = divmod(time.time() - start_time, 60)
     print("Needed {:.0f}min {:.0f}s for W2V embedding.".format(m, s))
 
@@ -218,8 +221,10 @@ def embed_data(seqs, w2v, emb_dim, n_gram, tokens=1):
         ngram_seq = seq2ngrams(seqs, n=n_gram)
     else:
         ngram_seq = split_ngrams(seqs, n=n_gram)
-    n_time = time.time()-start_time
-    m, s = divmod(n_time, 60)
+
+    n_time = time.time()
+    end_time = n_time - start_time
+    m, s = divmod(end_time, 60)
     print("Needed {:.0f}min {:.0f}s to create n-grams.".format(m, s))
 
     print('Emded data...')
@@ -232,7 +237,7 @@ def embed_data(seqs, w2v, emb_dim, n_gram, tokens=1):
             except:
                 print('Model not trained for '+g)
 
-    m,s = divmod(time.time()-n_time, 60)
+    m,s = divmod(time.time() - n_time, 60)
     print("Needed {:.0f}min {:.0f}s to embed data.".format(m, s))
 
     return embed_seq

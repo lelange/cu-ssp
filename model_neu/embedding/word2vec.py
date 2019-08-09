@@ -14,11 +14,11 @@ NB_NEG = 5
 NB_ITER = 10
 
 '''
-EMB_DIM = 20
-WINDOW_SIZE = 64
+EMB_DIM = 230
+WINDOW_SIZE = 20
 NB_NEG = 3
-NB_ITER = 22
-N_GRAM = 3
+NB_ITER = 24
+N_GRAM = 1
 
 
 def onehot_to_seq(oh_seq, index):
@@ -121,7 +121,7 @@ def load_data(dataname, mode):
     if dataname == 'qzlshy':
         return get_qzlshy_data(mode)
 
-def seq2ngrams(seqs, n = 3):
+def seq2ngrams2(seqs, n = 3):
     if n==1:
         return seqs
     else:
@@ -135,7 +135,7 @@ def seq2ngrams(seqs, n = 3):
 
         return np.array(result)
 
-def split_ngrams(seqs, n):
+def seq2ngrams(seqs, n):
     """
     'AGAMQSASM' => [['AGA', 'MQS', 'ASM'], ['GAM','QSA'], ['AMQ', 'SAS']]
     """
@@ -151,6 +151,7 @@ def split_ngrams(seqs, n):
 
 
 def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM):
+    start_time=time.time()
     # load input data
     if data is None:
         data = load_data(dataname, mode)
@@ -165,19 +166,12 @@ def get_embedding(dataname='netsurfp', mode='train', data=None, n_gram = N_GRAM)
     w2v = Word2Vec(ngram_seq, size=EMB_DIM, window=WINDOW_SIZE,
                    negative=NB_NEG, iter= NB_ITER, min_count=1, sg=1,
                    workers = multiprocessing.cpu_count())
+    embed_time = time.time()
+    m,s = divmod(embed_time-start_time, 60)
+    print("Needed {:.0f}min {:.0f}s for W2V embedding.".format(m, s))
+
     word_vectors = w2v.wv
     print('We have '+str(len(word_vectors.vocab))+ ' n-grams.')
-
-    embedding_matrix = word_vectors.vectors
-    l =[]
-    for item in embedding_matrix:
-        l.append(item[0])
-    index2embedding={}
-    for item in list(word_vectors.vocab.keys()):
-        if len(item)!=n_gram:
-            print('Error!!!')
-        #print(item, l.index(word_vectors[item][0]))
-        index2embedding.update({item:embedding_matrix[l.index(word_vectors[item][0])]})
     return w2v
 
 def embed_data(seqs, model, n_gram=N_GRAM):
@@ -205,30 +199,29 @@ print("The program needed {:.0f}min {:.0f}s to generate the embedding.".format(m
 
 start_time = time.time()
 
+nb_try = 4
+
 w2v_input = embed_data(get_netsurf_data('train_full')[0], w2v_dict)
-#np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy', w2v_input)
-#print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy')
+np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_'+str(nb_try)+'.npy', w2v_input)
+print('Data has been saved to '+data_root+'netsurfp/embedding/train_full_700_input_word2vec_'+str(nb_try)+'.npy')
 
 time_end = time.time()-start_time
 m, s = divmod(time_end, 60)
 
 print("The program needed {:.0f}min {:.0f}s to embed training data.".format(m, s))
 
-#w2v_input = embed_data(get_netsurf_data('cb513_full')[0], w2v_dict)
-#np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy', w2v_input)
-#print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy')
-
-'''
+w2v_input = embed_data(get_netsurf_data('cb513_full')[0], w2v_dict)
+np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_'+str(nb_try)+'.npy', w2v_input)
+print('Data has been saved to '+data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_'+str(nb_try)+'.npy')
 
 w2v_input = embed_data(get_netsurf_data('casp12_full')[0], w2v_dict)
-np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_3.npy', w2v_input)
-print('Data has been saved to '+data_root+'netsurfp/embedding/casp12_full_700_input_word2vec_3.npy')
+np.save(data_root+'netsurfp/embedding/train_full_700_input_word2vec_'+str(nb_try)+'.npy', w2v_input)
+print('Data has been saved to '+data_root+'netsurfp/embedding/casp12_full_700_input_word2vec_'+str(nb_try)+'.npy')
 
 w2v_input = embed_data(get_netsurf_data('ts115_full')[0], w2v_dict)
-np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_3.npy', w2v_input)
-print('Data has been saved to '+data_root+'netsurfp/embedding/ts115_full_700_input_word2vec_3.npy')
+np.save(data_root+'netsurfp/embedding/cb513_full_700_input_word2vec_'+str(nb_try)+'.npy', w2v_input)
+print('Data has been saved to '+data_root+'netsurfp/embedding/ts115_full_700_input_word2vec_'+str(nb_try)+'.npy')
 
 
-'''
 
 
