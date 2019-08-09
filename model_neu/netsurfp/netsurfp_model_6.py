@@ -61,7 +61,6 @@ if test_mode:
 
 batch_size = 128
 
-data_root = '../data/netsurfp/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
 file_scores = "logs/cv_results.txt"
@@ -85,11 +84,13 @@ def build_model():
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x = concatenate([x, profiles_input], axis=2)
+        xx = profiles_input
         inp.append(profiles_input)
 
     if embedding:
         emb_input = Input(shape=(MAXLEN_SEQ, EMB_DIM))
-        x = concatenate([x, emb_input], axis=2)
+        #x = concatenate([x, emb_input], axis=2)
+        xxx = emb_input
         inp.append(emb_input)
 
     z = Conv1D(64, 11, strides=1, padding='same')(x)
@@ -101,11 +102,9 @@ def build_model():
     w = Conv1D(64, 3, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
-
-
     x = Bidirectional(CuDNNLSTM(units=128, return_sequences=True))(x)
-
     y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(x)
+
     #y_q3 = TimeDistributed(Dense(3, activation="softmax"), name="y_q3")(x)
 
     model = Model(inp, y)
@@ -187,7 +186,7 @@ else:
     # load data
     X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
 
-    if hmm or embedding:
+    if hmm:
         print("X train shape: ", X_train_aug[0].shape)
         NB_AS=X_train_aug[0].shape[2]
         print("X aug train shape: ", X_train_aug[1].shape)

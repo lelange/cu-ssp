@@ -90,8 +90,6 @@ def get_netsurf_data(filename, max_len=None):
     np.save(path+filename + '_q9_AA_str.npy', prim_seq)
     print('saved AA '+filename+' to disk.')
     '''
-
-
     return prim_seq, input_onehot, q8_onehot, profiles
 
 def get_qzlshy_data(filename, maxlen=700):

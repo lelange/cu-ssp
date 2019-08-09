@@ -99,6 +99,8 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
     if hmm:
         print('Load hmm profiles...')
         profiles = np.load(data_root+filename+'_hmm.npy')[:,:MAXLEN_SEQ,:]
+        #pssm = np.load(data_root+filename+'_pssm.npy')[:,:MAXLEN_SEQ,:]
+        #profiles = np.concatenate((profiles, pssm), axis=2)
         if normalize:
             print('Normalize...')
             profiles = normal(profiles)
@@ -113,6 +115,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         print('Load word2vec model and embed input data...')
         model = word2vec.Word2Vec.load(data_root+'embedding/'+'word2vec4.model')
         embed_seq = embed_data(np.load(data_root + filename + '_q9_AA_str.npy'), model=model)
+        #embed_seq = embed_data(np.load(data_root + filename + '_q8.npy'), model=model)
         input_aug = embed_seq
         if hmm: #try with normal input as well! (3 inputs)
             input_aug = [input_seq, profiles, embed_seq]
@@ -355,7 +358,7 @@ def train_val_split(hmm, X_train_aug, y_train, perc = None, embedding = False):
     y_val = y_train[validation_idx]
     y_train = y_train[training_idx]
 
-    if hmm or embedding:
+    if hmm:
         '''
         X_val_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[validation_idx]
         X_train_aug = np.concatenate((X_train_aug[0], X_train_aug[1]), axis=2)[training_idx]
