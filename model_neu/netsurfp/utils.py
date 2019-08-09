@@ -115,7 +115,7 @@ def get_data(filename, hmm=True, normalize=False, standardize=True, embedding = 
         embed_seq = embed_data(np.load(data_root + filename + '_q9_AA_str.npy'), model=model)
         input_aug = embed_seq
         if hmm: #try with normal input as well! (3 inputs)
-            input_aug = [embed_seq, profiles]
+            input_aug = [input_seq, profiles, embed_seq]
     q8 = np.load(data_root + filename + '_q9.npy')[:,:MAXLEN_SEQ,:]
     outputs.append(q8)
 

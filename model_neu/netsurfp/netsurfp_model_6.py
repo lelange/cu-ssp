@@ -102,7 +102,7 @@ def build_model():
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
 
-    
+
     x = Bidirectional(CuDNNLSTM(units=128, return_sequences=True))(x)
 
     y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(x)
