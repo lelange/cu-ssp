@@ -85,7 +85,7 @@ def build_model():
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x = concatenate([input, profiles_input], axis=2)
-        inp = inp + profiles_input
+        inp.append(profiles_input)
     if embedding:
         emb_input = Input(shape=(MAXLEN_SEQ, EMB_DIM))
     z = Conv1D(64, 11, strides=1, padding='same')(x)
