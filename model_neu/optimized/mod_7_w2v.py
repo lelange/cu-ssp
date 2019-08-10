@@ -174,7 +174,7 @@ def build_model(hype_space):
     input = Input(shape=(MAXLEN_SEQ, int(hype_space['embed_dim']) ))
     profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
 
-    current_layer = random_image_mirror_left_right(input)
+    current_layer = input
 
     if hype_space['first_conv'] is not None:
         k = hype_space['first_conv']
