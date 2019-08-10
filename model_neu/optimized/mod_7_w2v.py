@@ -237,7 +237,13 @@ def build_model(hype_space):
         current_layer = dropout(
             current_layer, hype_space, for_convolution_else_fc=False)
 
-    y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(current_layer)
+    y = TimeDistributed(Dense(
+        units=NB_CLASSES_Q8,
+        activation="softmax",
+        kernel_regularizer=keras.regularizers.l2(
+            STARTING_L2_REG * hype_space['l2_weight_reg_mult']),
+        name='y'
+    ))(current_layer)
 
     # Finalize model:
     inp = [input, profiles_input]
@@ -341,7 +347,7 @@ def auto_choose_pooling(prev_layer, n_filters, hype_space):
 
     else:  # 'max'
         current_layer = keras.layers.pooling.MaxPooling1D(
-            pool_size=(2, 2)
+            pool_size=2
         )(prev_layer)
 
     return current_layer
