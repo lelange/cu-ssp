@@ -226,12 +226,12 @@ def build_model(hype_space):
         current_layer, hype_space, for_convolution_else_fc=False)
 
     if hype_space['one_more_fc'] is not None:
-        current_layer = keras.layers.core.Dense(
+        current_layer = TimeDistributed(Dense(
             units=int(750 * hype_space['one_more_fc']),
             activation=hype_space['activation'],
             kernel_regularizer=keras.regularizers.l2(
                 STARTING_L2_REG * hype_space['l2_weight_reg_mult'])
-        )(current_layer)
+        ))(current_layer)
         print(current_layer._keras_shape)
 
         current_layer = dropout(
@@ -244,6 +244,8 @@ def build_model(hype_space):
             STARTING_L2_REG * hype_space['l2_weight_reg_mult']),
         name='y'
     ))(current_layer)
+
+    print(y._keras_shape)
 
     # Finalize model:
     inp = [input, profiles_input]
