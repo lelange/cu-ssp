@@ -198,6 +198,7 @@ def build_model(hype_space):
             current_layer = bn(current_layer)
         print(current_layer._keras_shape)
 
+        '''
         deep_enough_for_res = hype_space['conv_pool_res_start_idx']
         if i >= deep_enough_for_res and hype_space['residual'] is not None:
             current_layer = residual(current_layer, n_filters, hype_space)
@@ -208,6 +209,8 @@ def build_model(hype_space):
         print(current_layer._keras_shape)
 
         current_layer = dropout(current_layer, hype_space)
+        '''
+
 
         n_filters *= 2
     # Fully Connected (FC) part:
