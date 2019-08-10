@@ -210,8 +210,6 @@ def build_model(hype_space):
         current_layer = dropout(current_layer, hype_space)
 
         n_filters *= 2
-
-    af
     # Fully Connected (FC) part:
     current_layer = keras.layers.core.Flatten()(current_layer)
     print(current_layer._keras_shape)
