@@ -178,8 +178,8 @@ def build_model(hype_space):
 
     if hype_space['first_conv'] is not None:
         k = hype_space['first_conv']
-        current_layer = keras.layers.convolutional.Conv2D(
-            filters=16, kernel_size=(k, k), strides=(1, 1),
+        current_layer = keras.layers.convolutional.Conv1D(
+            filters=16, kernel_size=k, strides=1,
             padding='same', activation=hype_space['activation'],
             kernel_regularizer=keras.regularizers.l2(
                 STARTING_L2_REG * hype_space['l2_weight_reg_mult'])
@@ -298,8 +298,8 @@ def convolution(prev_layer, n_filters, hype_space, force_ksize=None):
         k = force_ksize
     else:
         k = int(round(hype_space['conv_kernel_size']))
-    return keras.layers.convolutional.Conv2D(
-        filters=n_filters, kernel_size=(k, k), strides=(1, 1),
+    return keras.layers.convolutional.Conv1D(
+        filters=n_filters, kernel_size=k, strides=1,
         padding='same', activation=hype_space['activation'],
         kernel_regularizer=keras.regularizers.l2(
             STARTING_L2_REG * hype_space['l2_weight_reg_mult'])
@@ -310,8 +310,8 @@ def residual(prev_layer, n_filters, hype_space):
     """Some sort of residual layer, parametrized by the hype_space."""
     current_layer = prev_layer
     for i in range(int(round(hype_space['residual']))):
-        lin_current_layer = keras.layers.convolutional.Conv2D(
-            filters=n_filters, kernel_size=(1, 1), strides=(1, 1),
+        lin_current_layer = keras.layers.convolutional.Conv1D(
+            filters=n_filters, kernel_size=1, strides=1,
             padding='same', activation='linear',
             kernel_regularizer=keras.regularizers.l2(
                 STARTING_L2_REG * hype_space['l2_weight_reg_mult'])
@@ -344,12 +344,12 @@ def auto_choose_pooling(prev_layer, n_filters, hype_space):
         current_layer = inception_reduction(prev_layer, n_filters, hype_space)
 
     elif hype_space['pooling_type'] == 'avg':
-        current_layer = keras.layers.pooling.AveragePooling2D(
-            pool_size=(2, 2)
+        current_layer = keras.layers.pooling.AveragePooling1D(
+            pool_size=2
         )(prev_layer)
 
     else:  # 'max'
-        current_layer = keras.layers.pooling.MaxPooling2D(
+        current_layer = keras.layers.pooling.MaxPooling1D(
             pool_size=(2, 2)
         )(prev_layer)
 
@@ -360,8 +360,8 @@ def convolution_pooling(prev_layer, n_filters, hype_space):
     Pooling with a convolution of stride 2.
     See: https://arxiv.org/pdf/1412.6806.pdf
     """
-    current_layer = keras.layers.convolutional.Conv2D(
-        filters=n_filters, kernel_size=(3, 3), strides=(2, 2),
+    current_layer = keras.layers.convolutional.Conv1D(
+        filters=n_filters, kernel_size=3, strides=2,
         padding='same', activation='linear',
         kernel_regularizer=keras.regularizers.l2(
             STARTING_L2_REG * hype_space['l2_weight_reg_mult'])
@@ -389,8 +389,8 @@ def inception_reduction(prev_layer, n_filters, hype_space):
     conv2 = convolution_pooling(conv2, n_filters, hype_space)
 
     conv3 = convolution(prev_layer, n_filters, hype_space, force_ksize=1)
-    conv3 = keras.layers.pooling.MaxPooling2D(
-        pool_size=(3, 3), strides=(2, 2), padding='same'
+    conv3 = keras.layers.pooling.MaxPooling1D(
+        pool_size=3, strides=2, padding='same'
     )(conv3)
 
     current_layer = keras.layers.concatenate([conv1, conv2, conv3], axis=-1)
