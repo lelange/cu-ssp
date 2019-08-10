@@ -140,16 +140,54 @@ def seq2ngrams(seqs, n):
     """
     'AGAMQSASM' => [['AGA', 'MQS', 'ASM'], ['GAM','QSA'], ['AMQ', 'SAS']]
     """
-    result = []
-    for seq in seqs:
-        a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
-        str_ngrams = []
-        for ngrams in [a, b, c]:
-            for ngram in ngrams:
-                str_ngrams.append("".join(ngram))
-        result.append(str_ngrams)
-    return result
+    if n == 1:
+        return seqs
 
+    if n == 2:
+        result = []
+        for seq in seqs:
+            a, b = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n)
+            str_ngrams = []
+            for ngrams in [a, b]:
+                for ngram in ngrams:
+                    str_ngrams.append("".join(ngram))
+            result.append(str_ngrams)
+        return result
+
+    if n == 3:
+        result = []
+        for seq in seqs:
+            a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
+            str_ngrams = []
+            for ngrams in [a, b, c]:
+                for ngram in ngrams:
+                    str_ngrams.append("".join(ngram))
+            result.append(str_ngrams)
+        return result
+
+    if n == 4:
+        result = []
+        for seq in seqs:
+            a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
+            d = zip(*[iter(seq[3:])] * n)
+            str_ngrams = []
+            for ngrams in [a, b, c, d]:
+                for ngram in ngrams:
+                    str_ngrams.append("".join(ngram))
+            result.append(str_ngrams)
+        return result
+
+    else:
+        result = []
+        for seq in seqs:
+            a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
+            d, e = zip(*[iter(seq[3:])] * n), zip(*[iter(seq[4:])] * n)
+            str_ngrams = []
+            for ngrams in [a, b, c, d, e]:
+                for ngram in ngrams:
+                    str_ngrams.append("".join(ngram))
+            result.append(str_ngrams)
+        return result
 
 def onehot_to_seq(oh_seq, index):
     s = ''
