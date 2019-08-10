@@ -267,13 +267,17 @@ def embed_data(seqs, w2v, emb_dim, n_gram, tokens=1):
 
     print('Emded data...')
     embed_seq = np.zeros((len(seqs), MAXLEN_SEQ, emb_dim))
-
+    f = 0
+    c = 0
     for i, grams in enumerate(ngram_seq):
         for j, g in enumerate(grams[:MAXLEN_SEQ]):
             try:
                 embed_seq[i, j, :] = w2v.wv[g]
+                c+=1
             except:
                 print('Model not trained for '+g)
+                f+=1
+    print('{} n-grams are embedded but for {} the model has not been trained.'.format(c,f))
 
     m,s = divmod(time.time() - n_time, 60)
     print("Needed {:.0f}min {:.0f}s to embed data.".format(m, s))
