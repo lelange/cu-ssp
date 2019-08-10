@@ -254,7 +254,6 @@ def build_model(hype_space):
             lr=0.001 * hype_space['lr_rate_mult']
         ),
         loss='categorical_crossentropy',
-        loss_weights=[1.0, hype_space['coarse_labels_weight']],
         metrics=['accuracy']
     )
 

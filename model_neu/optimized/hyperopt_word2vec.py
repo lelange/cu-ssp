@@ -112,8 +112,6 @@ if model == 7:
         'batch_size': hp.quniform('batch_size', 100, 450, 5),
         # Choice of optimizer:
         'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
-        # Coarse labels importance for weights updates:
-        'coarse_labels_weight': hp.uniform('coarse_labels_weight', 0.1, 0.7),
         # Uniform distribution in finding appropriate dropout values, conv layers
         'conv_dropout_drop_proba': hp.uniform('conv_dropout_proba', 0.0, 0.35),
         # Uniform distribution in finding appropriate dropout values, FC layers
