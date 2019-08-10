@@ -147,12 +147,15 @@ def super_conv_block(x):
 
 def build_model():
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
-    if hmm:
+    if hmm or embedding:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
         x = concatenate([input, profiles_input])
         inp = [input, profiles_input]
+        if hmm and embedding:
+            emb_input = Input(shape=(MAXLEN_SEQ, EMB_DIM))
+            x = concatenate([x, emb_input], axis=2)
+            inp = [input, profiles_input, emb_input]
     else:
-
         x = input
         inp = input
 
@@ -249,19 +252,24 @@ def accuracy2(y_true, y_predicted):
 #--------------------------------- main ---------------------------------
 
 if predict_only:
-    NB_AS=20
-    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME,[file_test[0]])
+    NB_AS=100
+    build_and_predict(build_model(), best_weights, save_pred_file, MODEL_NAME, file_test,
+                      hmm=hmm, normalize=normalize, standardize=standardize, embedding=embedding)
     test_acc = None
     time_data = time.time() - start_time
     save_results = False
 else:
     # load data
-    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize)
-
+    X_train_aug, y_train = get_data(file_train, hmm, normalize, standardize, embedding)
+    EMB_DIM=230
     if hmm:
         print("X train shape: ", X_train_aug[0].shape)
         NB_AS=X_train_aug[0].shape[2]
         print("X aug train shape: ", X_train_aug[1].shape)
+        if hmm and embedding:
+            print("X embed train shape: ", X_train_aug[2].shape)
+            EMB_DIM = X_train_aug[2].shape[2]
+
     else:
         print("X train shape: ", X_train_aug.shape)
         NB_AS = X_train_aug.shape[2]
@@ -277,16 +285,17 @@ else:
         test_acc = test_accs[file_test[0] + '_mean']
 
     else:
-        X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc)
+        X_train_aug, y_train, X_val_aug, y_val = train_val_split(hmm, X_train_aug, y_train, tv_perc, embedding)
         model, history = build_and_train(X_train_aug, y_train, X_val_aug, y_val, epochs=epochs)
-        test_acc = evaluate_model(model, load_file, file_test=['cb513_full'])
+        test_acc = evaluate_model(model=model, load_file=load_file, file_test=file_test,
+                                  hmm=hmm, normalize=normalize, standardize=standardize, embedding=embedding)
+
 
 time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
+telegram_me(m, s, sys.argv[0], test_acc, hmm, standardize)
+
 if save_results:
-    save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc)
-
-telegram_me(m, s, sys.argv[0], test_acc, hmm=True, standardize=True)
-
+    save_results_to_file(time_end, MODEL_NAME, weights_file, test_acc, hmm, standardize, normalize)
