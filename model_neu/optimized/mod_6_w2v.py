@@ -165,7 +165,7 @@ def build_model(hype_space):
     input = Input(shape=(MAXLEN_SEQ, int(hype_space['embed_dim']) ))
     profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
     x = input
-
+    #conv = int(hype_space['embed_dim'])
     z = Conv1D(64, 11, strides=1, padding='same')(x)
     w = Conv1D(64, 7, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
@@ -175,7 +175,9 @@ def build_model(hype_space):
     w = Conv1D(64, 3, strides=1, padding='same')(x)
     x = concatenate([x, z], axis=2)
     x = concatenate([x, w], axis=2)
+
     x = Bidirectional(CuDNNLSTM(units=128, return_sequences=True))(x)
+    x = Bidirectional(CuDNNLSTM(units=64, return_sequences=True))(x)
     y = TimeDistributed(Dense(NB_CLASSES_Q8, activation="softmax"))(x)
 
     # y_q3 = TimeDistributed(Dense(3, activation="softmax"), name="y_q3")(x)
