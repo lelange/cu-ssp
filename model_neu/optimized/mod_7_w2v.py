@@ -211,15 +211,13 @@ def build_model(hype_space):
 
         n_filters *= 2
     # Fully Connected (FC) part:
-    current_layer = keras.layers.core.Flatten()(current_layer)
-    print(current_layer._keras_shape)
 
-    current_layer = keras.layers.core.Dense(
+    current_layer = TimeDistributed(Dense(
         units=int(1000 * hype_space['fc_units_1_mult']),
         activation=hype_space['activation'],
         kernel_regularizer=keras.regularizers.l2(
             STARTING_L2_REG * hype_space['l2_weight_reg_mult'])
-    )(current_layer)
+    ))(current_layer)
     print(current_layer._keras_shape)
 
     current_layer = dropout(
