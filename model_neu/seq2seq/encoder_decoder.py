@@ -7,6 +7,7 @@ import numpy as np
 import tensorflow as tf
 from keras import backend as K
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
+from keras.layers import Activation, BatchNormalization, dot, concatenate
 from datetime import datetime
 
 def get_acc(gt, pred, mask=None):
@@ -168,8 +169,15 @@ for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
 
 # Define an input sequence and process it.
 encoder_inputs = Input(shape=(None, num_encoder_tokens))
-encoder = (CuDNNLSTM(latent_dim, return_state=True))
-encoder_outputs, state_h, state_c = encoder(encoder_inputs)
+
+x1_out = Bidirectional(CuDNNLSTM(units=75, return_sequences=True), merge_mode='concat')(encoder_inputs)
+x2_out = CuDNNLSTM(units=150, return_sequences=True)(x1_out)
+attention = dot([x2_out, x1_out], axes=[2, 2])
+attention = Activation('softmax')(attention)
+context = dot([attention, x1_out], axes=[2, 1])
+x2_out_combined_context = concatenate([context, x2_out])
+
+encoder_outputs, state_h, state_c = CuDNNLSTM(latent_dim, return_state=True)(x2_out_combined_context)
 # We discard `encoder_outputs` and only keep the states.
 encoder_states = [state_h, state_c]
 
