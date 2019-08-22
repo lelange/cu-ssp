@@ -60,7 +60,7 @@ def accuracy(y_true, y_predicted):
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
 
-batch_size = 124  # Batch size for training.
+batch_size = 64  # Batch size for training.
 epochs = 25  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.
 num_samples = 10000  # Number of samples to train on.
@@ -242,13 +242,12 @@ reverse_target_char_index = dict(
 
 def decode_sequence(input_seq):
     # Encode the input as state vectors.
-    #encoder_model.load_weights(load_file)
     states_value = encoder_model.predict(input_seq)
 
     # Generate empty target sequence of length 1.
     target_seq = np.zeros((1, 1, num_decoder_tokens))
     # Populate the first character of target sequence with the start character.
-    target_seq[0, 0, target_token_index['\t']] = 1.
+    target_seq[0, 0, target_token_index['G']] = 1.
 
     # Sampling loop for a batch of sequences
     # (to simplify, here we assume a batch of size 1).
