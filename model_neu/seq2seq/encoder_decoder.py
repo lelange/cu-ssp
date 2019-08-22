@@ -60,7 +60,7 @@ def accuracy(y_true, y_predicted):
 
 
 batch_size = 64  # Batch size for training.
-epochs = 100  # Number of epochs to train for.
+epochs = 25  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.
 num_samples = 10000  # Number of samples to train on.
 MODEL_NAME = 's2q_lstm'
@@ -234,7 +234,7 @@ reverse_target_char_index = dict(
 
 def decode_sequence(input_seq):
     # Encode the input as state vectors.
-    encoder_model.load_weights(load_file)
+    #encoder_model.load_weights(load_file)
     states_value = encoder_model.predict(input_seq)
 
     # Generate empty target sequence of length 1.
