@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 from keras import backend as K
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
-import datetime
+from datetime import datetime
 
 def get_acc(gt, pred, mask=None):
     '''
