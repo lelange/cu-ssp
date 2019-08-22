@@ -202,7 +202,7 @@ decoder_inputs = Input(shape=(None, num_decoder_tokens))
 # return states in the training model, but we will use them in inference.
 decoder_lstm = (CuDNNLSTM(latent_dim, return_sequences=True, return_state=True))
 #
-x1_out = Bidirectional(CuDNNLSTM(units=75, return_sequences=True), merge_mode='concat')(decoder_inputs, initial_state=encoder_states)
+x1_out = Bidirectional(CuDNNLSTM(units=latent_dim, return_sequences=True), merge_mode='concat')(decoder_inputs, initial_state=encoder_states)
 x2_out = CuDNNLSTM(units=150, return_sequences=True)(x1_out)
 attention = dot([x2_out, x1_out], axes=[2, 2])
 attention = Activation('softmax')(attention)
@@ -264,7 +264,7 @@ decoder_state_input_c = Input(shape=(latent_dim,))
 decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
 #x, h, c = CuDNNLSTM(latent_dim, return_sequences=True, return_state=True)(decoder_inputs, initial_state=decoder_states_inputs)
 #
-x1_out = Bidirectional(CuDNNLSTM(units=75, return_sequences=True), merge_mode='concat')(decoder_inputs, initial_state=encoder_states)
+x1_out = Bidirectional(CuDNNLSTM(units=latent_dim, return_sequences=True), merge_mode='concat')(decoder_inputs, initial_state=encoder_states)
 x2_out = CuDNNLSTM(units=150, return_sequences=True)(x1_out)
 attention = dot([x2_out, x1_out], axes=[2, 2])
 attention = Activation('softmax')(attention)
