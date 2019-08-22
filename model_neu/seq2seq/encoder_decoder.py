@@ -209,7 +209,7 @@ attention = Activation('softmax')(attention)
 context = dot([attention, x1_out], axes=[2, 1])
 x2_out_combined_context = concatenate([context, x2_out])
 
-x3_out = decoder_lstm(x2_out, initial_state=[h,c])
+x3_out, h,c = decoder_lstm(x2_out, initial_state=[h,c])
 attention_2 = dot([x3_out, x2_out], axes=[2, 2])
 attention_2 = Activation('softmax')(attention_2)
 context_2 = dot([attention_2, x2_out], axes=[2, 1])
