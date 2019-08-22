@@ -187,7 +187,8 @@ decoder_inputs = Input(shape=(None, num_decoder_tokens))
 # and to return internal states as well. We don't use the
 # return states in the training model, but we will use them in inference.
 decoder_lstm = (CuDNNLSTM(latent_dim, return_sequences=True, return_state=True))
-decoder_outputs, _, _ = decoder_lstm(decoder_inputs,
+x = CuDNNLSTM(latent_dim, return_sequences=True)(decoder_inputs)
+decoder_outputs, _, _ = decoder_lstm(x,
                                      initial_state=encoder_states)
 decoder_dense = Dense(num_decoder_tokens, activation='softmax')
 decoder_outputs = decoder_dense(decoder_outputs)
@@ -225,8 +226,9 @@ encoder_model = Model(encoder_inputs, encoder_states)
 decoder_state_input_h = Input(shape=(latent_dim,))
 decoder_state_input_c = Input(shape=(latent_dim,))
 decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
+x = CuDNNLSTM(latent_dim, return_sequences=True)(decoder_inputs)
 decoder_outputs, state_h, state_c = decoder_lstm(
-    decoder_inputs, initial_state=decoder_states_inputs)
+    x, initial_state=decoder_states_inputs)
 decoder_states = [state_h, state_c]
 decoder_outputs = decoder_dense(decoder_outputs)
 decoder_model = Model(
