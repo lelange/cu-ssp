@@ -195,7 +195,7 @@ checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbo
 # Run training
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics = [accuracy])
 model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
-          callbacks=[checkpointer, earlyStopping],
+          #callbacks=[checkpointer, earlyStopping],
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.2)
