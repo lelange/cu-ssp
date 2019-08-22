@@ -288,6 +288,7 @@ for seq_index in range(100):
     print('-')
     print('Input sentence:', input_texts[seq_index])
     print('Decoded sentence:', decoded_sentence)
+    print('Real sentence:', target_texts[seq_index])
 
     corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
     q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
