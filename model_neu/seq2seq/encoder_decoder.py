@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 from keras.models import Model
-from keras.layers import Input, LSTM, Dense
+from keras.layers import Input, LSTM, Dense, Lambda
 from keras.layers import Bidirectional, Activation, Dropout, CuDNNGRU, Conv1D, GRU, CuDNNLSTM
 import numpy as np
 import tensorflow as tf
@@ -166,6 +166,7 @@ for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
             # and will not include the start character.
             decoder_target_data[i, t - 1, target_token_index[char]] = 1.
 
+'''
 # Define an input sequence and process it.
 encoder_inputs = Input(shape=(None, num_encoder_tokens))
 encoder = (CuDNNLSTM(latent_dim, return_state=True))
@@ -199,6 +200,7 @@ model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.2)
+          
 
 # Save model
 #model.save('s2s.h5')
@@ -232,9 +234,10 @@ reverse_input_char_index = dict(
 reverse_target_char_index = dict(
     (i, char) for char, i in target_token_index.items())
 
+
 def decode_sequence(input_seq):
     # Encode the input as state vectors.
-    #encoder_model.load_weights(load_file)
+    # encoder_model.load_weights(load_file)
     states_value = encoder_model.predict(input_seq)
 
     # Generate empty target sequence of length 1.
@@ -258,7 +261,7 @@ def decode_sequence(input_seq):
         # Exit condition: either hit max length
         # or find stop character.
         if (sampled_char == '\n' or
-           len(decoded_sentence) > max_decoder_seq_length):
+                len(decoded_sentence) > max_decoder_seq_length):
             stop_condition = True
 
         # Update the target sequence (of length 1).
@@ -282,3 +285,72 @@ for seq_index in range(100):
 
     corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
     q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
+
+'''
+
+encoder_inputs = Input(shape=(None, num_encoder_tokens))
+encoder = CuDNNLSTM(latent_dim, return_state=True)
+encoder_outputs, state_h, state_c = encoder(encoder_inputs)
+states = [state_h, state_c]
+
+# Set up the decoder, which will only process one timestep at a time.
+decoder_inputs = Input(shape=(1, num_decoder_tokens))
+decoder_lstm = CuDNNLSTM(latent_dim, return_sequences=True, return_state=True)
+decoder_dense = Dense(num_decoder_tokens, activation='softmax')
+
+all_outputs = []
+inputs = decoder_inputs
+for _ in range(max_decoder_seq_length):
+    # Run the decoder on one timestep
+    outputs, state_h, state_c = decoder_lstm(inputs,
+                                             initial_state=states)
+    outputs = decoder_dense(outputs)
+    # Store the current prediction (we will concatenate all predictions later)
+    all_outputs.append(outputs)
+    # Reinject the outputs as inputs for the next loop iteration
+    # as well as update the states
+    inputs = outputs
+    states = [state_h, state_c]
+
+# Concatenate all predictions
+decoder_outputs = Lambda(lambda x: K.concatenate(x, axis=1))(all_outputs)
+
+# Define and compile model as previously
+model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics = [accuracy])
+
+# Prepare decoder input data that just contains the start character
+# Note that we could have made it a constant hard-coded in the model
+decoder_input_data = np.zeros((num_samples, 1, num_decoder_tokens))
+decoder_input_data[:, 0, target_token_index['\t']] = 1.
+
+# callbacks
+earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
+checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
+                                   mode='max')
+
+# Run training
+model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
+          callbacks=[checkpointer, earlyStopping],
+          batch_size=batch_size,
+          epochs=epochs,
+          validation_split=0.2)
+
+decoded = model.predict([encoder_input_data, decoder_input_data])
+for seq_index in range(10):
+    # Take one sequence (part of the training set)
+    # for trying out decoding.
+    decoded_sentence = decoded[seq_index]
+    print('-')
+    print('Input sentence:', input_texts[seq_index])
+    print('Decoded sentence:', decoded_sentence)
+
+    corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
+    print(corr8/len8)
+    q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
+    print(q8_accs)
+
+
+
+
+
