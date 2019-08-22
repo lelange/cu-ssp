@@ -6,6 +6,8 @@ from keras.layers import Bidirectional, Activation, Dropout, CuDNNGRU, Conv1D, G
 import numpy as np
 import tensorflow as tf
 from keras import backend as K
+from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
+import datetime
 
 def get_acc(gt, pred, mask=None):
     '''
@@ -50,12 +52,22 @@ def get_acc2(gt, pred, mask = None):
 
     return (1.0 * correct)/length
 
+def accuracy(y_true, y_predicted):
+    y = tf.argmax(y_true, axis =- 1)
+    y_ = tf.argmax(y_predicted, axis =- 1)
+    mask = tf.greater(y, 0)
+    return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
+
+
 batch_size = 64  # Batch size for training.
 epochs = 100  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.
 num_samples = 10000  # Number of samples to train on.
+MODEL_NAME = 's2q_lstm'
 # Path to the data txt file on disk.
 data_root = '/nosave/lange/cu-ssp/data/'
+weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
+load_file = "./model/"+weights_file
 
 def get_princeton_data(filename, max_len=700):
     ### filename = cb6133 for train, cb513 for test"
@@ -80,7 +92,6 @@ def get_princeton_data(filename, max_len=700):
     q8_str_list = []
     for vec in residue_array:
         x = ''.join(vec[vec != 'NoSeq'])
-        x = '\t' + x + '\n'
         residue_str_list.append(x)
     for vec in q8_array:
         x = ''.join(vec[vec != 'NoSeq'])
@@ -113,7 +124,7 @@ for line in lines[: min(num_samples, len(lines) - 1)]:
             target_characters.add(char)
 '''
 input_texts, target_texts = get_princeton_data('cb6133filtered')
-input_characters = list('ACEDGFIHKMLNQPSRTWVYX') + ['\t'] + ['\n']
+input_characters = list('ACEDGFIHKMLNQPSRTWVYX')
 target_characters = list('LBEGIHST') + ['\t'] + ['\n']
 
 input_characters = sorted(list(input_characters))
@@ -176,10 +187,15 @@ decoder_outputs = decoder_dense(decoder_outputs)
 # Define the model that will turn
 # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
 model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
+# callbacks
 
+earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
+checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
+                                   mode='max')
 # Run training
-model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics = [accuracy])
 model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
+          callbacks=[checkpointer, earlyStopping],
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.2)
@@ -216,14 +232,9 @@ reverse_input_char_index = dict(
 reverse_target_char_index = dict(
     (i, char) for char, i in target_token_index.items())
 
-def accuracy(y_true, y_predicted):
-    y = tf.argmax(y_true, axis =- 1)
-    y_ = tf.argmax(y_predicted, axis =- 1)
-    mask = tf.greater(y, 0)
-    return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
-
 def decode_sequence(input_seq):
     # Encode the input as state vectors.
+    encoder_model.load_weights(load_file)
     states_value = encoder_model.predict(input_seq)
 
     # Generate empty target sequence of length 1.
