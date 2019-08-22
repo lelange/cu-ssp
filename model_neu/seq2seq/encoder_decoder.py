@@ -1,113 +1,22 @@
 from __future__ import print_function
 
 from keras.models import Model
-from keras.layers import Input, LSTM, Dense, Lambda
-from keras.layers import Bidirectional, Activation, Dropout, CuDNNGRU, Conv1D, GRU, CuDNNLSTM
+from keras.layers import Input, LSTM, Dense
 import numpy as np
-import tensorflow as tf
-from keras import backend as K
-from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
-from datetime import datetime
-
-def get_acc(gt, pred, mask=None):
-    '''
-         if len(gt)!=len(pred):
-        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
-    '''
-    correct = 0
-    for i in range(len(gt)):
-        if mask is not None:
-            if mask[i] == 1:
-                if gt[i] == pred[i]:
-                    correct += 1
-            length=np.sum(mask)
-
-        else:
-            try:
-                if gt[i] == pred[i]:
-                    correct += 1
-            except:
-                print(i)
-            length = len(gt)
-    return (1.0 * correct), length
-
-def get_acc2(gt, pred, mask = None):
-    '''
-         if len(gt)!=len(pred):
-        print("Lengths are not equal. Len true = "+str(len(gt))+" len pred = "+str(len(pred)))
-    '''
-    correct = 0
-    for i in range(len(gt)):
-        if mask is not None:
-            if mask[i] == 1:
-                if gt[i] == pred[i]:
-                    correct += 1
-            length=np.sum(mask)
-
-        else:
-            if gt[i] == pred[i]:
-                correct += 1
-
-            length = len(gt)
-
-    return (1.0 * correct)/length
-
-def accuracy(y_true, y_predicted):
-    y = tf.argmax(y_true, axis =- 1)
-    y_ = tf.argmax(y_predicted, axis =- 1)
-    mask = tf.greater(y, 0)
-    return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
-
 
 batch_size = 64  # Batch size for training.
-epochs = 25  # Number of epochs to train for.
+epochs = 100  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.
-num_samples = 5534  # Number of samples to train on.
-MODEL_NAME = 's2q_lstm'
+num_samples = 10000  # Number of samples to train on.
 # Path to the data txt file on disk.
-data_root = '/nosave/lange/cu-ssp/data/'
-weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
-load_file = "./model/"+weights_file
-
-def get_princeton_data(filename, max_len=700):
-    ### filename = cb6133 for train, cb513 for test"
-    path = data_root+'data_princeton/'
-
-    primary_list=list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
-    q8_list = list('LBEGIHST') + ['NoSeq']
-
-    data = np.load(path+filename+".npy")
-    data_reshape = data.reshape(data.shape[0], max_len, -1)
-    residue_onehot = data_reshape[:, :, 0:22]
-    residue_q8_onehot = data_reshape[:, :, 22:31]
-    profile = data_reshape[:, :, 35:57]
-
-    # pad profiles to same length
-    zero_arr = np.zeros((profile.shape[0], max_len - profile.shape[1], profile.shape[2]))
-    profile_padded = np.concatenate([profile, zero_arr], axis=1)
-
-    residue_array = np.array(primary_list)[residue_onehot.argmax(2)]
-    q8_array = np.array(q8_list)[residue_q8_onehot.argmax(2)]
-    residue_str_list = []
-    q8_str_list = []
-    for vec in residue_array:
-        x = ''.join(vec[vec != 'NoSeq'])
-        residue_str_list.append(x)
-    for vec in q8_array:
-        x = ''.join(vec[vec != 'NoSeq'])
-        x = '\t' + x + '\n'
-        q8_str_list.append(x)
-
-    return residue_str_list, q8_str_list #, residue_onehot, residue_q8_onehot, profile_padded
+data_path = 'fra-eng/fra.txt'
 
 # Vectorize the data.
-'''
 input_texts = []
 target_texts = []
 input_characters = set()
 target_characters = set()
-
-with open(data_path, 'r') as f:
+with open(data_path, 'r', encoding='utf-8') as f:
     lines = f.read().split('\n')
 for line in lines[: min(num_samples, len(lines) - 1)]:
     input_text, target_text = line.split('\t')
@@ -122,10 +31,6 @@ for line in lines[: min(num_samples, len(lines) - 1)]:
     for char in target_text:
         if char not in target_characters:
             target_characters.add(char)
-'''
-input_texts, target_texts = get_princeton_data('cb6133filtered')
-input_characters = list('ACEDGFIHKMLNQPSRTWVYX')
-target_characters = list('LBEGIHST') + ['\t'] + ['\n']
 
 input_characters = sorted(list(input_characters))
 target_characters = sorted(list(target_characters))
@@ -166,10 +71,9 @@ for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
             # and will not include the start character.
             decoder_target_data[i, t - 1, target_token_index[char]] = 1.
 
-'''
 # Define an input sequence and process it.
 encoder_inputs = Input(shape=(None, num_encoder_tokens))
-encoder = (CuDNNLSTM(latent_dim, return_state=True))
+encoder = LSTM(latent_dim, return_state=True)
 encoder_outputs, state_h, state_c = encoder(encoder_inputs)
 # We discard `encoder_outputs` and only keep the states.
 encoder_states = [state_h, state_c]
@@ -179,7 +83,7 @@ decoder_inputs = Input(shape=(None, num_decoder_tokens))
 # We set up our decoder to return full output sequences,
 # and to return internal states as well. We don't use the
 # return states in the training model, but we will use them in inference.
-decoder_lstm = (CuDNNLSTM(latent_dim, return_sequences=True, return_state=True))
+decoder_lstm = LSTM(latent_dim, return_sequences=True, return_state=True)
 decoder_outputs, _, _ = decoder_lstm(decoder_inputs,
                                      initial_state=encoder_states)
 decoder_dense = Dense(num_decoder_tokens, activation='softmax')
@@ -188,22 +92,15 @@ decoder_outputs = decoder_dense(decoder_outputs)
 # Define the model that will turn
 # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
 model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
-# callbacks
 
-earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
-checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
-                                   mode='max')
 # Run training
-model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics = [accuracy])
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
-          callbacks=[checkpointer, earlyStopping],
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.2)
-          
-
 # Save model
-#model.save('s2s.h5')
+model.save('s2s.h5')
 
 # Next: inference mode (sampling).
 # Here's the drill:
@@ -237,7 +134,6 @@ reverse_target_char_index = dict(
 
 def decode_sequence(input_seq):
     # Encode the input as state vectors.
-    # encoder_model.load_weights(load_file)
     states_value = encoder_model.predict(input_seq)
 
     # Generate empty target sequence of length 1.
@@ -261,7 +157,7 @@ def decode_sequence(input_seq):
         # Exit condition: either hit max length
         # or find stop character.
         if (sampled_char == '\n' or
-                len(decoded_sentence) > max_decoder_seq_length):
+           len(decoded_sentence) > max_decoder_seq_length):
             stop_condition = True
 
         # Update the target sequence (of length 1).
@@ -282,75 +178,3 @@ for seq_index in range(100):
     print('-')
     print('Input sentence:', input_texts[seq_index])
     print('Decoded sentence:', decoded_sentence)
-
-    corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
-    q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
-
-'''
-
-encoder_inputs = Input(shape=(None, num_encoder_tokens))
-encoder = CuDNNLSTM(latent_dim, return_state=True)
-encoder_outputs, state_h, state_c = encoder(encoder_inputs)
-states = [state_h, state_c]
-
-# Set up the decoder, which will only process one timestep at a time.
-decoder_inputs = Input(shape=(1, num_decoder_tokens))
-decoder_lstm = CuDNNLSTM(latent_dim, return_sequences=True, return_state=True)
-decoder_dense = Dense(num_decoder_tokens, activation='softmax')
-
-all_outputs = []
-inputs = decoder_inputs
-for _ in range(max_decoder_seq_length):
-    # Run the decoder on one timestep
-    outputs, state_h, state_c = decoder_lstm(inputs,
-                                             initial_state=states)
-    outputs = decoder_dense(outputs)
-    # Store the current prediction (we will concatenate all predictions later)
-    all_outputs.append(outputs)
-    # Reinject the outputs as inputs for the next loop iteration
-    # as well as update the states
-    inputs = outputs
-    states = [state_h, state_c]
-
-# Concatenate all predictions
-decoder_outputs = Lambda(lambda x: K.concatenate(x, axis=1))(all_outputs)
-
-# Define and compile model as previously
-model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
-model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics = [accuracy])
-
-# Prepare decoder input data that just contains the start character
-# Note that we could have made it a constant hard-coded in the model
-decoder_input_data = np.zeros((num_samples, 1, num_decoder_tokens))
-decoder_input_data[:, 0, target_token_index['\t']] = 1.
-
-# callbacks
-earlyStopping = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max')
-checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose=1, save_best_only=True,
-                                   mode='max')
-
-# Run training
-model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
-          callbacks=[checkpointer, earlyStopping],
-          batch_size=batch_size,
-          epochs=epochs,
-          validation_split=0.2)
-
-decoded = model.predict([encoder_input_data, decoder_input_data])
-for seq_index in range(10):
-    # Take one sequence (part of the training set)
-    # for trying out decoding.
-    decoded_sentence = decoded[seq_index]
-    print('-')
-    print('Input sentence:', input_texts[seq_index])
-    print('Decoded sentence:', decoded_sentence)
-
-    corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
-    print(corr8/len8)
-    q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
-    print(q8_accs)
-
-
-
-
-
