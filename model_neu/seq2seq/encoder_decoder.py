@@ -60,7 +60,7 @@ def accuracy(y_true, y_predicted):
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
 
-batch_size = 64  # Batch size for training.
+batch_size = 124  # Batch size for training.
 epochs = 25  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.
 num_samples = 10000  # Number of samples to train on.
