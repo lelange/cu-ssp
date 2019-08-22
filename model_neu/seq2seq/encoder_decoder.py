@@ -62,7 +62,7 @@ def accuracy(y_true, y_predicted):
 batch_size = 64  # Batch size for training.
 epochs = 25  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.
-num_samples = 10000  # Number of samples to train on.
+num_samples = 5534  # Number of samples to train on.
 MODEL_NAME = 's2q_lstm'
 # Path to the data txt file on disk.
 data_root = '/nosave/lange/cu-ssp/data/'
