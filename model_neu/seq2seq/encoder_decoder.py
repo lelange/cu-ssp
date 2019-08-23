@@ -149,11 +149,16 @@ for line in lines[: min(num_samples, len(lines) - 1)]:
 '''
 
 def get_vocab(seqs):
+    p=True
     characters = []
     for seq in seqs:
+        if p:
+            print(seq)
         for char in seq:
-            print(char)
+            if p:
+                print(char)
             characters.append(char)
+        p=False
     return np.unique(characters)
 
 input_texts, target_texts = get_princeton_data('cb6133filtered')
