@@ -150,6 +150,7 @@ def get_vocab(seqs):
     characters = []
     for seq in seqs:
         for char in seq:
+            print(char)
             characters.append(char)
     return np.unique(characters)
 
