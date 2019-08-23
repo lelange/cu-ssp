@@ -61,7 +61,7 @@ def accuracy(y_true, y_predicted):
 
 
 batch_size = 64  # Batch size for training.
-epochs = 18  # Number of epochs to train for.
+epochs = 50  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.
 num_samples = 10000  # Number of samples to train on.
 MODEL_NAME = 's2q_lstm'
@@ -241,7 +241,7 @@ checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbo
 # Run training
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics = [accuracy])
 model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
-          #callbacks=[checkpointer, earlyStopping],
+          callbacks=[checkpointer, earlyStopping],
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.2)
