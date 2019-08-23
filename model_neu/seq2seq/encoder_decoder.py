@@ -111,11 +111,13 @@ def get_princeton_data(filename, max_len=700):
     q8_str_list = []
     for vec in residue_array:
         x = ''.join(vec[vec != 'NoSeq'])
+        x=list(x)
         x = seq2ngrams(x[start:start+end], n)
         x = ['\t']+x
         residue_str_list.append(x)
     for vec in q8_array:
         x = ''.join(vec[vec != 'NoSeq'])
+        x = list(x)
         x = seq2ngrams(x[start:start+end], n)
         x = ['\t'] + x + ['\n']
         q8_str_list.append(x)
