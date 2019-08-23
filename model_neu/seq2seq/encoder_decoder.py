@@ -70,9 +70,25 @@ data_root = '/nosave/lange/cu-ssp/data/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
 
+def seq2ngrams(seqs, n):
+    """
+    'AGAMQSASM' => [['AGA', 'MQS', 'ASM'], ['GAM','QSA'], ['AMQ', 'SAS']]
+    """
+    result = []
+    for seq in seqs:
+        a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
+        str_ngrams = []
+        for ngrams in zip(a, b, c):
+            for ngram in ngrams:
+                str_ngrams.append("".join(ngram))
+        result.append(str_ngrams)
+    return result
+
 def get_princeton_data(filename, max_len=700):
     start= 5
     end = 20
+    n = 2
+
     ### filename = cb6133 for train, cb513 for test"
     path = data_root+'data_princeton/'
 
@@ -95,11 +111,13 @@ def get_princeton_data(filename, max_len=700):
     q8_str_list = []
     for vec in residue_array:
         x = ''.join(vec[vec != 'NoSeq'])
-        x = '\t'+x[start:start+end]
+        x = seq2ngrams(x[start:start+end], n)
+        x = '\t'+x
         residue_str_list.append(x)
     for vec in q8_array:
         x = ''.join(vec[vec != 'NoSeq'])
-        x = '\t' + x[start:start+end] + '\n'
+        x = seq2ngrams(x[start:start+end], n)
+        x = '\t' + x + '\n'
         q8_str_list.append(x)
 
     return residue_str_list, q8_str_list #, residue_onehot, residue_q8_onehot, profile_padded
@@ -127,9 +145,18 @@ for line in lines[: min(num_samples, len(lines) - 1)]:
         if char not in target_characters:
             target_characters.add(char)
 '''
+
+def get_vocab(seqs):
+    characters = []
+    for seq in seqs:
+        for char in seq:
+            characters.append(char)
+    return np.unique(characters)
+
 input_texts, target_texts = get_princeton_data('cb6133filtered')
-input_characters = list('ACEDGFIHKMLNQPSRTWVYX')+ ['\t']
-target_characters = list('LBEGIHST') + ['\t'] + ['\n']
+
+input_characters = get_vocab(input_texts)
+target_characters = get_vocab(target_texts)
 
 input_characters = sorted(list(input_characters))
 target_characters = sorted(list(target_characters))
