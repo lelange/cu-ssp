@@ -205,14 +205,9 @@ for i, (input_text, target_text) in enumerate(zip(input_texts, target_texts)):
 # Define an input sequence and process it.
 encoder_inputs = Input(shape=(None, num_encoder_tokens))
 
-x1_out = Bidirectional(CuDNNLSTM(units=75, return_sequences=True), merge_mode='concat')(encoder_inputs)
-x2_out = CuDNNLSTM(units=150, return_sequences=True)(x1_out)
-attention = dot([x2_out, x1_out], axes=[2, 2])
-attention = Activation('softmax')(attention)
-context = dot([attention, x1_out], axes=[2, 1])
-x2_out_combined_context = concatenate([context, x2_out])
-
-encoder_outputs, state_h, state_c = CuDNNLSTM(latent_dim, return_state=True)(x2_out_combined_context)
+encoder_lstm = CuDNNLSTM(latent_dim, return_sequences=True)
+x = encoder_lstm(encoder_inputs)
+encoder_outputs, state_h, state_c = CuDNNLSTM(latent_dim, return_state=True)(x)
 # We discard `encoder_outputs` and only keep the states.
 encoder_states = [state_h, state_c]
 
@@ -265,8 +260,7 @@ decoder_state_input_c = Input(shape=(latent_dim,))
 decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
 
 x, h, c = decoder_lstm2(decoder_inputs, initial_state=decoder_states_inputs)
-decoder_outputs, state_h, state_c = decoder_lstm(
-    x)
+decoder_outputs, state_h, state_c = decoder_lstm(x)
 
 decoder_states = [state_h, state_c]
 
@@ -295,6 +289,7 @@ def decode_sequence(input_seq):
     # (to simplify, here we assume a batch of size 1).
     stop_condition = False
     decoded_sentence = ''
+    nb = 1
     while not stop_condition:
         output_tokens, h, c = decoder_model.predict(
             [target_seq] + states_value)
@@ -311,11 +306,14 @@ def decode_sequence(input_seq):
             stop_condition = True
 
         # Update the target sequence (of length 1).
-        target_seq = np.zeros((1, 1, num_decoder_tokens))
-        target_seq[0, 0, sampled_token_index] = 1.
-
+        target_seq_new = np.zeros((1, nb, num_decoder_tokens))
+        target_seq_new[:, :-1, :] = target_seq
+        target_seq_new[0, -1, sampled_token_index] = 1.
+        target_seq = target_seq_new
+        nb += 1
         # Update states
         states_value = [h, c]
+
 
     return decoded_sentence
 
