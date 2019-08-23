@@ -85,7 +85,7 @@ def seq2ngrams(seq, n):
 def get_princeton_data(filename, max_len=700):
     start= 5
     end = 20
-    n = 2
+    n = 3
 
     ### filename = cb6133 for train, cb513 for test"
     path = data_root+'data_princeton/'
@@ -295,7 +295,7 @@ def decode_sequence(input_seq):
     # Sampling loop for a batch of sequences
     # (to simplify, here we assume a batch of size 1).
     stop_condition = False
-    decoded_sentence = ''
+    decoded_sentence = []
     while not stop_condition:
         output_tokens, h, c = decoder_model.predict(
             [target_seq] + states_value)
@@ -303,7 +303,7 @@ def decode_sequence(input_seq):
         # Sample a token
         sampled_token_index = np.argmax(output_tokens[0, -1, :])
         sampled_char = reverse_target_char_index[sampled_token_index]
-        decoded_sentence += sampled_char
+        decoded_sentence.append(sampled_char)
 
         # Exit condition: either hit max length
         # or find stop character.
