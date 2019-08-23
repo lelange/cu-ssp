@@ -70,7 +70,9 @@ data_root = '/nosave/lange/cu-ssp/data/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
 
-def get_princeton_data(filename, max_len=20):
+def get_princeton_data(filename, max_len=700):
+    start= 5
+    end = 20
     ### filename = cb6133 for train, cb513 for test"
     path = data_root+'data_princeton/'
 
@@ -93,10 +95,11 @@ def get_princeton_data(filename, max_len=20):
     q8_str_list = []
     for vec in residue_array:
         x = ''.join(vec[vec != 'NoSeq'])
+        x = '\t'+x[start:start+end]
         residue_str_list.append(x)
     for vec in q8_array:
         x = ''.join(vec[vec != 'NoSeq'])
-        x = '\t' + x + '\n'
+        x = '\t' + x[start:start+end] + '\n'
         q8_str_list.append(x)
 
     return residue_str_list, q8_str_list #, residue_onehot, residue_q8_onehot, profile_padded
@@ -291,11 +294,11 @@ for seq_index in range(30):
     input_seq = encoder_input_data[seq_index: seq_index + 1]
     decoded_sentence = decode_sequence(input_seq)
     print('-')
-    print('Input sentence:', input_texts[seq_index])
-    print('Decoded sentence:', decoded_sentence)
+    print('Input sentence:\t', input_texts[seq_index])
+    print('Decoded sentence\t:', decoded_sentence)
     print('Real sentence:', target_texts[seq_index])
 
-    corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
-    q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
-    print(1.0*corr8/len8)
-    print(q8_accs)
+    #corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
+    #q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
+    #print(1.0*corr8/len8)
+    #print(q8_accs)
