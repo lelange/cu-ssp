@@ -116,8 +116,7 @@ def get_princeton_data(filename, max_len=700):
     for vec in q8_array:
         x = ''.join(vec[vec != 'NoSeq'])
         x = x[start:start+end]
-        x = seq2ngrams(x, n)
-        x = ['\t'] + x + ['\n']
+        x = '\t' + x + '\n'
         q8_str_list.append(x)
 
     return residue_str_list, q8_str_list #, residue_onehot, residue_q8_onehot, profile_padded
@@ -327,9 +326,9 @@ for seq_index in range(30):
     input_seq = encoder_input_data[seq_index: seq_index + 1]
     decoded_sentence = decode_sequence(input_seq)
     print('-')
-    print('Input sentence: ', input_texts[seq_index])
+    print('Input sentence:   ', input_texts[seq_index])
     print('Decoded sentence: \t', decoded_sentence)
-    print('Real sentence: ', target_texts[seq_index])
+    print('Real sentence:   ', target_texts[seq_index])
 
     #corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
     #q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
