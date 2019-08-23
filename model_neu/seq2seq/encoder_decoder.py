@@ -128,7 +128,7 @@ for line in lines[: min(num_samples, len(lines) - 1)]:
             target_characters.add(char)
 '''
 input_texts, target_texts = get_princeton_data('cb6133filtered')
-input_characters = list('ACEDGFIHKMLNQPSRTWVYX')
+input_characters = list('ACEDGFIHKMLNQPSRTWVYX')+ ['\t']
 target_characters = list('LBEGIHST') + ['\t'] + ['\n']
 
 input_characters = sorted(list(input_characters))
