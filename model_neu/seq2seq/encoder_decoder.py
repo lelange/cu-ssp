@@ -70,7 +70,7 @@ data_root = '/nosave/lange/cu-ssp/data/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
 
-def get_princeton_data(filename, max_len=700):
+def get_princeton_data(filename, max_len=20):
     ### filename = cb6133 for train, cb513 for test"
     path = data_root+'data_princeton/'
 
