@@ -193,7 +193,7 @@ decoder_lstm = (CuDNNLSTM(latent_dim, return_sequences=True, return_state=True))
 decoder_lstm2 = (CuDNNLSTM(latent_dim, return_sequences=True, return_state=True))
 
 x, h, c = decoder_lstm2(decoder_inputs, initial_state=encoder_states)
-decoder_outputs, _, _ = decoder_lstm(x,initial_state=[h,c])
+decoder_outputs, _, _ = decoder_lstm(x)
 
 decoder_dense = Dense(num_decoder_tokens, activation='softmax')
 decoder_outputs = decoder_dense(decoder_outputs)
@@ -234,7 +234,7 @@ decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
 
 x, h, c = decoder_lstm2(decoder_inputs, initial_state=decoder_states_inputs)
 decoder_outputs, state_h, state_c = decoder_lstm(
-    x, initial_state=[h,c])
+    x)
 
 decoder_states = [state_h, state_c]
 
@@ -295,7 +295,7 @@ for seq_index in range(30):
     decoded_sentence = decode_sequence(input_seq)
     print('-')
     print('Input sentence: ', input_texts[seq_index])
-    print('Decoded sentence: ', decoded_sentence)
+    print('Decoded sentence: \t', decoded_sentence)
     print('Real sentence: ', target_texts[seq_index])
 
     #corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
