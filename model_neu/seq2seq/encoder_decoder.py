@@ -109,13 +109,13 @@ def get_princeton_data(filename, max_len=700):
     q8_str_list = []
     for vec in residue_array:
         x = ''.join(vec[vec != 'NoSeq'])
-        x=x[start:start+end]
+        #x=x[start:start+end]
         x = seq2ngrams(x, n)
         x = ['\t']+x
         residue_str_list.append(x)
     for vec in q8_array:
         x = ''.join(vec[vec != 'NoSeq'])
-        x = x[start:start+end]
+        #x = x[start:start+end]
         x = '\t' + x + '\n'
         q8_str_list.append(x)
 
@@ -294,7 +294,7 @@ def decode_sequence(input_seq):
     # Sampling loop for a batch of sequences
     # (to simplify, here we assume a batch of size 1).
     stop_condition = False
-    decoded_sentence = []
+    decoded_sentence = ''
     while not stop_condition:
         output_tokens, h, c = decoder_model.predict(
             [target_seq] + states_value)
@@ -302,7 +302,7 @@ def decode_sequence(input_seq):
         # Sample a token
         sampled_token_index = np.argmax(output_tokens[0, -1, :])
         sampled_char = reverse_target_char_index[sampled_token_index]
-        decoded_sentence.append(sampled_char)
+        decoded_sentence += sampled_char
 
         # Exit condition: either hit max length
         # or find stop character.
@@ -326,8 +326,8 @@ for seq_index in range(30):
     input_seq = encoder_input_data[seq_index: seq_index + 1]
     decoded_sentence = decode_sequence(input_seq)
     print('-')
-    print('Input sentence:   ', input_texts[seq_index])
-    print('Decoded sentence: \t', decoded_sentence)
+    #print('Input sentence:   ', input_texts[seq_index])
+    print('Decoded sentence:\t', decoded_sentence)
     print('Real sentence:   ', target_texts[seq_index])
 
     #corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
