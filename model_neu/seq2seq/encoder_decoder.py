@@ -203,11 +203,10 @@ decoder_inputs = Input(shape=(None, num_decoder_tokens))
 decoder_lstm = (CuDNNLSTM(latent_dim, return_sequences=True, return_state=True))
 #
 x, h,c = decoder_lstm(decoder_inputs, initial_state=encoder_states)
-x, h, c = decoder_lstm(x, initial_state=[h,c])
-x, h, c = decoder_lstm(x, initial_state=[h,c])
+x, h, c = decoder_lstm(x)
+x, h, c = decoder_lstm(x)
 #
-decoder_outputs, _, _ = decoder_lstm(x,
-                                     initial_state=[h,c])
+decoder_outputs, _, _ = decoder_lstm(x)
 decoder_dense = Dense(num_decoder_tokens, activation='softmax')
 decoder_outputs = decoder_dense(decoder_outputs)
 
@@ -248,12 +247,11 @@ decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
 #x, h, c = CuDNNLSTM(latent_dim, return_sequences=True, return_state=True)(decoder_inputs, initial_state=decoder_states_inputs)
 #
 x, h, c = decoder_lstm(decoder_inputs, initial_state=encoder_states)
-x, h, c = decoder_lstm(x, initial_state=[h,c])
-x, h, c = decoder_lstm(x, initial_state=[h,c])
+x, h, c = decoder_lstm(x)
+x, h, c = decoder_lstm(x)
 
 #
-decoder_outputs, state_h, state_c = decoder_lstm(
-    x, initial_state=[h,c])
+decoder_outputs, state_h, state_c = decoder_lstm(x)
 decoder_states = [state_h, state_c]
 decoder_outputs = decoder_dense(decoder_outputs)
 decoder_model = Model(
