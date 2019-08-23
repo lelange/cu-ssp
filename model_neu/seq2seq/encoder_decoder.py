@@ -202,32 +202,15 @@ decoder_inputs = Input(shape=(None, num_decoder_tokens))
 # return states in the training model, but we will use them in inference.
 decoder_lstm = (CuDNNLSTM(latent_dim, return_sequences=True, return_state=True))
 #
-x1_out, h,c = decoder_lstm(decoder_inputs, initial_state=encoder_states)
-x2_out, h, c = decoder_lstm(x1_out, initial_state=[h,c])
-attention = dot([x2_out, x1_out], axes=[2, 2])
-attention = Activation('softmax')(attention)
-context = dot([attention, x1_out], axes=[2, 1])
-x2_out_combined_context = concatenate([context, x2_out])
-
-x3_out, h,c = decoder_lstm(x2_out, initial_state=[h,c])
-attention_2 = dot([x3_out, x2_out], axes=[2, 2])
-attention_2 = Activation('softmax')(attention_2)
-context_2 = dot([attention_2, x2_out], axes=[2, 1])
-x3_out_combined_context = concatenate([context_2, x3_out])
-
-attention_2_1 = dot([x3_out, x1_out], axes=[2, 2])
-attention_2_1 = Activation('softmax')(attention_2_1)
-context_2_1 = dot([attention_2_1, x1_out], axes=[2, 1])
-x3_1_out_combined_context = concatenate([context_2_1, x3_out])
-
-out = keras.layers.Add()([x2_out_combined_context, x3_out_combined_context, x3_1_out_combined_context])
-
-x, h, c = decoder_lstm(out)
+x, h,c = decoder_lstm(decoder_inputs, initial_state=encoder_states)
+x, h, c = decoder_lstm(x, initial_state=[h,c])
+x, h, c = decoder_lstm(x, initial_state=[h,c])
 #
 decoder_outputs, _, _ = decoder_lstm(x,
                                      initial_state=[h,c])
 decoder_dense = Dense(num_decoder_tokens, activation='softmax')
 decoder_outputs = decoder_dense(decoder_outputs)
+
 
 # Define the model that will turn
 # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
@@ -264,27 +247,9 @@ decoder_state_input_c = Input(shape=(latent_dim,))
 decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
 #x, h, c = CuDNNLSTM(latent_dim, return_sequences=True, return_state=True)(decoder_inputs, initial_state=decoder_states_inputs)
 #
-x1_out, h, c = decoder_lstm(decoder_inputs, initial_state=encoder_states)
-x2_out, h, c = decoder_lstm(x1_out, initial_state=[h,c])
-attention = dot([x2_out, x1_out], axes=[2, 2])
-attention = Activation('softmax')(attention)
-context = dot([attention, x1_out], axes=[2, 1])
-x2_out_combined_context = concatenate([context, x2_out])
-
-x3_out, h, c = decoder_lstm(x2_out, initial_state=[h,c])
-attention_2 = dot([x3_out, x2_out], axes=[2, 2])
-attention_2 = Activation('softmax')(attention_2)
-context_2 = dot([attention_2, x2_out], axes=[2, 1])
-x3_out_combined_context = concatenate([context_2, x3_out])
-
-attention_2_1 = dot([x3_out, x1_out], axes=[2, 2])
-attention_2_1 = Activation('softmax')(attention_2_1)
-context_2_1 = dot([attention_2_1, x1_out], axes=[2, 1])
-x3_1_out_combined_context = concatenate([context_2_1, x3_out])
-
-out = keras.layers.Add()([x2_out_combined_context, x3_out_combined_context, x3_1_out_combined_context])
-
-x, h, c = decoder_lstm(out)
+x, h, c = decoder_lstm(decoder_inputs, initial_state=encoder_states)
+x, h, c = decoder_lstm(x, initial_state=[h,c])
+x, h, c = decoder_lstm(x, initial_state=[h,c])
 
 #
 decoder_outputs, state_h, state_c = decoder_lstm(
