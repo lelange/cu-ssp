@@ -203,8 +203,8 @@ decoder_inputs = Input(shape=(None, num_decoder_tokens))
 decoder_lstm = (CuDNNLSTM(latent_dim, return_sequences=True, return_state=True))
 #
 x, h,c = decoder_lstm(decoder_inputs, initial_state=encoder_states)
-x, h, c = decoder_lstm(x)
-x, h, c = decoder_lstm(x)
+x, h, c = CuDNNLSTM(latent_dim, return_sequences=True, return_state=True)(x)
+x, h, c = CuDNNLSTM(latent_dim, return_sequences=True, return_state=True)(x)
 #
 decoder_outputs, _, _ = decoder_lstm(x)
 decoder_dense = Dense(num_decoder_tokens, activation='softmax')
