@@ -61,7 +61,7 @@ def accuracy(y_true, y_predicted):
 
 
 batch_size = 64  # Batch size for training.
-epochs = 25  # Number of epochs to train for.
+epochs = 100  # Number of epochs to train for.
 latent_dim = 256  # Latent dimensionality of the encoding space.
 num_samples = 10000  # Number of samples to train on.
 MODEL_NAME = 's2q_lstm'
@@ -294,9 +294,9 @@ for seq_index in range(30):
     input_seq = encoder_input_data[seq_index: seq_index + 1]
     decoded_sentence = decode_sequence(input_seq)
     print('-')
-    print('Input sentence:\t', input_texts[seq_index])
-    print('Decoded sentence\t:', decoded_sentence)
-    print('Real sentence:', target_texts[seq_index])
+    print('Input sentence: ', input_texts[seq_index])
+    print('Decoded sentence: ', decoded_sentence)
+    print('Real sentence: ', target_texts[seq_index])
 
     #corr8, len8 = get_acc(target_texts[seq_index], decoded_sentence)
     #q8_accs = get_acc2(target_texts[seq_index], decoded_sentence)
