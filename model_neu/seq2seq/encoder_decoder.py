@@ -70,19 +70,17 @@ data_root = '/nosave/lange/cu-ssp/data/'
 weights_file = MODEL_NAME+"-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 load_file = "./model/"+weights_file
 
-def seq2ngrams(seqs, n):
+def seq2ngrams(seq, n):
     """
     'AGAMQSASM' => [['AGA', 'MQS', 'ASM'], ['GAM','QSA'], ['AMQ', 'SAS']]
     """
-    result = []
-    for seq in seqs:
-        a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
-        str_ngrams = []
-        for ngrams in zip(a, b, c):
-            for ngram in ngrams:
-                str_ngrams.append("".join(ngram))
-        result.append(str_ngrams)
-    return result
+    a, b, c = zip(*[iter(seq)] * n), zip(*[iter(seq[1:])] * n), zip(*[iter(seq[2:])] * n)
+    str_ngrams = []
+    for ngrams in zip(a, b, c):
+        for ngram in ngrams:
+            str_ngrams.append("".join(ngram))
+
+    return str_ngrams
 
 def get_princeton_data(filename, max_len=700):
     start= 5
@@ -111,13 +109,13 @@ def get_princeton_data(filename, max_len=700):
     q8_str_list = []
     for vec in residue_array:
         x = ''.join(vec[vec != 'NoSeq'])
-        x=[x[start:start+end]]
+        x=x[start:start+end]
         x = seq2ngrams(x, n)
         x = ['\t']+x
         residue_str_list.append(x)
     for vec in q8_array:
         x = ''.join(vec[vec != 'NoSeq'])
-        x = [x[start:start+end]]
+        x = x[start:start+end]
         x = seq2ngrams(x, n)
         x = ['\t'] + x + ['\n']
         q8_str_list.append(x)
