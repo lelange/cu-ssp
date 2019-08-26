@@ -353,7 +353,7 @@ else:
     X_train_aug = [X_train, X_aug_train]
     X_val_aug = [X_val, X_aug_val]
     X_test_aug = [X_test, X_aug_test]
-    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=10)
+    model, test_acc = train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs=30)
 
 
 time_end = time.time() - start_time
