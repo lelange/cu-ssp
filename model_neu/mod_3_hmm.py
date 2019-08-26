@@ -53,11 +53,11 @@ def parse_arguments():
     :return: command line arguments
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--pssm', help='use pssm profiles', action='store_true')
-    parser.add_argument('--hmm', help='use hmm profiles', action='store_true')
-    parser.add_argument('--normalize', help='nomalize profiles', action='store_true')
-    parser.add_argument('--standardize',  help='standardize profiles', action='store_true')
-    parser.add_argument('--cv', help='use crossvalidation' , action= 'store_true')
+    parser.add_argument('-pssm', help='use pssm profiles', action='store_true')
+    parser.add_argument('-hmm', help='use hmm profiles', action='store_true')
+    parser.add_argument('-normalize', help='nomalize profiles', action='store_true')
+    parser.add_argument('-standardize',  help='standardize profiles', action='store_true')
+    parser.add_argument('-cv', help='use crossvalidation' , action= 'store_true')
     return parser.parse_args()
 
 args = parse_arguments()
