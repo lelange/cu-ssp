@@ -32,6 +32,7 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
+from scipy.stats import logistic
 from utils import *
 
 start_time = time.time()
@@ -80,10 +81,10 @@ train_target_seqs = np.load('../data/data_qzlshy/train_q8.npy')
 test_target_seqs = np.load('../data/data_qzlshy/test_q8.npy')
 
 '''
-X_train = np.load('../data/X_train_6133.npy')
-X_test = np.load('../data/X_test_513.npy')
-y_train = np.load('../data/y_train_6133.npy')
-y_test = np.load('../data/y_test_513.npy')
+X_train = np.load('../data/data_qzlshy/X_train_6133.npy')
+X_test = np.load('../data/data_qzlshy/X_test_513.npy')
+y_train = np.load('../data/data_qzlshy/y_train_6133.npy')
+y_test = np.load('../data/data_qzlshy/y_test_513.npy')
 
 '''
 
@@ -92,40 +93,40 @@ if normalize:
     # load normalized profiles
     print("load normalized profiles... ")
     if pssm == True:
-        train_pssm = np.load('../data/train_pssm.npy')
-        test_pssm = np.load('../data/test_pssm.npy')
+        train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
+        test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
         #train_pssm = normal(train_pssm)
         #test_pssm= normal(test_pssm)
 
     if hmm == True:
-        train_hmm = np.load('../data/train_hmm.npy')
-        test_hmm = np.load('../data/test_hmm.npy')
+        train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
+        test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
         train_hmm = normal(train_hmm)
         test_hmm= normal(test_hmm)
 
 elif standardize:
     print("load standardized profiles... ")
     if pssm == True:
-        train_pssm = np.load('../data/train_pssm.npy')
-        test_pssm = np.load('../data/test_pssm.npy')
-        train_pssm = standard(train_pssm)
-        test_pssm = standard(test_pssm)
+        train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
+        test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
+        train_pssm = logistic.cdf(train_pssm)
+        test_pssm = logistic.cdf(test_pssm)
 
     if hmm == True:
-        train_hmm = np.load('../data/train_hmm.npy')
-        test_hmm = np.load('../data/test_hmm.npy')
+        train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
+        test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
         train_hmm = standard(train_hmm)
         test_hmm = standard(test_hmm)
 
 else:
     print("load profiles...")
     if pssm == True:
-        train_pssm = np.load('../data/train_pssm.npy')
-        test_pssm = np.load('../data/test_pssm.npy')
+        train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
+        test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
 
     if hmm == True:
-        train_hmm = np.load('../data/train_hmm.npy')
-        test_hmm = np.load('../data/test_hmm.npy')
+        train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
+        test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
 
 
 if pssm and hmm:
