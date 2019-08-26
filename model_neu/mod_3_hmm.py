@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from keras import backend as K
 from keras import regularizers, constraints, initializers, activations
 
-from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard
+from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from keras.engine import InputSpec
 from keras.engine.topology import Layer
 from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU
@@ -187,20 +187,17 @@ def build_model():
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 250
     x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    print(x1.shape)
-    print(profiles_input.shape)
     x1 = concatenate([x1, profiles_input])
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
-
-    x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
-    x2 = concatenate([x2, profiles_input])
-
     # Defining a bidirectional GRU using the embedded representation of the inputs
     x1 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x1)
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
-    
+
+    x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
+    x2 = concatenate([x2, profiles_input])
+    # Defining a bidirectional GRU using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)
     x2 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x2)
     COMBO_MOVE = concatenate([x1, x2])
@@ -208,7 +205,33 @@ def build_model():
     w = Dropout(0.4)(w)
     w = tcn.TCN(return_sequences=True)(w)
 
-    y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
+    # Defining an embedding layer mapping from the words (n_words) to a vector of len 250
+    x3 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
+    print(profiles_input.shape)
+    x3 = concatenate([x3, profiles_input])
+
+    x3 = Dense(600, activation="relu")(x3)
+    x3 = Dropout(0.5)(x3)
+    # Defining a bidirectional GRU using the embedded representation of the inputs
+    x3 = Bidirectional(CuDNNGRU(units=300, return_sequences=True))(x3)
+    x3 = Bidirectional(CuDNNGRU(units=150, return_sequences=True))(x3)
+
+    x4 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
+    x4 = concatenate([x4, profiles_input])
+    # Defining a bidirectional GRU using the embedded representation of the inputs
+    x4 = Bidirectional(CuDNNGRU(units=300, return_sequences=True))(x4)
+    x4 = Bidirectional(CuDNNGRU(units=150, return_sequences=True))(x4)
+    COMBO_MOVE2 = concatenate([x3, x4])
+    w2 = Dense(300, activation="relu")(COMBO_MOVE2)  # try 500
+    w2 = Dropout(0.4)(w2)
+    w2 = tcn.TCN(return_sequences=True)(w2)
+
+    COMBO_MOVE3 = concatenate([w, w2])
+    w3 = Dense(150, activation="relu")(COMBO_MOVE3)  # try 500
+    w3 = Dropout(0.4)(w3)
+    w3 = tcn.TCN(return_sequences=True)(w3)
+
+    y = TimeDistributed(Dense(n_tags, activation="softmax"))(w3)
 
     # Defining the model as a whole and printing the summary
     model = Model([input, profiles_input], y)
@@ -225,12 +248,14 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
 
     load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
+    reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
+                                  patience=2, verbose=1, min_lr=0.0001)
     earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
     #tensorboard = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
     # Training the model on the training data and validating using the validation set
     history = model.fit(X_train_aug, y_train, validation_data=(X_val_aug, y_val),
-            epochs=epochs, batch_size=16, callbacks=[checkpointer, earlyStopping], verbose=1, shuffle=True)
+            epochs=epochs, batch_size=16, callbacks=[checkpointer, earlyStopping, reduce_lr], verbose=1, shuffle=True)
 
     model.load_weights(load_file)
     print("####evaluate:")
