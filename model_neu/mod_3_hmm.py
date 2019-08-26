@@ -115,8 +115,8 @@ elif standardize:
     if hmm == True:
         train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
         test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
-        train_hmm = standard(train_hmm)
-        test_hmm = standard(test_hmm)
+        train_hmm = logistic.cdf(train_hmm)
+        test_hmm = logistic.cdf(test_hmm)
 
 else:
     print("load profiles...")
