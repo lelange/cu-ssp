@@ -14,8 +14,8 @@ from keras import optimizers, initializers, constraints, regularizers
 from keras.engine.topology import Layer
 from tensorflow.keras.layers import Activation
 from tensorflow.layers import Flatten
-cb6133filename = '../data/cb6133filtered.npy'
-cb513 = '../data/cb513.npy'
+cb6133filename = '../data/data_princeton/cb6133filtered.npy'
+cb513 = '../data/data_princeton/cb513.npy'
 def load_augmented_data(npy_path, max_len):
     data = np.load(npy_path)
     residue_list = ['A', 'C', 'E', 'D', 'G', 'F', 'I', 'H', 'K', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y', 'X','NoSeq']
@@ -75,11 +75,6 @@ train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.
 test_df, X_aug_test = load_augmented_data(cb513,maxlen_seq)
 test_input_seqs, test_target_seqs = test_df[['input','expected']][(test_df.len <= maxlen_seq)].values.T
 
-
-
-
-
-
 train_input_grams = seq2ngrams(train_input_seqs)
 tokenizer_encoder = Tokenizer()
 
@@ -130,6 +125,7 @@ revsere_decoder_index = {value:key for key,value in tokenizer_decoder.word_index
 revsere_encoder_index = {value:key for key,value in tokenizer_encoder.word_index.items()}
 acc = model.evaluate([X_test,X_aug_test], y_test)
 print (acc)
+'''
 y_test_pred = model.predict([X_test,X_aug_test])
 np.save('cb513_test_prob_6.npy', y_test_pred)
 counter = 0
@@ -138,3 +134,4 @@ for i in range(len(X_test)):
     print_results(X_test[i], y_test_pred[i], revsere_decoder_index,counter,test_df)
     counter+=1
 Ans.to_csv('cb513_test_6.csv',index = False)
+'''
