@@ -20,7 +20,7 @@ from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceL
 from keras.engine import InputSpec
 from keras.engine.topology import Layer
 from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU
-from keras.layers import Dropout, Flatten, Activation, RepeatVector, Permute
+from keras.layers import Dropout, Flatten, Activation, RepeatVector, Permute, Conv1D, BatchNormalization
 
 from keras.layers import Dropout
 from keras.layers import merge
@@ -251,7 +251,7 @@ def build_model():
     # Defining a bidirectional GRU using the embedded representation of the inputs
     x4 = Bidirectional(CuDNNGRU(units=300, return_sequences=True))(x4)
     x4 = Bidirectional(CuDNNGRU(units=150, return_sequences=True))(x4)
-    
+
     COMBO_MOVE2 = concatenate([x3, x4])
     w2 = Dense(300, activation="relu")(COMBO_MOVE2)  # try 500
     w2 = Dropout(0.4)(w2)
