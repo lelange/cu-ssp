@@ -19,7 +19,7 @@ from keras import regularizers, constraints, initializers, activations
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from keras.engine import InputSpec
 from keras.engine.topology import Layer
-from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU
+from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU, Concatenate
 from keras.layers import Dropout, Flatten, Activation, RepeatVector, Permute, Conv1D, BatchNormalization
 
 from keras.layers import Dropout
