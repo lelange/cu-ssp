@@ -180,6 +180,34 @@ y_train = to_categorical(train_target_data)
 
 time_data = time.time() - start_time
 
+
+def conv_block(x, activation=True, batch_norm=True, drop_out=True, res=True):
+    cnn = Conv1D(64, 11, padding="same")(x)
+    if activation: cnn = TimeDistributed(Activation("relu"))(cnn)
+    if batch_norm: cnn = TimeDistributed(BatchNormalization())(cnn)
+    if drop_out:   cnn = TimeDistributed(Dropout(0.5))(cnn)
+    if res:        cnn = Concatenate(axis=-1)([x, cnn])
+
+    return cnn
+
+
+def super_conv_block(x):
+    c3 = Conv1D(32, 1, padding="same")(x)
+    c3 = TimeDistributed(Activation("relu"))(c3)
+    c3 = TimeDistributed(BatchNormalization())(c3)
+
+    c7 = Conv1D(64, 3, padding="same")(x)
+    c7 = TimeDistributed(Activation("relu"))(c7)
+    c7 = TimeDistributed(BatchNormalization())(c7)
+
+    c11 = Conv1D(128, 5, padding="same")(x)
+    c11 = TimeDistributed(Activation("relu"))(c11)
+    c11 = TimeDistributed(BatchNormalization())(c11)
+
+    x = Concatenate(axis=-1)([x, c3, c7, c11])
+    x = TimeDistributed(Dropout(0.5))(x)
+    return x
+
 def build_model():
     model = None
     input = Input(shape=(None,))
@@ -201,9 +229,11 @@ def build_model():
     x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)
     x2 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x2)
     COMBO_MOVE = concatenate([x1, x2])
+
     w = Dense(500, activation="relu")(COMBO_MOVE)  # try 500
     w = Dropout(0.4)(w)
-    w = tcn.TCN(return_sequences=True)(w)
+    w = super_conv_block(w)
+    w = conv_block(w)
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 250
     x3 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
@@ -221,10 +251,12 @@ def build_model():
     # Defining a bidirectional GRU using the embedded representation of the inputs
     x4 = Bidirectional(CuDNNGRU(units=300, return_sequences=True))(x4)
     x4 = Bidirectional(CuDNNGRU(units=150, return_sequences=True))(x4)
+    
     COMBO_MOVE2 = concatenate([x3, x4])
     w2 = Dense(300, activation="relu")(COMBO_MOVE2)  # try 500
     w2 = Dropout(0.4)(w2)
-    w2 = tcn.TCN(return_sequences=True)(w2)
+    w2 = super_conv_block(w2)
+    w2 = conv_block(w2)
 
     COMBO_MOVE3 = concatenate([w, w2])
     w3 = Dense(150, activation="relu")(COMBO_MOVE3)  # try 500
