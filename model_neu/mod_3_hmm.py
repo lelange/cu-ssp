@@ -76,11 +76,11 @@ if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
 
 #inputs: primary structure
-train_input_seqs = np.load('../data/train_input.npy')
-test_input_seqs = np.load('../data/test_input.npy')
+train_input_seqs = np.load('../data/data_qzlshy/train_input.npy')
+test_input_seqs = np.load('../data/data_qzlshy/test_input.npy')
 #labels: secondary structure
-train_target_seqs = np.load('../data/train_q8.npy')
-test_target_seqs = np.load('../data/test_q8.npy')
+train_target_seqs = np.load('../data/data_qzlshy/train_q8.npy')
+test_target_seqs = np.load('../data/data_qzlshy/test_q8.npy')
 
 '''
 X_train = np.load('../data/X_train_6133.npy')
@@ -302,15 +302,4 @@ time_end = time.time() - start_time
 m, s = divmod(time_end, 60)
 print("The program needed {:.0f}s to load the data and {:.0f}min {:.0f}s in total.".format(time_data, m, s))
 
-def message_me(model_name, m, s):
-    username = 'charlie.gpu'
-    password = '19cee1Et742'
-    recipient = '100002834091853'  #Anna: 100002834091853, Chris: 100001479799294
-    client = fbchat.Client(username, password)
-    msg = Message(text='{} ist erfolgreich durchgelaufen! \U0001F973 '
-                       '\n\n(Gesamtlaufzeit {:.0f}min {:.0f}s)'.format(model_name, m, s))
 
-    sent = client.send(msg, thread_id=recipient, thread_type=ThreadType.USER)
-    client.logout()
-
-message_me(sys.argv[0], m, s)

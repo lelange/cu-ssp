@@ -46,13 +46,13 @@ import os
 train_df = pd.read_csv('cb6133filtered.npy.csv')
 test_df = pd.read_csv('cb513.npy.csv')
 
-data_train = np.load('../data/cb6133filtered.npy')
+data_train = np.load('../data/data_princeton/cb6133filtered.npy')
 data_reshape_train = data_train.reshape(data_train.shape[0], 700, -1)
 profile_train = data_reshape_train[:,:,35:57]
 zero_arr_train = np.zeros((profile_train.shape[0], 800 - profile_train.shape[1], profile_train.shape[2]))
 profile_padded_train = np.concatenate([profile_train, zero_arr_train], axis=1)
 
-data_test = np.load('../data/cb513.npy')
+data_test = np.load('../data/data_princeton/cb513.npy')
 data_reshape_test = data_test.reshape(data_test.shape[0], 700, -1)
 profile_test = data_reshape_test[:,:,35:57]
 zero_arr_test = np.zeros((profile_test.shape[0], 800 - profile_test.shape[1], profile_test.shape[2]))

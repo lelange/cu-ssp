@@ -39,10 +39,10 @@ def load_augmented_data(npy_path, max_len):
     train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'expected': q8_str_list})
     return train_df, profile_padded_wrapped
 
-cb513filename = '../data/cb513.npy'
+cb513filename = '../data/data_princeton/cb513.npy'
 
-cb6133filename = '../data/cb6133.npy'
-cb6133filteredfilename = '../data/cb6133filtered.npy'
+cb6133filename = '../data/data_princeton/cb6133.npy'
+cb6133filteredfilename = '../data/data_princeton/cb6133filtered.npy'
 
 max_len =700
 train_df, profile_padded_wrapped = load_augmented_data(cb6133filename, max_len)

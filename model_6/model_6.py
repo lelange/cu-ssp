@@ -68,7 +68,6 @@ def print_results(x, y_, revsere_decoder_index, counter,test_df):
 def seq2ngrams(seqs, n = 1):
     return np.array([[seq[i : i + n] for i in range(len(seq))] for seq in seqs])
 
-
 maxlen_seq = 700
 train_df, X_aug_train = load_augmented_data(cb6133filename,maxlen_seq)
 train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.len <= maxlen_seq)].values.T
