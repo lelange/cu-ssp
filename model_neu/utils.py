@@ -10,6 +10,7 @@ import tensorflow as tf
 import argparse
 from datetime import datetime
 import os, pickle
+from scipy.stats import logistic
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
@@ -40,10 +41,7 @@ def parse_arguments(default_epochs):
     return parser.parse_args()
 
 def normal(data):
-    min = np.min(data)
-    max = np.max(data)
-    data_ = (data-min)/(max-min)
-    return data_
+    return logistic.clf(data)
 
 def standard(data):
     mean = np.mean(data)

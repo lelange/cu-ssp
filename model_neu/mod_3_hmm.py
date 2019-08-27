@@ -32,7 +32,7 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
-from scipy.stats import logistic
+
 from utils import *
 
 start_time = time.time()
@@ -219,7 +219,7 @@ def build_model():
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
-    
+
     # Defining a bidirectional GRU using the embedded representation of the inputs
     x1 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x1)
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
