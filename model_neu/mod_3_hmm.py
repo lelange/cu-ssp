@@ -265,7 +265,7 @@ def build_model():
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
     adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
-    model.compile(optimizer=adamOptimizer, loss=["categorical_crossentropy", nll1], metrics=["accuracy", accuracy])
+    model.compile(optimizer=adamOptimizer, loss=nll1, metrics=["accuracy", accuracy])
     return model
 
 def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs = 5):
