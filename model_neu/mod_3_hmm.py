@@ -208,6 +208,27 @@ def super_conv_block(x):
     x = TimeDistributed(Dropout(0.5))(x)
     return x
 
+def nll1(y_true, y_pred):
+    """ Negative log likelihood. """
+
+    # keras.losses.binary_crossentropy give the mean
+    # over the last axis. we require the sum
+    return K.sum(K.binary_crossentropy(y_true, y_pred), axis=-1)
+
+def nll2(y_true, y_pred):
+    """ Negative log likelihood. """
+
+    likelihood = K.tf.distributions.Bernoulli(probs=y_pred)
+
+    return - K.sum(likelihood.log_prob(y_true), axis=-1)
+
+def nll3(y_true, y_pred):
+    """ Negative log likelihood. """
+
+    likelihood = K.tf.distributions.Bernoulli(logits=y_pred)
+
+    return - K.sum(likelihood.log_prob(y_true), axis=-1)
+
 def build_model():
     model = None
     input = Input(shape=(None,))
@@ -244,7 +265,7 @@ def build_model():
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
     adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
-    model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=["accuracy", accuracy])
+    model.compile(optimizer=adamOptimizer, loss=["categorical_crossentropy", nll1], metrics=["accuracy", accuracy])
     return model
 
 def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epochs = 5):
