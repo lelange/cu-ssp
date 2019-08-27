@@ -109,14 +109,14 @@ elif standardize:
     if pssm == True:
         train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
         test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
-        train_pssm = logistic.cdf(train_pssm)
-        test_pssm = logistic.cdf(test_pssm)
+        train_pssm = standard(train_pssm)
+        test_pssm = standard(test_pssm)
 
     if hmm == True:
         train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
         test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
-        train_hmm = logistic.cdf(train_hmm)
-        test_hmm = logistic.cdf(test_hmm)
+        train_hmm = standard(train_hmm)
+        test_hmm = standard(test_hmm)
 
 else:
     print("load profiles...")
