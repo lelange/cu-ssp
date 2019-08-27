@@ -41,7 +41,7 @@ def parse_arguments(default_epochs):
     return parser.parse_args()
 
 def normal(data):
-    return logistic.clf(data)
+    return logistic.cdf(data)
 
 def standard(data):
     mean = np.mean(data)
