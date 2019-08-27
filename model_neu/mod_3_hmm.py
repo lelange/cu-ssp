@@ -269,8 +269,8 @@ def train_model(X_train_aug, y_train, X_val_aug, y_val, X_test_aug, y_test, epoc
     load_file = "./model/mod_3-CB513-"+datetime.now().strftime("%Y_%m_%d-%H_%M")+".h5"
 
     reduce_lr = ReduceLROnPlateau(monitor='val_accuracy', factor=0.5,
-                                  patience=2, verbose=1, min_lr=0.0001)
-    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=3, verbose=1, mode='max')
+                                  patience=3, verbose=1, min_lr=0.0001)
+    earlyStopping = EarlyStopping(monitor='val_accuracy', patience=5, verbose=1, mode='max')
     checkpointer = ModelCheckpoint(filepath=load_file, monitor='val_accuracy', verbose = 1, save_best_only=True, mode='max')
     #tensorboard = TensorBoard(log_dir='./Graph', histogram_freq=0, write_graph=True, write_images=True)
     # Training the model on the training data and validating using the validation set
