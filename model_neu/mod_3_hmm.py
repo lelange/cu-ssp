@@ -240,25 +240,13 @@ def build_model():
     print(profiles_input.shape)
     x3 = concatenate([x3, profiles_input])
 
-    x3 = Dense(600, activation="relu")(x3)
+    x3 = Dense(1200, activation="relu")(x3)
     x3 = Dropout(0.5)(x3)
     # Defining a bidirectional GRU using the embedded representation of the inputs
-    x3 = Bidirectional(CuDNNGRU(units=300, return_sequences=True))(x3)
-    x3 = Bidirectional(CuDNNGRU(units=150, return_sequences=True))(x3)
+    x3 = super_conv_block(x3)
+    x3 = conv_block(x3)
 
-    x4 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
-    x4 = concatenate([x4, profiles_input])
-    # Defining a bidirectional GRU using the embedded representation of the inputs
-    x4 = Bidirectional(CuDNNGRU(units=300, return_sequences=True))(x4)
-    x4 = Bidirectional(CuDNNGRU(units=150, return_sequences=True))(x4)
-
-    COMBO_MOVE2 = concatenate([x3, x4])
-    w2 = Dense(300, activation="relu")(COMBO_MOVE2)  # try 500
-    w2 = Dropout(0.4)(w2)
-    w2 = super_conv_block(w2)
-    w2 = conv_block(w2)
-
-    COMBO_MOVE3 = concatenate([w, w2])
+    COMBO_MOVE3 = concatenate([w, x3])
     w3 = Dense(150, activation="relu")(COMBO_MOVE3)  # try 500
     w3 = Dropout(0.4)(w3)
     w3 = tcn.TCN(return_sequences=True)(w3)
