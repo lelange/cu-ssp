@@ -219,12 +219,14 @@ def build_model():
 
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
+    
     # Defining a bidirectional GRU using the embedded representation of the inputs
     x1 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x1)
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
 
     x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
     x2 = concatenate([x2, profiles_input])
+
     # Defining a bidirectional GRU using the embedded representation of the inputs
     x2 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x2)
     x2 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x2)
@@ -232,26 +234,9 @@ def build_model():
 
     w = Dense(500, activation="relu")(COMBO_MOVE)  # try 500
     w = Dropout(0.4)(w)
-    w = super_conv_block(w)
-    w = conv_block(w)
+    w = tcn.TCN(return_sequences=True)(w)
 
-    # Defining an embedding layer mapping from the words (n_words) to a vector of len 250
-    x3 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    print(profiles_input.shape)
-    x3 = concatenate([x3, profiles_input])
-
-    x3 = Dense(1200, activation="relu")(x3)
-    x3 = Dropout(0.5)(x3)
-    # Defining a bidirectional GRU using the embedded representation of the inputs
-    x3 = super_conv_block(x3)
-    x3 = conv_block(x3)
-
-    COMBO_MOVE3 = concatenate([w, x3])
-    w3 = Dense(150, activation="relu")(COMBO_MOVE3)  # try 500
-    w3 = Dropout(0.4)(w3)
-    w3 = tcn.TCN(return_sequences=True)(w3)
-
-    y = TimeDistributed(Dense(n_tags, activation="softmax"))(w3)
+    y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
 
     # Defining the model as a whole and printing the summary
     model = Model([input, profiles_input], y)
