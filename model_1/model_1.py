@@ -87,7 +87,7 @@ def accuracy(y_true, y_pred):
     mask = tf.greater(y, 0)
     return K.cast(K.equal(tf.boolean_mask(y, mask), tf.boolean_mask(y_, mask)), K.floatx())
 
-# Maps the sequence to a one-hot encoding
+
 def onehot_to_seq(oh_seq, index):
     s = ''
     for o in oh_seq:
@@ -97,7 +97,7 @@ def onehot_to_seq(oh_seq, index):
         else:
             break
     return s
-
+# Maps the sequence to a one-hot encoding
 def seq2onehot(seq, n):
     out = np.zeros((len(seq), maxlen_seq, n))
     for i in range(len(seq)):
