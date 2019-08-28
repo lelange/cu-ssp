@@ -143,8 +143,8 @@ X_aug_train=train_profiles
 X_aug_test=test_profiles
 
 #transform sequence to n-grams, default n=1
-train_input_grams = seq2ngrams(train_input_seqs, n=2)
-test_input_grams = seq2ngrams(test_input_seqs, n=2)
+train_input_grams = seq2ngrams(train_input_seqs, n=1)
+test_input_grams = seq2ngrams(test_input_seqs, n=1)
 
 # Use tokenizer to encode and decode the sequences
 tokenizer_encoder = Tokenizer()
