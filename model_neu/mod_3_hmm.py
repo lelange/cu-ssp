@@ -95,28 +95,28 @@ if normalize:
     if pssm == True:
         train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
         test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
-        #train_pssm = normal(train_pssm)
-        #test_pssm= normal(test_pssm)
+        train_pssm = normalp(train_pssm)
+        test_pssm= normalp(test_pssm)
 
     if hmm == True:
         train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
         test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
-        train_hmm = normal(train_hmm)
-        test_hmm= normal(test_hmm)
+        train_hmm = normalh(train_hmm)
+        test_hmm= normalh(test_hmm)
 
 elif standardize:
     print("load standardized profiles... ")
     if pssm == True:
         train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
         test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
-        train_pssm = standard(train_pssm)
-        test_pssm = standard(test_pssm)
+        train_pssm = standardp(train_pssm)
+        test_pssm = standardp(test_pssm)
 
     if hmm == True:
         train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
         test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
-        train_hmm = standard(train_hmm)
-        test_hmm = standard(test_hmm)
+        train_hmm = standardh(train_hmm)
+        test_hmm = standardh(test_hmm)
 
 else:
     print("load profiles...")
@@ -255,7 +255,7 @@ def build_model():
     # Defining a bidirectional GRU using the embedded representation of the inputs
     x1 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x1)
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
-    
+
     if embedding_layer:
         x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
     else:

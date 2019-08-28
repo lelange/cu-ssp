@@ -40,10 +40,20 @@ def parse_arguments(default_epochs):
     parser.add_argument('-predict', help='predict model', action='store_true')
     return parser.parse_args()
 
-def normal(data):
+#transformations for pssm:
+def normalp(data):
     return logistic.cdf(data)
 
-def standard(data):
+def standardp(data):
+    mean = np.mean(data)
+    std = np.std(data)
+    data_ = (data - mean) / std
+    return data_
+#transformations for hmm:
+def normalh(data):
+    return 2**((-data/1000))
+
+def standardh(data):
     mean = np.mean(data)
     std = np.std(data)
     data_ = (data - mean) / std
