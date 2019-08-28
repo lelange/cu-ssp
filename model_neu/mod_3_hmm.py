@@ -142,7 +142,6 @@ else:
 X_aug_train=train_profiles
 X_aug_test=test_profiles
 
-
 #transform sequence to n-grams, default n=1
 train_input_grams = seq2ngrams(train_input_seqs, n=2)
 test_input_grams = seq2ngrams(test_input_seqs, n=2)
@@ -179,6 +178,12 @@ y_test = to_categorical(test_target_data)
 y_train = to_categorical(train_target_data)
 
 time_data = time.time() - start_time
+
+embedding_layer = False
+
+if not embedding_layer:
+    X_train = to_categorical(X_train)
+    X_test = to_categorical(y_train)
 
 
 def conv_block(x, activation=True, batch_norm=True, drop_out=True, res=True):
@@ -231,13 +236,19 @@ def nll3(y_true, y_pred):
 
 def build_model():
     model = None
-    input = Input(shape=(None,))
+    if embedding_layer:
+        input = Input(shape=(None,))
+    else:
+        input = Input(shape=(None,n_words))
     profiles_input = Input(shape=(None, X_aug_train.shape[2]))
 
     # Defining an embedding layer mapping from the words (n_words) to a vector of len 250
-    x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
-    x1 = concatenate([x1, profiles_input])
+    if embedding_layer:
+        x1 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input)
+    else:
+        x1 = input
 
+    x1 = concatenate([x1, profiles_input])
     x1 = Dense(1200, activation="relu")(x1)
     x1 = Dropout(0.5)(x1)
 
