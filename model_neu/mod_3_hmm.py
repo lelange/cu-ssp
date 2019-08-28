@@ -255,8 +255,11 @@ def build_model():
     # Defining a bidirectional GRU using the embedded representation of the inputs
     x1 = Bidirectional(CuDNNGRU(units=500, return_sequences=True))(x1)
     x1 = Bidirectional(CuDNNGRU(units=100, return_sequences=True))(x1)
-
-    x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
+    
+    if embedding_layer:
+        x2 = Embedding(input_dim=n_words, output_dim=125, input_length=None)(input)
+    else:
+        x2 = input
     x2 = concatenate([x2, profiles_input])
 
     # Defining a bidirectional GRU using the embedded representation of the inputs
