@@ -183,7 +183,7 @@ embedding_layer = False
 
 if not embedding_layer:
     X_train = to_categorical(X_train)
-    X_test = to_categorical(y_train)
+    X_test = to_categorical(X_test)
 
 
 def conv_block(x, activation=True, batch_norm=True, drop_out=True, res=True):

@@ -160,3 +160,40 @@ score = model.evaluate([X_test,X_aug_test], y_test, verbose=2, batch_size=1)
 print(score)
 print ('test loss:', score[0])
 print ('test accuracy:', score[2])
+
+
+
+
+import numpy as np
+import pickle
+
+input = np.load('cb6133filtered.npy')
+label = np.load('cb513.npy')
+
+print(len(input))
+print(len(input[0]))
+print(input[0].shape)
+print(input[0][0])
+print(label[0])
+
+residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
+q8_list      = list('LBEGIHST') + ['NoSeq']
+
+def load_augmented_data(npy_path):
+    data = np.load(npy_path)
+
+    data_reshape = data.reshape(data.shape[0], 700, -1)
+    residue_onehot = data_reshape[:,:,0:22]
+
+    residue_array = np.array(residue_list)[residue_onehot.argmax(2)]
+    residue_str_list = []
+    id = 1
+    for vec in residue_array:
+        x = ''.join(vec[vec != 'NoSeq'])
+        with open('eddtrain/protein'+str(id)+'.fasta', 'w+') as fp:
+            pickle.dump('>\n'+x, fp)
+        residue_str_list.append(x)
+        id += 1
+
+
+load_augmented_data('cb513.npy', 700)
