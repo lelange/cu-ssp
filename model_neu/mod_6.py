@@ -20,8 +20,8 @@ from keras.callbacks import TensorBoard, LearningRateScheduler, ReduceLROnPlatea
 
 from utils import *
 
-cb513filename = '../data/cb513.npy'
-cb6133filteredfilename = '../data/cb6133filtered.npy'
+cb513filename = '../data/data_princeton/cb513.npy'
+cb6133filteredfilename = '../data/data_princeton/cb6133filtered.npy'
 
 maxlen_seq = 700 # protein residues padded to 700
 

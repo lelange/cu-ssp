@@ -20,8 +20,8 @@ from utils import *
 
 maxlen_seq = 768
 
-cb513filename = '../data/cb513.npy'
-cb6133filteredfilename = '../data/cb6133filtered.npy'
+cb513filename = '../data/data_princeton/cb513.npy'
+cb6133filteredfilename = '../data/data_princeton/cb6133filtered.npy'
 
 #load train and test
 train_df, X_aug_train = load_augmented_data(cb6133filteredfilename  ,maxlen_seq)

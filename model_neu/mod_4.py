@@ -39,8 +39,8 @@ Getting Data
 '''
 #cb513filename= '../../../../py_charm_code/data/cb513.npy'
 #cb6133filteredfilename = '../../../../py_charm_code/data/cb6133filtered.npy'
-cb513filename = '../data/cb513.npy'
-cb6133filteredfilename = '../data/cb6133filtered.npy'
+cb513filename = '../data/data_princeton/cb513.npy'
+cb6133filteredfilename = '../data/data_princeton/cb6133filtered.npy'
 
 '''
 Setting up training, validation, test data

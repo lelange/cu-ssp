@@ -27,8 +27,8 @@ from keras.callbacks import EarlyStopping ,ModelCheckpoint
 from utils import *
 
 ### Data Retrieval
-cb513filename = '../data/cb513.npy'
-cb6133filteredfilename = '../data/cb6133filtered.npy'
+cb513filename = '../data/data_princeton/cb513.npy'
+cb6133filteredfilename = '../data/data_princeton/cb6133filtered.npy'
 
 maxlen_seq = r = 700  # protein residues padded to 700
 f = 57  # number of features for each residue
