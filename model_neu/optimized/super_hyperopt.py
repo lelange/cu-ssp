@@ -26,9 +26,10 @@ space = {
     # a linear fashion, to handle his exponentialy varying nature:
     'lr_rate_mult': hp.loguniform('lr_rate_mult', -0.5, 0.5),
     # max weight contraint:
-
+    # L2 weight decay:
+    'l2_weight_reg_mult': hp.loguniform('l2_weight_reg_mult', -1.3, 1.3),
     # batch size
-    'batch_size': hp.quniform('batch_size', 100, 450, 2),
+    'batch_size': hp.quniform('batch_size', 20, 450, 2),
     # Choice of optimizer:
     'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
     # Kernel size for convolutions:
@@ -43,7 +44,7 @@ space = {
     'input': hp.choice('input', ['onehot','seqs','both'] ),
     'use_profiles': hp.choice('use_profiles', [hp.choice('which_profiles', ['pssm']), None]),
     'tcn_position':hp.choice('tcn_position', [hp.choice('position', ['first', 'last']), None]),
-    'loss':hp.choice('loss',['categorical_crossentropy', 'nll']),
+    'loss':hp.choice('loss',['categorical_crossentropy', 'nll', 'mean_squared_error']),
 
     'first_layer':hp.choice('first_layer', [
         { #use LSTM
@@ -141,7 +142,7 @@ def run_a_trial():
     except:
         # empty results.pkl
         trials = Trials()
-        max_evals = 20
+        max_evals = 1 #später 20
         print("Starting from scratch: new trials.")
 
     best = fmin(

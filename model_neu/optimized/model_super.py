@@ -1,8 +1,11 @@
+import sys
 from keras.models import *
 from keras.layers import *
 from keras import backend as K
 from keras.regularizers import l1, l2
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
+sys.path.append('keras-tcn')
+from tcn import tcn
 
 import time
 import dill as pickle
@@ -13,12 +16,47 @@ import numpy as np
 import keras
 from keras.layers.core import K  # import keras.backend as K
 from keras.models import Model, Input
-from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, GRU, Conv1D, CuDNNLSTM, concatenate
+from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, GRU, Conv1D, CuDNNLSTM, concatenate, Dropout
 from keras.optimizers import Adam, Nadam, RMSprop
 from hyperopt import STATUS_OK, STATUS_FAIL
 from datetime import datetime
 import traceback
 import os
+
+
+import os
+import argparse
+import time
+import numpy as np
+import dill as pickle
+import pandas as pd
+import tensorflow as tf
+sys.path.append('keras-tcn')
+from tcn import tcn
+import h5py
+
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+
+from keras import backend as K
+from keras import regularizers, constraints, initializers, activations
+
+from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
+from keras.engine import InputSpec
+from keras.engine.topology import Layer
+from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Bidirectional, CuDNNGRU, Concatenate
+from keras.layers import Dropout, Flatten, Activation, RepeatVector, Permute, Conv1D, BatchNormalization
+
+from keras.layers import Dropout
+from keras.layers import merge
+from keras.layers.merge import concatenate
+from keras.layers.recurrent import Recurrent
+from keras.metrics import categorical_accuracy
+from keras.models import Model, Input, Sequential
+from keras.optimizers import Adam
+from keras.preprocessing import text, sequence
+from keras.preprocessing.text import Tokenizer
+from keras.utils import to_categorical
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -42,6 +80,7 @@ OPTIMIZER_STR_TO_CLASS = {
 
 LOSS_STR_TO_CLASS = {
     'categorical_crossentropy': 'categorical_crossentropy',
+    'mean_squared_error': 'mean_squared_error',
     'nll': nll
 }
 
@@ -133,7 +172,8 @@ def build_and_train(hype_space, save_best_weights=True):
 
 """ Build model """
 
-n_words = 9
+n_words = 24
+n_tags = 9
 
 def build_model(hype_space):
     """Create model according to the hyperparameter space given."""
@@ -144,6 +184,7 @@ def build_model(hype_space):
     input_onehot = Input(shape=(None, n_words))
     input_seqs = Input(shape=(None,))
     input_pssm = Input(shape=(None, 21))
+    inp = [input_onehot, input_seqs, input_pssm]
 
     if hype_space['input']=='onehot':
         x0 = input_onehot
@@ -170,8 +211,8 @@ def build_model(hype_space):
         if hype_space['first_layer']['gru2'] and hype_space['first_layer']['gru2']['gru3']:
             x2 = Bidirectional(CuDNNGRU(units=int(hype_space['gru2']['gru3']['gru3_units']), return_sequences=True))(x2)
 
-
-
+    COMBO_MOVE = concatenate([x1, x2])
+    '''
     current_layer = input
 
     if hype_space['first_conv'] is not None:
@@ -237,11 +278,25 @@ def build_model(hype_space):
 
     model.compile(
         optimizer=OPTIMIZER_STR_TO_CLASS[hype_space['optimizer']](
-            lr=0.001 * hype_space['lr_rate_mult']
+            #lr=0.001 * hype_space['lr_rate_mult']
         ),
-        loss=hype_space['loss'],
-        metrics=[accuracy]
+        loss=LOSS_STR_TO_CLASS[hype_space['loss']],
+        metrics=[accuracy] #noch andere dazu
     )
+    '''
+    w = Dense(500, activation="relu")(COMBO_MOVE)  # try 500
+    w = Dropout(0.4)(w)
+    w = tcn.TCN(return_sequences=True)(w)
+
+    y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
+
+    # Defining the model as a whole and printing the summary
+    model = Model(inp, y)
+    # model.summary()
+
+    # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
+    adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
+    model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=[ accuracy])
 
     return model
 

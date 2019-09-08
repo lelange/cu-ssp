@@ -130,7 +130,7 @@ def get_data(npy_path, normalize_profiles):
 
     output_data = [q8_onehot, rsa_onehot]
 
-    return input_data
+    return input_data, output_data
 
 # fit_on_texts Updates internal vocabulary based on a list of texts
 # texts_to_sequences Transforms each text in texts to a sequence of integers, 0 is reserved for padding
