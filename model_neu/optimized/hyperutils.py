@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 from keras.layers.core import K  #import keras.backend as K
 import time
+import pandas as pd
 import multiprocessing
 #
 from keras.preprocessing import text, sequence
