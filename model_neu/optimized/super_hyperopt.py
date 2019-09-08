@@ -43,7 +43,7 @@ space = {
     'dropout': hp.uniform('dropout', 0.0, 0.9),
     #decide input
     'input': hp.choice('input', ['onehot','seqs','both'] ),
-    'use_profiles': hp.choice('use_profiles', [hp.choice('which_profiles', ['pssm']), None]),
+    'use_profiles': hp.choice('use_profiles', [hp.choice('which_profiles', ['pssm', 'hmm', 'both']), None]),
     'tcn_position':hp.choice('tcn_position', [hp.choice('position', ['first', 'last']), None]),
     'loss':hp.choice('loss',['categorical_crossentropy', 'nll', 'mean_squared_error']),
 

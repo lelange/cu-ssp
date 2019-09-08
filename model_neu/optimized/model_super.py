@@ -183,7 +183,8 @@ def build_model(hype_space):
     input_onehot = Input(shape=(None, n_words))
     input_seqs = Input(shape=(None,))
     input_pssm = Input(shape=(None, 22))
-    inp = [input_onehot, input_seqs, input_pssm]
+    input_hmm = Input(shape=(None, 30))
+    inp = [input_onehot, input_seqs, input_pssm, input_hmm]
     x0=None
     if hype_space['input']=='onehot':
         x0 = input_onehot
@@ -198,6 +199,11 @@ def build_model(hype_space):
     if hype_space['use_profiles'] is not None:
         if hype_space['use_profiles']=='pssm':
             x0 = concatenate([x0, input_pssm])
+        if hype_space['use_profiles']=='hmm':
+            x0 = concatenate([x0, input_hmm])
+        if hype_space['use_profiles']=='both':
+            x0 = concatenate([x0, input_pssm, input_hmm])
+
 
     x1 = x0
     if hype_space['first_layer']['type'] == 'LSTM':
