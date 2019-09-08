@@ -119,7 +119,7 @@ def build_and_train(hype_space, save_best_weights=True):
         patience=10, verbose=1, mode='max', cooldown = 2))
 
     #standardize train and val profiles
-    X_train, y_train, X_test, y_test = get_data('cb6133filtered')
+    X_train, y_train, X_test, y_test = get_data()
 
     # Train net:
     history = model.fit(
