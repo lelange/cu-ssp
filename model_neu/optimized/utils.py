@@ -284,29 +284,3 @@ def embed_data(seqs, w2v, emb_dim, n_gram, tokens=1):
 
     return embed_seq
 
-
-def evaluate_model(model, load_file, emb_dim, n_gram, index2embed):
-    start_time = time.time()
-    print(load_file)
-    file_test = ['cb513_full', 'ts115_full', 'casp12_full']
-    test_accs = []
-    names = []
-    for test in file_test:
-        X_test, y_test, X_aug = get_netsurf_data(test)
-        X_aug = standard(X_aug)
-        print(X_test.shape)
-        X_embed = embed_data(X_test, index2embed, emb_dim, n_gram)
-        print(emb_dim)
-        print(X_embed.shape)
-        X_test_aug = [X_embed, X_aug]
-        model.load_weights(load_file)
-        score = model.evaluate(X_test_aug, y_test, verbose=2, batch_size=1)
-        print(model.metrics_names)
-        print(score)
-        test_accs.append(score[1])
-        names.append(test)
-
-    m, s = divmod(time.time() - start_time, 60)
-    print("Needed {:.0f}min {:.0f}s to evaluate model.".format(m, s))
-
-    return dict(zip(names, test_accs))

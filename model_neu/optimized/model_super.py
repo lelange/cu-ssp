@@ -1,7 +1,7 @@
 import sys
 from keras.models import *
 from keras.layers import *
-from keras import backend as K
+
 from keras.regularizers import l1, l2
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau, LearningRateScheduler
 sys.path.append('keras-tcn')
@@ -38,7 +38,6 @@ import h5py
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 
-from keras import backend as K
 from keras import regularizers, constraints, initializers, activations
 
 from keras.callbacks import EarlyStopping ,ModelCheckpoint, TensorBoard, ReduceLROnPlateau
