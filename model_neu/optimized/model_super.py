@@ -300,8 +300,13 @@ def build_model(hype_space):
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
     adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
-    model.compile(optimizer=adamOptimizer, loss="categorical_crossentropy", metrics=[ accuracy])
-
+    model.compile(
+        optimizer=OPTIMIZER_STR_TO_CLASS[hype_space['optimizer']](
+            # lr=0.001 * hype_space['lr_rate_mult']
+        ),
+        loss=LOSS_STR_TO_CLASS[hype_space['loss']],
+        metrics=[accuracy]  # noch andere dazu
+    )
     return model
 
 
