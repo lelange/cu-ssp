@@ -3,7 +3,7 @@ import json
 import os
 import numpy as np
 import tensorflow as tf
-import keras.backend as K
+from keras.layers.core import K  #import keras.backend as K
 import time
 import multiprocessing
 
