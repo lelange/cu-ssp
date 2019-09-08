@@ -243,7 +243,9 @@ def get_data():
     input_data_train = [input_one_hot, X_train, standard(X_aug_train), input_hmm]
     output_data_train = y_train
     print(len(y_train))
+    print(input_hmm.shape)
     print(len(y_test))
+    print(input_hmm_test.shape)
     input_data_test = [input_one_hot_test, X_test, standard(X_aug_test), input_hmm_test]
     output_data_test = y_test
 
