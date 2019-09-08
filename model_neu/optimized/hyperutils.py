@@ -239,7 +239,7 @@ def get_data():
     '''
 
     input_data_train = [input_one_hot, X_train, X_aug_train]
-    output_data_train = y_test
+    output_data_train = y_train
     input_data_test = [input_one_hot_test, X_test, X_aug_test]
     output_data_test = y_test
 
