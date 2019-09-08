@@ -179,8 +179,8 @@ def load_augmented_data(npy_path, max_len):
     return train_df, profile_padded
 
 def get_data():
-    cb513filename = '../data/data_princeton/cb513.npy'
-    cb6133filteredfilename = '../data/data_princeton/cb6133filtered.npy'
+    cb513filename = '/nosave/lange/cu-ssp/data/data_princeton/cb513.npy'
+    cb6133filteredfilename = 'nosave/lange/cu-ssp/data/data_princeton/cb6133filtered.npy'
     maxlen_seq = 700
     # load train and test and cut length to maxlen_seq
 
