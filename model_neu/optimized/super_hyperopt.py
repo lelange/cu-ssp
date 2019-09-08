@@ -1,4 +1,5 @@
-from keras import backend as K
+#from keras import backend as K
+from keras.layers.core import K 
 import traceback
 from datetime import datetime
 import traceback
