@@ -202,6 +202,7 @@ def build_model(hype_space):
     x1 = x0
     if hype_space['first_layer']['type'] == 'LSTM':
         for i in range(hype_space['first_layer']['nb']):
+            i=i+1
             print(i)
             x1 = Bidirectional(CuDNNLSTM(units=int(hype_space['first_layer']['units']/i), return_sequences=True))(x1)
 
