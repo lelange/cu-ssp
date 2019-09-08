@@ -119,7 +119,7 @@ def build_and_train(hype_space, save_best_weights=True):
         patience=10, verbose=1, mode='max', cooldown = 2))
 
     #standardize train and val profiles
-    X_train, y_train = get_data('')
+    X_train, y_train, X_test, y_test = get_data('cb6133filtered')
 
     # Train net:
     history = model.fit(
@@ -136,7 +136,7 @@ def build_and_train(hype_space, save_best_weights=True):
     end_time = time.time() - start_time
 
     # evaluate on cb513:
-    score = evaluate_model(model, weights_save_path, hype_space)
+    score = evaluate_model(model, weights_save_path, hype_space, X_test, y_test)
     K.set_learning_phase(0)
 
     print("\n\n")

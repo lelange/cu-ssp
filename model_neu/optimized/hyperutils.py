@@ -6,6 +6,10 @@ import tensorflow as tf
 from keras.layers.core import K  #import keras.backend as K
 import time
 import multiprocessing
+#
+from keras.preprocessing import text, sequence
+from keras.preprocessing.text import Tokenizer
+from keras.utils import to_categorical
 
 RESULTS_DIR = "results/"
 MAXLEN_SEQ = 700
@@ -99,7 +103,7 @@ def nll(y_true, y_pred):
     # over the last axis. we require the sum
     return K.sum(K.binary_crossentropy(y_true, y_pred), axis=-1)
 
-
+'''
 def get_data(npy_path, normalize_profiles):
 
     # daten durcheinander würfeln?
@@ -125,25 +129,134 @@ def get_data(npy_path, normalize_profiles):
     for vec in q8_array:
         x = ''.join(vec[vec != 'NoSeq'])
         q8_str_list.append(x)
+    id_list = np.arange(1, len(residue_array) + 1)
+    len_list = np.array([len(x) for x in residue_str_list])
+    train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'expected': q8_str_list})
+    
+    input_one_hot = residue_onehot
+    q8_onehot = residue_q8_onehot
+    
+    train_input_seqs, train_target_seqs= train_df[['input', 'expected']][(train_df.len <= 700)].values.T
+    input_seqs 
+    input_pssm = profile_padded
+    #SPÄTERE::
+    #nput_hmm = None
+    #rsa_onehot = None; output_data = [q8_onehot, rsa_onehot]
+    #input_data = [input_one_hot, input_seqs, input_pssm, input_hmm]
+    input_data = [input_one_hot, input_seqs, input_pssm]
 
-    input_data = [input_one_hot, input_seqs, input_pssm, input_hmm]
-
-    output_data = [q8_onehot, rsa_onehot]
+    output_data = q8_onehot
 
     return input_data, output_data
+
+
+'''
+def load_augmented_data(npy_path, max_len):
+    data = np.load(npy_path)
+
+    data_reshape = data.reshape(data.shape[0], 700, -1)
+    residue_onehot = data_reshape[:,:,0:22]
+    residue_q8_onehot = data_reshape[:,:,22:31]
+    profile = data_reshape[:,:,35:57]
+    #pad profiles to same length
+    zero_arr = np.zeros((profile.shape[0], max_len - profile.shape[1], profile.shape[2]))
+    profile_padded = np.concatenate([profile, zero_arr], axis=1)
+
+    residue_array = np.array(residue_list)[residue_onehot.argmax(2)]
+    q8_array = np.array(q8_list)[residue_q8_onehot.argmax(2)]
+    residue_str_list = []
+    q8_str_list = []
+    for vec in residue_array:
+        x = ''.join(vec[vec != 'NoSeq'])
+        residue_str_list.append(x)
+    for vec in q8_array:
+        x = ''.join(vec[vec != 'NoSeq'])
+        q8_str_list.append(x)
+
+    id_list = np.arange(1, len(residue_array) + 1)
+    len_list = np.array([len(x) for x in residue_str_list])
+    train_df = pd.DataFrame({'id': id_list, 'len': len_list, 'input': residue_str_list, 'expected': q8_str_list})
+    return train_df, profile_padded
+
+def get_data():
+    cb513filename = '../data/data_princeton/cb513.npy'
+    cb6133filteredfilename = '../data/data_princeton/cb6133filtered.npy'
+    maxlen_seq = 700
+    # load train and test and cut length to maxlen_seq
+
+    train_df, X_aug_train = load_augmented_data(cb6133filteredfilename, maxlen_seq)
+    train_input_seqs, train_target_seqs = train_df[['input', 'expected']][(train_df.len <= maxlen_seq)].values.T
+
+    test_df, X_aug_test = load_augmented_data(cb513filename, maxlen_seq)
+    test_input_seqs, test_target_seqs = test_df[['input', 'expected']][(test_df.len <= maxlen_seq)].values.T
+
+    # Using the tokenizer to encode and decode the sequences for use in training
+    # use preprocessing tools for text from keras to encode input sequence as word rank numbers and target sequence as one hot.
+    # To ensure easy to use training and testing, all sequences are padded with zeros to the maximum sequence length
+    # transform sequences to trigrams
+    train_input_grams = seq2ngrams(train_input_seqs)
+    # transform sequences
+    # fit alphabet on train basis
+    tokenizer_encoder = Tokenizer()
+    tokenizer_encoder.fit_on_texts(train_input_grams)
+
+    tokenizer_decoder = Tokenizer(char_level=True)
+    tokenizer_decoder.fit_on_texts(train_target_seqs)
+
+    # train
+    train_input_data = tokenizer_encoder.texts_to_sequences(train_input_grams)
+    X_train = sequence.pad_sequences(train_input_data, maxlen=maxlen_seq, padding='post')
+    # transform targets to one-hot
+    train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
+    train_target_data = sequence.pad_sequences(train_target_data, maxlen=maxlen_seq, padding='post')
+
+    y_train = to_categorical(train_target_data)
+    input_one_hot = to_categorical(X_train)
+
+    # test
+    test_input_grams = seq2ngrams(test_input_seqs)
+    test_input_data = tokenizer_encoder.texts_to_sequences(test_input_grams)
+    X_test = sequence.pad_sequences(test_input_data, maxlen=maxlen_seq, padding='post')
+    test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
+    test_target_data = sequence.pad_sequences(test_target_data, maxlen=maxlen_seq, padding='post')
+    y_test = to_categorical(test_target_data)
+    input_one_hot_test = to_categorical(X_test)
+
+    #### validation data
+    '''
+     n_samples = len(train_df)
+    np.random.seed(0)
+    validation_idx = np.random.choice(np.arange(n_samples), size=300, replace=False)
+    training_idx = np.array(list(set(np.arange(n_samples)) - set(validation_idx)))
+
+    X_val = X_train[validation_idx]
+    X_train = X_train[training_idx]
+    y_val = y_train[validation_idx]
+    y_train = y_train[training_idx]
+    X_aug_val = X_aug_train[validation_idx]
+    X_aug_train = X_aug_train[training_idx]
+    '''
+
+    input_data_train = [input_one_hot, X_train, X_aug_train]
+    output_data_train = y_test
+    input_data_test = [input_one_hot_test, X_test, X_aug_test]
+    output_data_test = y_test
+
+    return input_data_train, output_data_train, input_data_test, output_data_test
 
 # fit_on_texts Updates internal vocabulary based on a list of texts
 # texts_to_sequences Transforms each text in texts to a sequence of integers, 0 is reserved for padding
 
 #fertig, nur get_data noch machen
-def evaluate_model(model, load_file, hype_space):
+def evaluate_model(model, load_file, hype_space, X_test=None, y_test=None):
 
     start_time = time.time()
     file_test = ['cb513'] #add more later
     test_accs = []
 
     for test in file_test:
-        X_test, y_test = get_data(test, hype_space['normalize_profiles'])
+        if X_test is None:
+            X_test, y_test = get_data(test, hype_space['normalize_profiles'])
 
         model.load_weights(load_file)
 
