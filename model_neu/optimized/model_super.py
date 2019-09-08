@@ -184,12 +184,16 @@ def build_model(hype_space):
     input_seqs = Input(shape=(None,))
     input_pssm = Input(shape=(None, 21))
     inp = [input_onehot, input_seqs, input_pssm]
-
+    x0=None
     if hype_space['input']=='onehot':
         x0 = input_onehot
     if hype_space['input']=='seqs':
         # have to use embedding
         x0 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input_seqs)
+    if hype_space['input']=='both':
+        x_seq = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input_seqs)
+        x0 = concatenate([input_onehot, x_seq])
+
 
     if hype_space['use_profiles'] is not None:
         if hype_space['use_profiles']=='pssm':
