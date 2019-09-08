@@ -238,10 +238,12 @@ def get_data():
     X_aug_train = X_aug_train[training_idx]
     '''
 
-    input_hmm = np.load('/nosave/lange/cu-ssp/data/data_princeton/hmm_train.npy', allow_pickle=True)
-    input_hmm_test = np.load('/nosave/lange/cu-ssp/data/data_princeton/hmm_cb513.npy', allow_pickle=True)
+    input_hmm = np.load('/nosave/lange/cu-ssp/data/data_princeton/hmm_train.npy', allow_pickle=True)[:,:700,:]
+    input_hmm_test = np.load('/nosave/lange/cu-ssp/data/data_princeton/hmm_cb513.npy', allow_pickle=True)[:,:700,:]
     input_data_train = [input_one_hot, X_train, standard(X_aug_train), input_hmm]
     output_data_train = y_train
+    print(len(y_train))
+    print(len(y_test))
     input_data_test = [input_one_hot_test, X_test, standard(X_aug_test), input_hmm_test]
     output_data_test = y_test
 
