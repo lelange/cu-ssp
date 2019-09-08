@@ -208,11 +208,11 @@ def build_model(hype_space):
     # wenn model gestackt x2=x1, sonst x2 = x0
     x2 = x0
     if hype_space['first_layer']['type']=='GRU':
-        x2 = Bidirectional(CuDNNGRU(units=int(hype_space['gru1']), return_sequences=True))(x2)
+        x2 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru1']*100), return_sequences=True))(x2)
         if hype_space['first_layer']['gru2']:
-            x2 = Bidirectional(CuDNNGRU(units=int(hype_space['gru2']['gru2_units']), return_sequences=True))(x2)
+            x2 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru2']['gru2_units']*100), return_sequences=True))(x2)
         if hype_space['first_layer']['gru2'] and hype_space['first_layer']['gru2']['gru3']:
-            x2 = Bidirectional(CuDNNGRU(units=int(hype_space['gru2']['gru3']['gru3_units']), return_sequences=True))(x2)
+            x2 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru2']['gru3']['gru3_units']*100), return_sequences=True))(x2)
 
     COMBO_MOVE = concatenate([x1, x2])
     '''
