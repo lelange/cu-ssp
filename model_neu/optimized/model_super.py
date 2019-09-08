@@ -182,7 +182,7 @@ def build_model(hype_space):
     #get all inputs but only use according to hyperparameter
     input_onehot = Input(shape=(None, n_words))
     input_seqs = Input(shape=(None,))
-    input_pssm = Input(shape=(None, 21))
+    input_pssm = Input(shape=(None, 22))
     inp = [input_onehot, input_seqs, input_pssm]
     x0=None
     if hype_space['input']=='onehot':
