@@ -171,7 +171,7 @@ def build_and_train(hype_space, save_best_weights=True):
 
 """ Build model """
 
-n_words = 24
+n_words = 22
 n_tags = 9
 
 def build_model(hype_space):
