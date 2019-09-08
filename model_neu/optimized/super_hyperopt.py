@@ -1,5 +1,5 @@
-#from keras import backend as K
-from keras.layers.core import K 
+from keras import backend as K
+#from keras.layers.core import K
 import traceback
 from datetime import datetime
 import traceback
@@ -50,7 +50,7 @@ space = {
     'first_layer':hp.choice('first_layer', [
         { #use LSTM
             'type': 'LSTM',
-            'units': hp.uniform('lstm.units', 50, 800, 10 ),
+            'units': hp.quniform('lstm.units', 50, 800, 10 ),
             'nb': hp.choice('lstm.nb', [1,2,3])
         },
         { #or use GRU
