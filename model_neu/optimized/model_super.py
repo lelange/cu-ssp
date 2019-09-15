@@ -209,6 +209,7 @@ def build_model(hype_space):
 
     # NN starts here:
     if hype_space['tcn_position']=='first':
+        print('TCN first.')
         x0 = tcn.TCN(return_sequences=True)(x0)
 
     x1 = x0
@@ -359,6 +360,7 @@ def build_model(hype_space):
     w = Dense(int(hype_space['dense_output'])*2, activation="relu")(COMBO_MOVE)  # try 500
     w = Dropout(int(hype_space['dropout']))(w)
     if hype_space['tcn_position']=='last':
+        print('TCN last.')
         w = tcn.TCN(return_sequences=True)(w)
 
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
@@ -376,7 +378,7 @@ def build_model(hype_space):
         loss=LOSS_STR_TO_CLASS[hype_space['loss']],
         metrics=[accuracy,
                  #weighted_accuracy,
-                 kullback_leibler_divergence,
+                 #kullback_leibler_divergence,
                  matthews_correlation,
                  precision,
                  recall,
