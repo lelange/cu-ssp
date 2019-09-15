@@ -98,9 +98,9 @@ space = {
             'nb_filter_2': hp.quniform('nb_filter_2', 2, 32, 2),
             'nb_conv_layers_2': hp.choice('nb_conv_layers_2', [1, 2, 3]),
         },
-        {#no second layer
-            False
-        }
+        #no second layer
+        False
+
     ])
 
 
