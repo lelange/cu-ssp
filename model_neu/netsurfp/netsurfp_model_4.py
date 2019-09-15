@@ -148,39 +148,42 @@ def build_model():
     # Defining 3 bidirectional GRU layers; taking the concatenation of outputs
     gru1 = Bidirectional(CuDNNGRU(32,
                              return_sequences='True',
-                             activation='tanh',
-                             recurrent_activation='hard_sigmoid',
-                             use_bias=True,
+                             #activation='tanh',
+                             #recurrent_activation='hard_sigmoid',
+                             #use_bias=True,
                              kernel_initializer='glorot_uniform',
                              recurrent_initializer='orthogonal',
                              bias_initializer='zeros',
-                             dropout=0.0,
-                             recurrent_dropout=0.1,
-                             implementation=1))(conv)
+                             #dropout=0.0,
+                             #recurrent_dropout=0.1,
+                             #implementation=1
+                                ))(conv)
 
     gru2 = Bidirectional(CuDNNGRU(32,
                              return_sequences='True',
-                             activation='tanh',
-                             recurrent_activation='hard_sigmoid',
-                             use_bias=True,
+                             #activation='tanh',
+                             #recurrent_activation='hard_sigmoid',
+                             #use_bias=True,
                              kernel_initializer='glorot_uniform',
                              recurrent_initializer='orthogonal',
                              bias_initializer='zeros',
-                             dropout=0.0,
-                             recurrent_dropout=0.1,
-                             implementation=1))(gru1)
-
+                             #dropout=0.0,
+                             #recurrent_dropout=0.1,
+                             #implementation=1
+                                  ))(gru1)
+    
     gru3 = Bidirectional(CuDNNGRU(32,
                              return_sequences='True',
-                             activation='tanh',
-                             recurrent_activation='hard_sigmoid',
-                             use_bias=True,
+                             #activation='tanh',
+                             #recurrent_activation='hard_sigmoid',
+                             #use_bias=True,
                              kernel_initializer='glorot_uniform',
                              recurrent_initializer='orthogonal',
                              bias_initializer='zeros',
-                             dropout=0.0,
-                             recurrent_dropout=0.1,
-                             implementation=1))(gru2)
+                             #dropout=0.0,
+                             #recurrent_dropout=0.1,
+                             #implementation=1
+                                  ))(gru2)
 
     comb = concatenate([gru1, gru2, gru3, conv])
 
