@@ -15,7 +15,7 @@ import os, pickle
 import random
 import matplotlib.pyplot as plt
 from datetime import datetime
-from gensim.models import word2vec
+#from gensim.models import word2vec
 
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
