@@ -99,7 +99,7 @@ space = {
             'nb_conv_layers_2': hp.choice('nb_conv_layers_2', [1, 2, 3]),
         },
         {#no second layer
-            None
+            False
         }
     ])
 
