@@ -74,17 +74,17 @@ if not pssm and not hmm:
     raise Exception('you should use one of the profiles!')
 
 #inputs: primary structure
-train_input_seqs = np.load('../data/data_qzlshy/train_input.npy')
-test_input_seqs = np.load('../data/data_qzlshy/test_input.npy')
+train_input_seqs = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/train_input.npy')
+test_input_seqs = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/test_input.npy')
 #labels: secondary structure
-train_target_seqs = np.load('../data/data_qzlshy/train_q8.npy')
-test_target_seqs = np.load('../data/data_qzlshy/test_q8.npy')
+train_target_seqs = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/train_q8.npy')
+test_target_seqs = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/test_q8.npy')
 
 '''
-X_train = np.load('../data/data_qzlshy/X_train_6133.npy')
-X_test = np.load('../data/data_qzlshy/X_test_513.npy')
-y_train = np.load('../data/data_qzlshy/y_train_6133.npy')
-y_test = np.load('../data/data_qzlshy/y_test_513.npy')
+X_train = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/X_train_6133.npy')
+X_test = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/X_test_513.npy')
+y_train = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/y_train_6133.npy')
+y_test = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/y_test_513.npy')
 
 '''
 
@@ -93,40 +93,40 @@ if normalize:
     # load normalized profiles
     print("load normalized profiles... ")
     if pssm == True:
-        train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
-        test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
+        train_pssm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/train_pssm.npy')
+        test_pssm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/test_pssm.npy')
         train_pssm = normalp(train_pssm)
         test_pssm= normalp(test_pssm)
 
     if hmm == True:
-        train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
-        test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
+        train_hmm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/train_hmm.npy')
+        test_hmm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/test_hmm.npy')
         train_hmm = normalh(train_hmm)
         test_hmm= normalh(test_hmm)
 
 elif standardize:
     print("load standardized profiles... ")
     if pssm == True:
-        train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
-        test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
+        train_pssm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/train_pssm.npy')
+        test_pssm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/test_pssm.npy')
         train_pssm = standardp(train_pssm)
         test_pssm = standardp(test_pssm)
 
     if hmm == True:
-        train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
-        test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
+        train_hmm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/train_hmm.npy')
+        test_hmm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/test_hmm.npy')
         train_hmm = standardh(train_hmm)
         test_hmm = standardh(test_hmm)
 
 else:
     print("load profiles...")
     if pssm == True:
-        train_pssm = np.load('../data/data_qzlshy/train_pssm.npy')
-        test_pssm = np.load('../data/data_qzlshy/test_pssm.npy')
+        train_pssm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/train_pssm.npy')
+        test_pssm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/test_pssm.npy')
 
     if hmm == True:
-        train_hmm = np.load('../data/data_qzlshy/train_hmm.npy')
-        test_hmm = np.load('../data/data_qzlshy/test_hmm.npy')
+        train_hmm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/train_hmm.npy')
+        test_hmm = np.load('/nosave/lange/cu-ssp/data/data_qzlshy/test_hmm.npy')
 
 
 if pssm and hmm:

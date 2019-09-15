@@ -4,8 +4,8 @@ import pandas as pd
 maxlen_seq = 700
 minlen_seq= 100
 
-cullpdb =np.load("../data/cullpdb_train.npy").item()
-data13=np.load("../data/cb513_hmm.npy").item()
+cullpdb =np.load("/nosave/lange/cu-ssp/data/data_qzlshy/cullpdb_train.npy").item()
+data13=np.load("/nosave/lange/cu-ssp/data/data_qzlshy/cb513_hmm.npy").item()
 cullpdb_df = pd.DataFrame(cullpdb)
 data13_df = pd.DataFrame(data13)
 
@@ -60,16 +60,16 @@ train_hmm = reshape_and_pad(train_hmm_list)
 test_hmm = reshape_and_pad(test_hmm_list)
 
 print("save data...")
-np.save('../data/train_input.npy', train_input)
-np.save('../data/test_input.npy', test_input)
+np.save('/nosave/lange/cu-ssp/data/data_qzlshy/train_input.npy', train_input)
+np.save('/nosave/lange/cu-ssp/data/data_qzlshy/test_input.npy', test_input)
 
-np.save('../data/train_q8.npy', train_dssp_q8)
-np.save('../data/test_q8.npy', test_dssp_q8)
+np.save('/nosave/lange/cu-ssp/data/data_qzlshy/train_q8.npy', train_dssp_q8)
+np.save('/nosave/lange/cu-ssp/data/data_qzlshy/test_q8.npy', test_dssp_q8)
 
-np.save('../data/train_pssm.npy', train_pssm)
-np.save('../data/test_pssm.npy', test_pssm)
+np.save('/nosave/lange/cu-ssp/data/data_qzlshy/data/train_pssm.npy', train_pssm)
+np.save('/nosave/lange/cu-ssp/data/data_qzlshy/data/test_pssm.npy', test_pssm)
 
-np.save('../data/train_hmm.npy', train_hmm)
-np.save('../data/test_hmm.npy', test_hmm)
+np.save('/nosave/lange/cu-ssp/data/data_qzlshy/data/train_hmm.npy', train_hmm)
+np.save('/nosave/lange/cu-ssp/data/data_qzlshy/data/test_hmm.npy', test_hmm)
 
 
