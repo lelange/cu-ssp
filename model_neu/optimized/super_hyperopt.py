@@ -26,7 +26,7 @@ space = {
     # This loguniform scale will multiply the learning rate, so as to make
     # it vary exponentially, in a multiplicative fashion rather than in
     # a linear fashion, to handle his exponentialy varying nature:
-    'lr_rate_mult': hp.loguniform('lr_rate_mult', -0.5, 0.5),
+    #'lr_rate_mult': hp.loguniform('lr_rate_mult', -0.5, 0.5),
     # max weight contraint:
     # L2 weight decay:
     'l2_weight_reg_mult': hp.loguniform('l2_weight_reg_mult', -1.3, 1.3),

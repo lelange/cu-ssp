@@ -376,7 +376,7 @@ def build_model(hype_space):
     #adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
     model.compile(
         optimizer=OPTIMIZER_STR_TO_CLASS[hype_space['optimizer']](
-            lr=0.001 * hype_space['lr_rate_mult']
+            #lr=0.001 * hype_space['lr_rate_mult']
         ),
         loss=LOSS_STR_TO_CLASS[hype_space['loss']],
         metrics=[accuracy,
