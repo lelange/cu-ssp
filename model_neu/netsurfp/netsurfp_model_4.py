@@ -146,7 +146,7 @@ def build_model():
     conv = Reshape([len_seq, 3 * 64])(conv)
 
     # Defining 3 bidirectional GRU layers; taking the concatenation of outputs
-    gru1 = Bidirectional(GRU(32,
+    gru1 = Bidirectional(CuDNNGRU(32,
                              return_sequences='True',
                              activation='tanh',
                              recurrent_activation='hard_sigmoid',
@@ -158,7 +158,7 @@ def build_model():
                              recurrent_dropout=0.1,
                              implementation=1))(conv)
 
-    gru2 = Bidirectional(GRU(32,
+    gru2 = Bidirectional(CuDNNGRU(32,
                              return_sequences='True',
                              activation='tanh',
                              recurrent_activation='hard_sigmoid',
@@ -170,7 +170,7 @@ def build_model():
                              recurrent_dropout=0.1,
                              implementation=1))(gru1)
 
-    gru3 = Bidirectional(GRU(32,
+    gru3 = Bidirectional(CuDNNGRU(32,
                              return_sequences='True',
                              activation='tanh',
                              recurrent_activation='hard_sigmoid',
