@@ -42,7 +42,7 @@ MODEL_NAME = 'mod_1'
 N_FOLDS = 10 # for cross validation
 MAXLEN_SEQ = None # only use sequences to this length and pad to this length, choose from 600, 608, 700
 NB_CLASSES_Q8 = 9 # number Q8 classes, used in final layer for classification (one extra for empty slots)
-NB_CLASSES_Q3 = 3 # number Q3 classes
+#NB_CLASSES_Q3 = 3 # number Q3 classes
 NB_AS = 20 # number of amino acids, length of one-hot endoded amino acids vectors
 NB_FEATURES = 30 # feature dimension
 
@@ -82,17 +82,6 @@ else:
 
 file_train = 'train_' + ending
 file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
-
-'''
-p = {'activation1':[relu, softmax],
-     'activation2':[relu, softmax],
-     'optimizer': ['Nadam', "RMSprop"],
-     'losses': ['categorical_crossentropy', keras.losses.binary_crossentropy],
-     'first_hidden_layer': [10, 8, 6],
-     'second_hidden_layer': [2, 4, 6],
-     'batch_size': [64, 128, 10000],
-     'epochs': [50, 75]}
-'''
 
 
 def build_and_train (X_train_aug, y_train, X_val_aug, y_val, epochs = epochs):
