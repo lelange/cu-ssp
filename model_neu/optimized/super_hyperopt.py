@@ -40,7 +40,7 @@ space = {
     'dropout': hp.uniform('dropout', 0.0, 0.9),
     #decide input
     'input': hp.choice('input', ['seqs'] ), #['onehot','seqs','both'] ),
-    'use_profiles': hp.choice('use_profiles', [hp.choice('which_profiles', ['pssm', 'hmm', 'both']), None]),
+    'use_profiles': hp.choice('use_profiles', [None]), #[hp.choice('which_profiles', ['pssm', 'hmm', 'both']), None]),
     #position tcn layer
     'tcn_position':hp.choice('tcn_position', [hp.choice('position', ['first', 'last']), None]),
     #loss function to be evaluated
