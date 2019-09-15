@@ -39,7 +39,7 @@ space = {
     # Uniform distribution in finding appropriate dropout values, conv layers
     'dropout': hp.uniform('dropout', 0.0, 0.9),
     #decide input
-    'input': hp.choice('input', ['onehot','seqs','both'] ),
+    'input': hp.choice('input', ['both'] ), #'onehot','seqs',
     'use_profiles': hp.choice('use_profiles', [hp.choice('which_profiles', ['pssm', 'hmm', 'both']), None]),
     #position tcn layer
     'tcn_position':hp.choice('tcn_position', [hp.choice('position', ['first', 'last']), None]),

@@ -191,6 +191,7 @@ def build_model(hype_space):
         print('Onehot shape:', x0._keras_shape)
     if hype_space['input']=='seqs':
         # have to use embedding
+        print('Seqs shape before embedding:', x0._keras_shape)
         x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x0._keras_shape)
     if hype_space['input']=='both':
