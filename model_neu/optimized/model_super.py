@@ -195,7 +195,10 @@ def build_model(hype_space):
         x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x0._keras_shape)
     if hype_space['input']=='both':
+        print('Seqs shape before embedding:', input_seqs._keras_shape)
         x_seq = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
+        print('Seqs shape after embedding:', x_seq._keras_shape)
+        print('Onehot shape:', input_onehot._keras_shape)
         x0 = concatenate([input_onehot, x_seq])
         print('Both concac input shape:', x0._keras_shape)
 
