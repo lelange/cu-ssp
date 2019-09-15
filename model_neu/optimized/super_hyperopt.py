@@ -76,27 +76,27 @@ space = {
     'second_layer':hp.choice('second_layer', [
         { #use LSTM
             'type': 'LSTM',
-            'lstm_units': hp.quniform('lstm_units', 50, 800, 10 ),
-            'lstm_nb': hp.choice('lstm_nb', [1, 2, 3])
+            'lstm_units_2': hp.quniform('lstm_units_2', 50, 800, 10 ),
+            'lstm_nb_2': hp.choice('lstm_nb_2', [1, 2, 3])
         },
         { #or use GRU
             'type': 'GRU',
-            'gru1': hp.loguniform('gru1', -0.6, 0.6),
+            'gru1_2': hp.loguniform('gru1_2', -0.6, 0.6),
             # nesting the layers ensures they're only un-rolled sequentially
-            'gru2': hp.choice('gru2', [False, {
-                'gru2_units': hp.loguniform('gru2_units', -0.6, 0.6),
+            'gru2_2': hp.choice('gru2_2', [False, {
+                'gru2_units_2': hp.loguniform('gru2_units_2', -0.6, 0.6),
                 # only make the 3rd layer availabile if the 2nd one is
-                'gru3': hp.choice('gru3', [False, {
-                    'gru3_units': hp.loguniform('gru3_units', -0.6, 0.6)
+                'gru3_2': hp.choice('gru3_2', [False, {
+                    'gru3_units_2': hp.loguniform('gru3_units_2', -0.6, 0.6)
                 }]),
             }]),
 
         },
         { # or use convolutional Layer
             'type': 'conv',
-            'conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
-            'nb_filter': hp.quniform('nb_filter', 2, 32, 2),
-            'nb_conv_layers': hp.choice('nb_conv_layers', [1, 2, 3]),
+            'conv_filter_size_2': hp.quniform('conv_filter_size_2', 8, 128, 8),
+            'nb_filter_2': hp.quniform('nb_filter_2', 2, 32, 2),
+            'nb_conv_layers_2': hp.choice('nb_conv_layers_2', [1, 2, 3]),
         },
         {#no second layer
             None

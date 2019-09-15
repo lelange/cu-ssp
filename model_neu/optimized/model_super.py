@@ -243,32 +243,32 @@ def build_model(hype_space):
     x0=x3
     x1 = x0
     if hype_space['second_layer']['type'] == 'LSTM':
-        for i in range(hype_space['second_layer']['lstm_nb']):
+        for i in range(hype_space['second_layer']['lstm_nb_2']):
             i = i + 1
             print(i)
             x1 = Bidirectional(
-                CuDNNLSTM(units=int(hype_space['second_layer']['lstm_units'] / i), return_sequences=True))(x1)
+                CuDNNLSTM(units=int(hype_space['second_layer']['lstm_units_2'] / i), return_sequences=True))(x1)
             x1 = Dropout(int(hype_space['dropout']))(x1)
     x2 = x1
 
     x1 = x0
     if hype_space['second_layer']['type'] == 'GRU':
-        x1 = Bidirectional(CuDNNGRU(units=int(hype_space['second_layer']['gru1'] * 100), return_sequences=True))(x1)
-        if hype_space['second_layer']['gru2']:
+        x1 = Bidirectional(CuDNNGRU(units=int(hype_space['second_layer']['gru1_2'] * 100), return_sequences=True))(x1)
+        if hype_space['second_layer']['gru2_2']:
             x1 = Bidirectional(
-                CuDNNGRU(units=int(hype_space['second_layer']['gru2']['gru2_units'] * 100), return_sequences=True))(x1)
-        if hype_space['second_layer']['gru2'] and hype_space['second_layer']['gru2']['gru3']:
-            x1 = Bidirectional(CuDNNGRU(units=int(hype_space['second_layer']['gru2']['gru3']['gru3_units'] * 100),
+                CuDNNGRU(units=int(hype_space['second_layer']['gru2_2']['gru2_units_2'] * 100), return_sequences=True))(x1)
+        if hype_space['second_layer']['gru2_2'] and hype_space['second_layer']['gru2_2']['gru3_2']:
+            x1 = Bidirectional(CuDNNGRU(units=int(hype_space['second_layer']['gru2_2']['gru3_2']['gru3_units_2'] * 100),
                                         return_sequences=True))(x1)
         x2 = x1
     x1 = x0
     if hype_space['second_layer']['type'] == 'conv':
-        for i in range(hype_space['second_layer']['nb_conv_layers']):
+        for i in range(hype_space['second_layer']['nb_conv_layers_2']):
             i = i + 1
             print(i)
             x1 = keras.layers.convolutional.Conv1D(
-                filters=int(hype_space['second_layer']['nb_filter']),
-                kernel_size=int(hype_space['second_layer']['conv_filter_size']), strides=i,
+                filters=int(hype_space['second_layer']['nb_filter_2']),
+                kernel_size=int(hype_space['second_layer']['conv_filter_size_2'])*i, strides=i,
                 padding='same',
                 kernel_regularizer=keras.regularizers.l2(
                     STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
@@ -368,7 +368,7 @@ def build_model(hype_space):
             lr=0.001 * hype_space['lr_rate_mult']
         ),
         loss=LOSS_STR_TO_CLASS[hype_space['loss']],
-        metrics=[accuracy, weighted_accuracy, kullback_leibler_divergence, matthews_correlation, precision, recall, fbeta_score] 
+        metrics=[accuracy, weighted_accuracy, kullback_leibler_divergence, matthews_correlation, precision, recall, fbeta_score]
     )
     return model
 
