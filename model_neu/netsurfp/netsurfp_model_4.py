@@ -171,7 +171,7 @@ def build_model():
                              #recurrent_dropout=0.1,
                              #implementation=1
                                   ))(gru1)
-    
+
     gru3 = Bidirectional(CuDNNGRU(32,
                              return_sequences='True',
                              #activation='tanh',
