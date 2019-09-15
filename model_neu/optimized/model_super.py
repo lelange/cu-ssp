@@ -218,7 +218,7 @@ def build_model(hype_space):
     if hype_space['tcn_position']=='first':
         print('TCN first.')
         x0 = tcn.TCN(return_sequences=True)(x0)
-
+    print('First layer is', hype_space['first_layer']['type'])
     x1 = x0
     if hype_space['first_layer']['type'] == 'LSTM':
         for i in range(hype_space['first_layer']['lstm_nb']):
@@ -243,7 +243,7 @@ def build_model(hype_space):
             print(i)
             x1 = keras.layers.convolutional.Conv1D(
             filters=int(hype_space['first_layer']['nb_filter']), kernel_size=int(hype_space['first_layer']['conv_filter_size']), strides=i,
-            padding='same',
+            padding='valid',
             kernel_regularizer=keras.regularizers.l2(
                 STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
             x1 = Dropout(int(hype_space['dropout']))(x1)
@@ -253,6 +253,7 @@ def build_model(hype_space):
 
     x0=COMBO_MOVE
     if hype_space['second_layer']:
+        print('Second layer is', hype_space['second_layer']['type'])
         x1 = x0
         if hype_space['second_layer']['type'] == 'LSTM':
             for i in range(hype_space['second_layer']['lstm_nb_2']):
