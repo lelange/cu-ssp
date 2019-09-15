@@ -198,10 +198,13 @@ def build_model(hype_space):
 
     if hype_space['use_profiles'] is not None:
         if hype_space['use_profiles']=='pssm':
+            print('Use pssm profiles.')
             x0 = concatenate([x0, input_pssm])
         if hype_space['use_profiles']=='hmm':
+            print('Use hmm profiles.')
             x0 = concatenate([x0, input_hmm])
         if hype_space['use_profiles']=='both':
+            print('Use both profiles.')
             x0 = concatenate([x0, input_pssm, input_hmm])
 
     # NN starts here:
