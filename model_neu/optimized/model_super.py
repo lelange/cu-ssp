@@ -386,11 +386,7 @@ def build_model(hype_space):
         loss=LOSS_STR_TO_CLASS[hype_space['loss']],
         metrics=[accuracy,
                  #weighted_accuracy,
-                 #kullback_leibler_divergence,
-                 matthews_correlation,
-                 precision,
-                 recall,
-                 fbeta_score
+                 kullback_leibler_divergence
                  ]
     )
     return model
