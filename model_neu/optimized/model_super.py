@@ -59,16 +59,16 @@ from keras.utils import to_categorical
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-WEIGHTS_DIR = "weights_super/"
+WEIGHTS_DIR = "weights_super_v2/"
 DATA_ROOT = '/nosave/lange/cu-ssp/data/data_princeton/'
-MODEL_NAME = "mod_super"
+MODEL_NAME = "mod_super_v2"
 
 MAXLEN_SEQ = 700
 
 NB_CLASSES_Q8 = 8
-NB_CLASSES_RSA = 4
+#NB_CLASSES_RSA = 4
 
-
+STARTING_L2_REG = 0.0007
 EPOCHS = 100
 
 OPTIMIZER_STR_TO_CLASS = {
@@ -179,7 +179,7 @@ def build_model(hype_space):
     print("Hyperspace:")
     print(hype_space)
 
-    #get all inputs but only use according to hyperparameter
+    #use different inputs according to choice of hyperparameter 'input', 'use profiles'
     input_onehot = Input(shape=(None, n_words))
     input_seqs = Input(shape=(None,))
     input_pssm = Input(shape=(None, 22))
@@ -190,9 +190,9 @@ def build_model(hype_space):
         x0 = input_onehot
     if hype_space['input']=='seqs':
         # have to use embedding
-        x0 = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input_seqs)
+        x0 = Embedding(input_dim=n_words, output_dim=hype_space['dense_output'], input_length=None)(input_seqs)
     if hype_space['input']=='both':
-        x_seq = Embedding(input_dim=n_words, output_dim=250, input_length=None)(input_seqs)
+        x_seq = Embedding(input_dim=n_words, output_dim=hype_space['dense_output'], input_length=None)(input_seqs)
         x0 = concatenate([input_onehot, x_seq])
 
 
@@ -204,24 +204,80 @@ def build_model(hype_space):
         if hype_space['use_profiles']=='both':
             x0 = concatenate([x0, input_pssm, input_hmm])
 
+    # NN starts here:
+    if hype_space['tcn_position']=='first':
+        x0 = tcn.TCN(return_sequences=True)(x0)
 
     x1 = x0
     if hype_space['first_layer']['type'] == 'LSTM':
-        for i in range(hype_space['first_layer']['nb']):
+        for i in range(hype_space['first_layer']['lstm_nb']):
             i=i+1
             print(i)
-            x1 = Bidirectional(CuDNNLSTM(units=int(hype_space['first_layer']['units']/i), return_sequences=True))(x1)
+            x1 = Bidirectional(CuDNNLSTM(units=int(hype_space['first_layer']['lstm_units']/i), return_sequences=True))(x1)
+            x1 = Dropout(int(hype_space['dropout']))(x1)
+    x2=x1
 
-    # wenn model gestackt x2=x1, sonst x2 = x0
-    x2 = x0
+    x1 = x0
     if hype_space['first_layer']['type']=='GRU':
-        x2 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru1']*100), return_sequences=True))(x2)
+        x1 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru1']*100), return_sequences=True))(x1)
         if hype_space['first_layer']['gru2']:
-            x2 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru2']['gru2_units']*100), return_sequences=True))(x2)
+            x1 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru2']['gru2_units']*100), return_sequences=True))(x1)
         if hype_space['first_layer']['gru2'] and hype_space['first_layer']['gru2']['gru3']:
-            x2 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru2']['gru3']['gru3_units']*100), return_sequences=True))(x2)
+            x1 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru2']['gru3']['gru3_units']*100), return_sequences=True))(x1)
+        x2=x1
+    x1 = x0
+    if hype_space['first_layer']['type'] == 'conv':
+        for i in range(hype_space['first_layer']['nb_conv_layers']):
+            i = i + 1
+            print(i)
+            x1 = keras.layers.convolutional.Conv1D(
+            filters=int(hype_space['first_layer']['nb_filter']), kernel_size=int(hype_space['first_layer']['conv_filter_size']), strides=i,
+            padding='same',
+            kernel_regularizer=keras.regularizers.l2(
+                STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
+            x1 = Dropout(int(hype_space['dropout']))(x1)
+        x2 = x1
 
-    COMBO_MOVE = concatenate([x1, x2])
+    x3 = concatenate([x0, x2])
+
+    x0=x3
+    x1 = x0
+    if hype_space['second_layer']['type'] == 'LSTM':
+        for i in range(hype_space['second_layer']['lstm_nb']):
+            i = i + 1
+            print(i)
+            x1 = Bidirectional(
+                CuDNNLSTM(units=int(hype_space['second_layer']['lstm_units'] / i), return_sequences=True))(x1)
+            x1 = Dropout(int(hype_space['dropout']))(x1)
+    x2 = x1
+
+    x1 = x0
+    if hype_space['second_layer']['type'] == 'GRU':
+        x1 = Bidirectional(CuDNNGRU(units=int(hype_space['second_layer']['gru1'] * 100), return_sequences=True))(x1)
+        if hype_space['second_layer']['gru2']:
+            x1 = Bidirectional(
+                CuDNNGRU(units=int(hype_space['second_layer']['gru2']['gru2_units'] * 100), return_sequences=True))(x1)
+        if hype_space['second_layer']['gru2'] and hype_space['second_layer']['gru2']['gru3']:
+            x1 = Bidirectional(CuDNNGRU(units=int(hype_space['second_layer']['gru2']['gru3']['gru3_units'] * 100),
+                                        return_sequences=True))(x1)
+        x2 = x1
+    x1 = x0
+    if hype_space['second_layer']['type'] == 'conv':
+        for i in range(hype_space['second_layer']['nb_conv_layers']):
+            i = i + 1
+            print(i)
+            x1 = keras.layers.convolutional.Conv1D(
+                filters=int(hype_space['second_layer']['nb_filter']),
+                kernel_size=int(hype_space['second_layer']['conv_filter_size']), strides=i,
+                padding='same',
+                kernel_regularizer=keras.regularizers.l2(
+                    STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
+            x1 = Dropout(int(hype_space['dropout']))(x1)
+        x2 = x1
+
+
+    COMBO_MOVE = concatenate([x0, x2])
+
     '''
     current_layer = input
 
@@ -294,9 +350,10 @@ def build_model(hype_space):
         metrics=[accuracy] #noch andere dazu
     )
     '''
-    w = Dense(500, activation="relu")(COMBO_MOVE)  # try 500
-    w = Dropout(0.4)(w)
-    w = tcn.TCN(return_sequences=True)(w)
+    w = Dense(int(hype_space['dense_output'])*2, activation="relu")(COMBO_MOVE)  # try 500
+    w = Dropout(int(hype_space['dropout']))(w)
+    if hype_space['tcn_position']=='last':
+        w = tcn.TCN(return_sequences=True)(w)
 
     y = TimeDistributed(Dense(n_tags, activation="softmax"))(w)
 
@@ -305,13 +362,13 @@ def build_model(hype_space):
     # model.summary()
 
     # Setting up the model with categorical x-entropy loss and the custom accuracy function as accuracy
-    adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
+    #adamOptimizer = Adam(lr=0.001, beta_1=0.8, beta_2=0.8, epsilon=None, decay=0.0001, amsgrad=False)
     model.compile(
         optimizer=OPTIMIZER_STR_TO_CLASS[hype_space['optimizer']](
-            # lr=0.001 * hype_space['lr_rate_mult']
+            lr=0.001 * hype_space['lr_rate_mult']
         ),
         loss=LOSS_STR_TO_CLASS[hype_space['loss']],
-        metrics=[accuracy]  # noch andere dazu
+        metrics=[accuracy, weighted_accuracy, kullback_leibler_divergence, matthews_correlation, precision, recall, fbeta_score] 
     )
     return model
 

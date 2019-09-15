@@ -1,4 +1,5 @@
 from keras import backend as K
+import numpy as np
 #from keras.layers.core import K
 import traceback
 from datetime import datetime
@@ -12,8 +13,8 @@ from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL
 
 from model_super import build_and_train, build_model, MODEL_NAME
 
-SAVE_RESULTS = "results_mod_super.pkl" # save trials of optimization
-SAVE_BEST_PLOT = "model_super_best" # save best NN graph
+SAVE_RESULTS = "results_mod_super_v2.pkl" # save trials of optimization
+SAVE_BEST_PLOT = "model_super_best_v2" # save best NN graph
 
 DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
 UNIT_CHOICES = [100, 200, 500, 800, 1000, 1200]
@@ -33,25 +34,23 @@ space = {
     'batch_size': hp.quniform('batch_size', 20, 450, 2),
     # Choice of optimizer:
     'optimizer': hp.choice('optimizer', ['Adam', 'Nadam', 'RMSprop']),
-    # Kernel size for convolutions:
-    'conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
     # LSTM units:
-    'GRU_units_mult': hp.loguniform('GRU_units_mult', -0.6, 0.6),
-    # Number of super_conv+conv layers stacked:
-    'nb_conv_layers': hp.choice('nb_conv_layers', [2, 3, 4]),
+    'dense_output': hp.quniform('dense_output', 100, 500, 50),
     # Uniform distribution in finding appropriate dropout values, conv layers
     'dropout': hp.uniform('dropout', 0.0, 0.9),
     #decide input
     'input': hp.choice('input', ['onehot','seqs','both'] ),
     'use_profiles': hp.choice('use_profiles', [hp.choice('which_profiles', ['pssm', 'hmm', 'both']), None]),
+    #position tcn layer
     'tcn_position':hp.choice('tcn_position', [hp.choice('position', ['first', 'last']), None]),
+    #loss function to be evaluated
     'loss':hp.choice('loss',['categorical_crossentropy', 'nll', 'mean_squared_error']),
-
+    # decide about first layer: recurrent or conv
     'first_layer':hp.choice('first_layer', [
         { #use LSTM
             'type': 'LSTM',
-            'units': hp.quniform('lstm.units', 50, 800, 10 ),
-            'nb': hp.choice('lstm.nb', [1,2,3])
+            'lstm_units': hp.quniform('lstm_units', 50, 800, 10 ),
+            'lstm_nb': hp.choice('lstm_nb', [1, 2, 3])
         },
         { #or use GRU
             'type': 'GRU',
@@ -65,6 +64,42 @@ space = {
                 }]),
             }]),
 
+        },
+        { # or use convolutional Layer
+            'type': 'conv',
+            'conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
+            'nb_filter': hp.quniform('nb_filter', 8, 128, 8),
+            'nb_conv_layers': hp.choice('nb_conv_layers', [1, 2, 3]),
+        },
+    ]),
+    #same for the second layer
+    'second_layer':hp.choice('second_layer', [
+        { #use LSTM
+            'type': 'LSTM',
+            'lstm_units': hp.quniform('lstm_units', 50, 800, 10 ),
+            'lstm_nb': hp.choice('lstm_nb', [1, 2, 3])
+        },
+        { #or use GRU
+            'type': 'GRU',
+            'gru1': hp.loguniform('gru1', -0.6, 0.6),
+            # nesting the layers ensures they're only un-rolled sequentially
+            'gru2': hp.choice('gru2', [False, {
+                'gru2_units': hp.loguniform('gru2_units', -0.6, 0.6),
+                # only make the 3rd layer availabile if the 2nd one is
+                'gru3': hp.choice('gru3', [False, {
+                    'gru3_units': hp.loguniform('gru3_units', -0.6, 0.6)
+                }]),
+            }]),
+
+        },
+        { # or use convolutional Layer
+            'type': 'conv',
+            'conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
+            'nb_filter': hp.quniform('nb_filter', 2, 32, 2),
+            'nb_conv_layers': hp.choice('nb_conv_layers', [1, 2, 3]),
+        },
+        {#no second layer
+            None
         }
     ])
 
