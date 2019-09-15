@@ -190,9 +190,9 @@ def build_model(hype_space):
         x0 = input_onehot
     if hype_space['input']=='seqs':
         # have to use embedding
-        x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
+        x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']))(input_seqs)
     if hype_space['input']=='both':
-        x_seq = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
+        x_seq = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']))(input_seqs)
         x0 = concatenate([input_onehot, x_seq])
 
 
