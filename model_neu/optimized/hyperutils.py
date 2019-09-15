@@ -100,12 +100,9 @@ def kullback_leibler_divergence(y_true, y_pred):
     '''Calculates the Kullback-Leibler (KL) divergence between prediction
     and target values.
     '''
-    y = tf.argmax(y_true, axis=- 1)
-    y_ = tf.argmax(y_pred, axis=- 1)
-    mask = tf.greater(y, 0)
-    y = K.clip(y, K.epsilon(), 1)
-    y_ = K.clip(y_, K.epsilon(), 1)
-    return K.sum(tf.boolean_mask(y, mask) * K.log(tf.boolean_mask(y, mask) / tf.boolean_mask(y_, mask)), axis=-1)
+    y_true = K.clip(y_true, K.epsilon(), 1)
+    y_pred = K.clip(y_pred, K.epsilon(), 1)
+    return K.sum(y_true * K.log(y_true / y_pred), axis=-1)
 
 def matthews_correlation(y_true, y_pred):
     '''Calculates the Matthews correlation coefficient measure for quality
