@@ -78,22 +78,14 @@ file_test = ['cb513_'+ ending, 'ts115_'+ ending, 'casp12_'+ ending]
 def build_model():
     model = None
 
-    #input = Input(shape=(MAXLEN_SEQ, NB_AS,))
-    #x = input
-    #inp = [input]
+    input = Input(shape=(MAXLEN_SEQ, NB_AS,))
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
-        x = concatenate([x, profiles_input], axis=2)
-        xx = profiles_input
-        inp.append(profiles_input)
-
-    if embedding:
-        emb_input = Input(shape=(MAXLEN_SEQ, EMB_DIM))
-        #x = concatenate([x, emb_input], axis=2)
-        xxx = emb_input
-        #inp.append(emb_input)
-        inp = emb_input
-        x=emb_input
+        x = concatenate([input, profiles_input])
+        inp = [input, profiles_input]
+    else:
+        x = input
+        inp = input
 
     z = Conv1D(64, 11, strides=1, padding='same')(x)
     w = Conv1D(64, 7, strides=1, padding='same')(x)

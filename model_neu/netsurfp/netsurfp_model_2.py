@@ -115,16 +115,15 @@ def evaluate_model(model, load_file, test_ind = None):
 def build_model():
     model = None
     input = Input(shape=(MAXLEN_SEQ, NB_AS,))
-
     if hmm:
         profiles_input = Input(shape=(MAXLEN_SEQ, NB_FEATURES,))
-        merged_input = concatenate([input, profiles_input])
+        x = concatenate([input, profiles_input])
         inp = [input, profiles_input]
     else:
-        merged_input = input
+        x = input
         inp = input
 
-    merged_input = Conv1D(128, 3, padding='same', kernel_initializer='he_normal')(merged_input)
+    merged_input = Conv1D(128, 3, padding='same', kernel_initializer='he_normal')(x)
 
     conv1 = conv_block(merged_input, 128, droprate)
     pool1 = MaxPooling1D(pool_size=2)(conv1)
