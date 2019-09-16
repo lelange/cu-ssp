@@ -21,9 +21,7 @@ import time
 import dill as pickle
 from hyperopt import hp, fmin, tpe, hp, STATUS_OK, Trials, space_eval
 
-from utils import parse_arguments, get_data, train_val_split, \
-    save_cv, telegram_me, accuracy, get_acc, build_and_predict, \
-    save_results_to_file
+from utils import *
 
 from collections import defaultdict
 from datetime import datetime
