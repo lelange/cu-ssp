@@ -23,7 +23,7 @@ path = '/nosave/lange/cu-ssp/data/'
 PRED_DIR = "preds/"
 q8_list = list('-GHIBESTC')
 q3_list = list('-HHHEECCC')
-MAXLEN_SEQ = 700
+MAXLEN_SEQ = 768
 
 def parse_arguments(default_epochs):
     """
