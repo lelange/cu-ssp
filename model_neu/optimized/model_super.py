@@ -56,6 +56,8 @@ from keras.optimizers import Adam
 from keras.preprocessing import text, sequence
 from keras.preprocessing.text import Tokenizer
 from keras.utils import to_categorical
+from allennlp.commands.elmo import ElmoEmbedder
+from pathlib import Path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -70,6 +72,12 @@ NB_CLASSES_Q8 = 8
 
 STARTING_L2_REG = 0.0007
 EPOCHS = 100
+
+model_dir = Path('/nosave/lange/seqVec')
+weights = model_dir / 'weights.hdf5'
+options = model_dir / 'options.json'
+seqvec  = ElmoEmbedder(options,weights,cuda_device=0) # cuda_device=-1 for CPU
+
 
 OPTIMIZER_STR_TO_CLASS = {
     'Adam': Adam,
@@ -192,7 +200,10 @@ def build_model(hype_space):
     if hype_space['input']=='seqs':
         # have to use embedding
         print('Seqs shape before embedding:', x0._keras_shape)
-        x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
+        if hype_space['embedding']:
+            x0 = seqvec.embed_sentences(input_seqs) # returns: List-of-Lists with shape [3,L,1024]
+        else:
+            x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x0._keras_shape)
     if hype_space['input']=='both':
         print('Seqs shape before embedding:', input_seqs._keras_shape)

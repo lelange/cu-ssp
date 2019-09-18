@@ -40,6 +40,7 @@ space = {
     'dropout': hp.uniform('dropout', 0.0, 0.9),
     #decide input
     'input': hp.choice('input', ['onehot','seqs','both'] ),
+    'embedding': hp.choice('embedding', [True])#[True, False]),
     'use_profiles': hp.choice('use_profiles', [hp.choice('which_profiles', ['pssm', 'hmm', 'both']), None]),
     #position tcn layer
     'tcn_position':hp.choice('tcn_position', [hp.choice('position', ['first', 'last']), None]),
