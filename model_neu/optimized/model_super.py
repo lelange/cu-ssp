@@ -203,7 +203,7 @@ def build_model(hype_space):
         if hype_space['embedding']:
             embedding = seqvec.embed_sentences(input_seqs) # returns: List-of-Lists with shape [3,L,1024]
             #x0 = torch.tensor(embedding).sum(dim=0)  # Tensor with shape [L,1024]
-            x0 = K.sum(tf.convert_to_tensor(embedding), axis =0)
+            x0 = K.sum(tf.convert_to_tensor(torch.tensor(embedding)), axis =0)
         else:
             x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x0._keras_shape)
