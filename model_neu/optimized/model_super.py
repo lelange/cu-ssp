@@ -202,15 +202,15 @@ def build_model(hype_space):
         # have to use embedding
         print('Seqs shape before embedding:', x0._keras_shape)
         if hype_space['embedding']:
-            x0 = seqvec.embed_sentences(input_seqs) # returns: List-of-Lists with shape [3,L,1024]
+            embedding = seqvec.embed_sentences(input_seqs) # returns: List-of-Lists with shape [3,L,1024]
+            x0 = torch.tensor(embedding).sum(dim=0)  # Tensor with shape [L,1024]
         else:
             x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x0._keras_shape)
     if hype_space['input']=='both':
         # elmo einfügen
         print('Seqs shape before embedding:', input_seqs._keras_shape)
-        embedding = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
-        x_seq = torch.tensor(embedding).sum(dim=0)  # Tensor with shape [L,1024]
+        x_seq = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x_seq._keras_shape)
         print('Onehot shape:', input_onehot._keras_shape)
         x0 = concatenate([input_onehot, x_seq])
