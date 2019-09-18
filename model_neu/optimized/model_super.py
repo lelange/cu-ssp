@@ -34,6 +34,7 @@ import tensorflow as tf
 sys.path.append('keras-tcn')
 from tcn import tcn
 import h5py
+import torch
 
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
@@ -206,8 +207,10 @@ def build_model(hype_space):
             x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x0._keras_shape)
     if hype_space['input']=='both':
+        # elmo einfügen
         print('Seqs shape before embedding:', input_seqs._keras_shape)
-        x_seq = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
+        embedding = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
+        x_seq = torch.tensor(embedding).sum(dim=0)  # Tensor with shape [L,1024]
         print('Seqs shape after embedding:', x_seq._keras_shape)
         print('Onehot shape:', input_onehot._keras_shape)
         x0 = concatenate([input_onehot, x_seq])
