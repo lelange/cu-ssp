@@ -200,7 +200,6 @@ def build_model(hype_space):
         print('Onehot shape:', x0._keras_shape)
     if hype_space['input']=='seqs':
         # have to use embedding
-        print('Seqs shape before embedding:', x0._keras_shape)
         if hype_space['embedding']:
             embedding = seqvec.embed_sentences(input_seqs) # returns: List-of-Lists with shape [3,L,1024]
             x0 = torch.tensor(embedding).sum(dim=0)  # Tensor with shape [L,1024]
