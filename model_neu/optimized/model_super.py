@@ -201,7 +201,10 @@ def build_model(hype_space):
     if hype_space['input']=='seqs':
         # have to use embedding
         if hype_space['embedding']:
+            seqvec = ElmoEmbedder(options, weights, cuda_device=0)  # cuda_device=-1 for CPU
             embedding = seqvec.embed_sentences(input_seqs) # returns: List-of-Lists with shape [3,L,1024]
+            print(type(embedding))
+            print(embedding.shape)
             #x0 = torch.tensor(embedding).sum(dim=0)  # Tensor with shape [L,1024]
             x0 = tf.convert_to_tensor(torch.tensor(embedding).sum(dim=0))
         else:
