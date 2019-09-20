@@ -79,28 +79,10 @@ test_input_seqs, test_target_seqs = test_df[['input', 'expected']][(test_df.len 
 # use preprocessing tools for text from keras to encode input sequence as word rank numbers and target sequence as one hot.
 # To ensure easy to use training and testing, all sequences are padded with zeros to the maximum sequence length
 # transform sequences to trigrams
-train_input_grams = seq2ngrams(train_input_seqs)
+train_input_data = seq2ngrams(train_input_seqs)
 # transform sequences
 # fit alphabet on train basis
-tokenizer_encoder = Tokenizer()
-tokenizer_encoder.fit_on_texts(train_input_grams)
 
-tokenizer_decoder = Tokenizer(char_level=True)
-tokenizer_decoder.fit_on_texts(train_target_seqs)
-
-# train
-train_input_data = tokenizer_encoder.texts_to_sequences(train_input_grams)
-
-X_train = sequence.pad_sequences(train_input_data, maxlen=maxlen_seq, padding='post')
-# transform targets to one-hot
-train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
-#train_target_data = sequence.pad_sequences(train_target_data, maxlen=maxlen_seq, padding='post')
-
-# test
-test_input_grams = seq2ngrams(test_input_seqs)
-test_input_data = tokenizer_encoder.texts_to_sequences(test_input_grams)
-X_test = sequence.pad_sequences(test_input_data, maxlen=maxlen_seq, padding='post')
-test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
 #test_target_data = sequence.pad_sequences(test_target_data, maxlen=maxlen_seq, padding='post')
 
 #
