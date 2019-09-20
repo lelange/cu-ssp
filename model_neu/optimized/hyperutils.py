@@ -15,6 +15,7 @@ from keras.utils import to_categorical
 RESULTS_DIR = "results/"
 MAXLEN_SEQ = 700
 
+data_root = '/nosave/lange/cu-ssp/data/'
 residue_list = list('ACEDGFIHKMLNQPSRTWVYX') + ['NoSeq']
 q8_list      = list('LBEGIHST') + ['NoSeq']
 
@@ -256,8 +257,8 @@ def load_augmented_data(npy_path, max_len):
     return train_df, profile_padded
 
 def get_data():
-    cb513filename = '/nosave/lange/cu-ssp/data/data_princeton/cb513.npy'
-    cb6133filteredfilename = '/nosave/lange/cu-ssp/data/data_princeton/cb6133filtered.npy'
+    cb513filename = data_root+'data_princeton/cb513.npy'
+    cb6133filteredfilename = data_root+'data_princeton/cb6133filtered.npy'
     maxlen_seq = 700
     # load train and test and cut length to maxlen_seq
 
@@ -313,16 +314,21 @@ def get_data():
     X_aug_val = X_aug_train[validation_idx]
     X_aug_train = X_aug_train[training_idx]
     '''
+    #hmm profiles
+    input_hmm = np.load(data_root+'data_princeton/hmm_train.npy', allow_pickle=True)[:,:700,:]
+    input_hmm_test = np.load(data_root+'data_princeton/hmm_cb513.npy', allow_pickle=True)[:,:700,:]
 
-    input_hmm = np.load('/nosave/lange/cu-ssp/data/data_princeton/hmm_train.npy', allow_pickle=True)[:,:700,:]
-    input_hmm_test = np.load('/nosave/lange/cu-ssp/data/data_princeton/hmm_cb513.npy', allow_pickle=True)[:,:700,:]
-    input_data_train = [input_one_hot, X_train, standard(X_aug_train), input_hmm]
+    #elmo embedding
+    input_elmo_train = np.load(data_root+'data_princeton/train_input_embedding.npy')
+    input_elmo_test = np.load(data_root+'data_princeton/cb513_input_embedding.npy')
+
+    input_data_train = [input_one_hot, X_train, input_elmo_train, standard(X_aug_train), input_hmm]
     output_data_train = y_train
     print(len(y_train))
     print(input_hmm.shape)
     print(len(y_test))
     print(input_hmm_test.shape)
-    input_data_test = [input_one_hot_test, X_test, standard(X_aug_test), input_hmm_test]
+    input_data_test = [input_one_hot_test, X_test, input_elmo_test, standard(X_aug_test), input_hmm_test]
     output_data_test = y_test
 
     return input_data_train, output_data_train, input_data_test, output_data_test

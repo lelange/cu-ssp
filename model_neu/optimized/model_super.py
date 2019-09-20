@@ -191,9 +191,10 @@ def build_model(hype_space):
     #use different inputs according to choice of hyperparameter 'input', 'use profiles'
     input_onehot = Input(shape=(None, n_words))
     input_seqs = Input(shape=(None,))
+    input_elmo = Input(shape=(None, 1024))
     input_pssm = Input(shape=(None, 22))
     input_hmm = Input(shape=(None, 30))
-    inp = [input_onehot, input_seqs, input_pssm, input_hmm]
+    inp = [input_onehot, input_seqs, input_elmo, input_pssm, input_hmm]
     x0=None
     if hype_space['input']=='onehot':
         x0 = input_onehot
@@ -201,19 +202,16 @@ def build_model(hype_space):
     if hype_space['input']=='seqs':
         # have to use embedding
         if hype_space['embedding']:
-            seqvec = ElmoEmbedder(options, weights, cuda_device=0)  # cuda_device=-1 for CPU
-            embedding = seqvec.embed_sentences(input_seqs) # returns: List-of-Lists with shape [3,L,1024]
-            print(type(embedding))
-            print(embedding.shape)
-            #x0 = torch.tensor(embedding).sum(dim=0)  # Tensor with shape [L,1024]
-            x0 = tf.convert_to_tensor(torch.tensor(embedding).sum(dim=0))
+           x0 = input_elmo
         else:
             x0 = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x0._keras_shape)
     if hype_space['input']=='both':
         # elmo einfügen
-        print('Seqs shape before embedding:', input_seqs._keras_shape)
-        x_seq = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
+        if hype_space['embedding']:
+            x_seq = input_elmo
+        else:
+            x_seq = Embedding(input_dim=n_words, output_dim=int(hype_space['dense_output']), input_length=None)(input_seqs)
         print('Seqs shape after embedding:', x_seq._keras_shape)
         print('Onehot shape:', input_onehot._keras_shape)
         x0 = concatenate([input_onehot, x_seq])
