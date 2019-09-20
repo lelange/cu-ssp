@@ -105,7 +105,7 @@ def calculate_and_save_embedding(input_seq):
         print(type(input_seq))
         print(seq)
 
-        embedding = seqvec.embed_sentence(list(seq))  # List-of-Lists with shape [3,L,1024]
+        embedding = seqvec.embed_sentence(seq)  # List-of-Lists with shape [3,L,1024]
 
         # Get 1024-dimensional embedding for per-residue predictions:
         residue_embd = torch.tensor(embedding).sum(dim=0) # Tensor with shape [L,1024]
