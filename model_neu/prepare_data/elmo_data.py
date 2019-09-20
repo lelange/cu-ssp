@@ -23,7 +23,7 @@ import pandas as pd
 import tensorflow as tf
 import sys
 
-
+data_root = "nosave/lange/cu-ssp/data/data_princeton/"
 model_dir = Path('/nosave/lange/seqVec')
 weights = model_dir / 'weights.hdf5'
 options = model_dir / 'options.json'
@@ -80,6 +80,7 @@ test_input_seqs, test_target_seqs = test_df[['input', 'expected']][(test_df.len 
 # To ensure easy to use training and testing, all sequences are padded with zeros to the maximum sequence length
 # transform sequences to trigrams
 train_input_data = seq2ngrams(train_input_seqs)
+test_input_data = seq2ngrams(test_input_seqs)
 # transform sequences
 # fit alphabet on train basis
 
@@ -126,24 +127,15 @@ def calculate_and_save_embedding(input_seq):
     print("The embedding calculation needed {:.0f}min {:.0f}s in total.".format(m, s))
     return input_embedding
 
-start_time = time.time()
 
 train_input_embedding= calculate_and_save_embedding(train_input_data)
-#np.save(data_root+'train_netsurfp_input_embedding_residue.npy', train_input_embedding)
+np.save(data_root+'train_input_embedding.npy', train_input_embedding)
+print('saved train data')
 
-time_end = time.time() - start_time
-m, s = divmod(time_end, 60)
-print(m, s)
-'''
-start_time = time.time()
-mask = get_seq_mask(data_cb513)
-test_input_embedding, test_times = calculate_and_save_embedding(test_input, mask_seq=mask[:,:maxlen_seq])
-np.save(data_root+'cb513_netsurfp_times_residue.npy', test_times)
-np.save(data_root+'cb513_netsurfp_input_embedding_residue.npy', test_input_embedding)
+test_input_embedding = calculate_and_save_embedding(test_input_data)
+np.save(data_root+'cb513_input_embedding.npy', test_input_seqs)
 
-time_end = time.time() - start_time
-m, s = divmod(time_end, 60)
-telegram_me(m, s, sys.argv[0])
-'''
+print('saved test data')
+
 
 
