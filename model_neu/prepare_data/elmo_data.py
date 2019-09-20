@@ -116,7 +116,7 @@ def calculate_and_save_embedding(input_seq):
         print(residue_embd_np.shape)
 
         #input_embedding.append(residue_embd_np)
-        input_embedding[i, :, :]= residue_embd_np
+        input_embedding[i, :len(seq), :]= residue_embd_np
 
         t = time.time() - t1
         print("For {} residues {:.0f}s needed.".format(len(input_seq), t))
