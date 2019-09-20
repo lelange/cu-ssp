@@ -96,9 +96,6 @@ X_train = sequence.pad_sequences(train_input_data, maxlen=maxlen_seq, padding='p
 train_target_data = tokenizer_decoder.texts_to_sequences(train_target_seqs)
 #train_target_data = sequence.pad_sequences(train_target_data, maxlen=maxlen_seq, padding='post')
 
-y_train = to_categorical(train_target_data)
-input_one_hot = to_categorical(X_train)
-
 # test
 test_input_grams = seq2ngrams(test_input_seqs)
 test_input_data = tokenizer_encoder.texts_to_sequences(test_input_grams)
@@ -124,6 +121,7 @@ def calculate_and_save_embedding(input_seq, mask_seq):
 
         #list() only if not list yet
         print(type(input_seq))
+        print(seq)
 
         embedding = seqvec.embed_sentence(list(seq))  # List-of-Lists with shape [3,L,1024]
 
