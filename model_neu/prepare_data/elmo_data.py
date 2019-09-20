@@ -95,7 +95,6 @@ def calculate_and_save_embedding(input_seq):
     #input_embedding = []
 
     for i, seq in enumerate(input_seq):
-        t1 = time.time()
         print('\n \n----------------------')
         print('----------------------')
         print('Sequence ', (i + 1), '/', len(input_seq))
@@ -119,23 +118,18 @@ def calculate_and_save_embedding(input_seq):
         #input_embedding.append(residue_embd_np)
         input_embedding[i, :len(seq), :]= residue_embd_np
 
-        t = time.time() - t1
-        print("For {} residues {:.0f}s needed.".format(len(input_seq), t))
-
-    end_time = time.time() - start_time
-    m, s = divmod(end_time, 60)
-    print("The embedding calculation needed {:.0f}min {:.0f}s in total.".format(m, s))
     return input_embedding
 
-
-train_input_embedding= calculate_and_save_embedding(train_input_data)
-np.save(data_root+'train_input_embedding.npy', train_input_embedding)
-print('saved train data')
 
 test_input_embedding = calculate_and_save_embedding(test_input_data)
 np.save(data_root+'cb513_input_embedding.npy', test_input_seqs)
 
 print('saved test data')
+
+train_input_embedding= calculate_and_save_embedding(train_input_data)
+np.save(data_root+'train_input_embedding.npy', train_input_embedding)
+
+print('saved train data')
 
 
 
