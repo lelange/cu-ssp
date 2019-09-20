@@ -104,7 +104,7 @@ test_target_data = tokenizer_decoder.texts_to_sequences(test_target_seqs)
 #test_target_data = sequence.pad_sequences(test_target_data, maxlen=maxlen_seq, padding='post')
 
 #
-def calculate_and_save_embedding(input_seq, mask_seq):
+def calculate_and_save_embedding(input_seq):
     # Get embedding for amino acid sequence
 
     # use list or numpy array to store data
