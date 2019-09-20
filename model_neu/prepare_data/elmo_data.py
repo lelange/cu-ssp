@@ -23,7 +23,7 @@ import pandas as pd
 import tensorflow as tf
 import sys
 
-data_root = "nosave/lange/cu-ssp/data/data_princeton/"
+data_root = "/nosave/lange/cu-ssp/data/data_princeton/"
 model_dir = Path('/nosave/lange/seqVec')
 weights = model_dir / 'weights.hdf5'
 options = model_dir / 'options.json'
