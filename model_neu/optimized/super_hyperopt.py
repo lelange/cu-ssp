@@ -67,13 +67,15 @@ space = {
             }]),
 
         },
-
+        '''
         { # or use convolutional Layer
             'type': 'conv',
             'conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
             'nb_filter': hp.quniform('nb_filter', 8, 128, 8),
             'nb_conv_layers': hp.choice('nb_conv_layers', [1, 2, 3]),
         },
+        '''
+
     ]),
     #same for the second layer
     'second_layer':hp.choice('second_layer', [
@@ -95,14 +97,16 @@ space = {
             }]),
 
         },
+        # no second layer
+        False,
+        '''
         { # or use convolutional Layer
             'type': 'conv',
             'conv_filter_size_2': hp.quniform('conv_filter_size_2', 8, 128, 8),
             'nb_filter_2': hp.quniform('nb_filter_2', 2, 32, 2),
             'nb_conv_layers_2': hp.choice('nb_conv_layers_2', [1, 2, 3]),
-        },
-        #no second layer
-        False
+        },'''
+
 
     ])
 
@@ -187,7 +191,7 @@ def run_a_trial():
     best = fmin(
         optimize_model,
         space,
-        algo=rand.suggest,
+        algo=tpe.suggest,
         trials=trials,
         max_evals=max_evals
     )
