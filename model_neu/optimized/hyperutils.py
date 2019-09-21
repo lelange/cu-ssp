@@ -321,6 +321,7 @@ def get_data():
     #elmo embedding
     input_elmo_train = np.load(data_root+'data_princeton/train_input_embedding.npy')
     input_elmo_test = np.load(data_root+'data_princeton/cb513_input_embedding.npy')
+    print(input_elmo_train.shape)
 
     input_data_train = [input_one_hot, X_train, input_elmo_train, standard(X_aug_train), input_hmm]
     output_data_train = y_train
