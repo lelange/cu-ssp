@@ -48,7 +48,6 @@ space = {
     'loss':hp.choice('loss',['categorical_crossentropy', 'nll', 'mean_squared_error']),
     # decide about first layer: recurrent or conv
     'first_layer':hp.choice('first_layer', [
-
         { #use LSTM
             'type': 'LSTM',
             'lstm_units': hp.quniform('lstm_units', 50, 800, 10 ),
@@ -67,7 +66,6 @@ space = {
             }]),
 
         },
-
         { # or use convolutional Layer
             'type': 'conv',
             'conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
