@@ -122,14 +122,16 @@ def calculate_and_save_embedding(input_seq):
 
 
 test_input_embedding = calculate_and_save_embedding(test_input_data)
-np.save(data_root+'cb513_input_embedding.npy', test_input_seqs)
+np.save(data_root+'cb513_input_embedding.npy', test_input_embedding)
 
 print('saved test data')
-
+'''
 train_input_embedding= calculate_and_save_embedding(train_input_data)
 np.save(data_root+'train_input_embedding.npy', train_input_embedding)
 
 print('saved train data')
+
+'''
 
 
 
