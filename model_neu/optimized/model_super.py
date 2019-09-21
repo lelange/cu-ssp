@@ -251,6 +251,7 @@ def build_model(hype_space):
         if hype_space['first_layer']['gru2'] and hype_space['first_layer']['gru2']['gru3']:
             x1 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru2']['gru3']['gru3_units']*100), return_sequences=True))(x1)
         x2=x1
+    '''
     x1 = x0
     if hype_space['first_layer']['type'] == 'conv':
         for i in range(hype_space['first_layer']['nb_conv_layers']):
@@ -263,7 +264,8 @@ def build_model(hype_space):
                 STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
             x1 = Dropout(int(hype_space['dropout']))(x1)
         x2 = x1
-
+    '''
+    
     COMBO_MOVE = concatenate([x0, x2])
 
     x0=COMBO_MOVE
@@ -292,8 +294,9 @@ def build_model(hype_space):
                     CuDNNGRU(units=int(hype_space['second_layer']['gru2_2']['gru3_2']['gru3_units_2'] * 100),
                              return_sequences=True))(x1)
             x2 = x1
+        '''
         x1 = x0
-        if hype_space['second_layer']['type'] == 'conv':
+                if hype_space['second_layer']['type'] == 'conv':
             for i in range(hype_space['second_layer']['nb_conv_layers_2']):
                 i = i + 1
                 print(i)
@@ -305,6 +308,8 @@ def build_model(hype_space):
                         STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
                 x1 = Dropout(int(hype_space['dropout']))(x1)
             x2 = x1
+
+        '''
 
         COMBO_MOVE = concatenate([x0, x2])
 
