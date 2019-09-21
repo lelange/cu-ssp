@@ -257,7 +257,7 @@ def build_model(hype_space):
             i = i + 1
             print(i)
             x1 = keras.layers.convolutional.Conv1D(
-            filters=int(hype_space['first_layer']['nb_filter']), kernel_size=int(hype_space['first_layer']['conv_filter_size']), strides=i,
+            filters=int(hype_space['first_layer']['nb_filter']), kernel_size=int(hype_space['first_layer']['conv_filter_size']),
             padding='valid',
             kernel_regularizer=keras.regularizers.l2(
                 STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
