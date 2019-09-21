@@ -322,6 +322,7 @@ def get_data():
     input_elmo_train = np.load(data_root+'data_princeton/train_input_embedding.npy')
     input_elmo_test = np.load(data_root+'data_princeton/cb513_input_embedding.npy')
     print(input_elmo_train.shape)
+    print(input_elmo_test.shape)
 
     input_data_train = [input_one_hot, X_train, input_elmo_train, standard(X_aug_train), input_hmm]
     output_data_train = y_train
@@ -338,15 +339,13 @@ def get_data():
 # texts_to_sequences Transforms each text in texts to a sequence of integers, 0 is reserved for padding
 
 #fertig, nur get_data noch machen
-def evaluate_model(model, load_file, hype_space, X_test=None, y_test=None):
+def evaluate_model(model, load_file, hype_space, X_test, y_test):
 
     start_time = time.time()
     file_test = ['cb513'] #add more later
     test_accs = []
 
     for test in file_test:
-        if X_test is None:
-            X_test, y_test = get_data(test, hype_space['normalize_profiles'])
 
         model.load_weights(load_file)
 
