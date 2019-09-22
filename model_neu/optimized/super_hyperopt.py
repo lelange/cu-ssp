@@ -66,12 +66,7 @@ space = {
             }]),
 
         },
-        { # or use convolutional Layer
-            'type': 'conv',
-            'conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
-            'nb_filter': hp.quniform('nb_filter', 2, 32, 8),
-            'nb_conv_layers': hp.choice('nb_conv_layers', [1, 2, 3]),
-        },
+
     ]),
     #same for the second layer
     'second_layer':hp.choice('second_layer', [
@@ -92,12 +87,6 @@ space = {
                 }]),
             }]),
 
-        },
-        { # or use convolutional Layer
-            'type': 'conv',
-            'conv_filter_size_2': hp.quniform('conv_filter_size_2', 8, 128, 8),
-            'nb_filter_2': hp.quniform('nb_filter_2', 2, 32, 2),
-            'nb_conv_layers_2': hp.choice('nb_conv_layers_2', [1, 2, 3]),
         },
         #no second layer
         False
@@ -179,7 +168,7 @@ def run_a_trial():
     except:
         # empty results.pkl
         trials = Trials()
-        max_evals = 1 #test mode = 1
+        max_evals = 21 #test mode = 1
         print("Starting from scratch: new trials.")
 
     best = fmin(

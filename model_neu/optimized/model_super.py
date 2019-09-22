@@ -252,18 +252,6 @@ def build_model(hype_space):
             x1 = Bidirectional(CuDNNGRU(units=int(hype_space['first_layer']['gru2']['gru3']['gru3_units']*100), return_sequences=True))(x1)
         x2=x1
     x1 = x0
-    if hype_space['first_layer']['type'] == 'conv':
-        for i in range(hype_space['first_layer']['nb_conv_layers']):
-            i = i + 1
-            print(i)
-            x1 = keras.layers.convolutional.Conv1D(
-                filters=int(hype_space['first_layer']['nb_filter']),
-                kernel_size=int(hype_space['first_layer']['conv_filter_size']),
-                padding='valid',
-                kernel_regularizer=keras.regularizers.l2(
-                    STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
-            x1 = Dropout(int(hype_space['dropout']))(x1)
-        x2 = x1
 
 
     COMBO_MOVE = concatenate([x0, x2])
@@ -294,24 +282,6 @@ def build_model(hype_space):
                     CuDNNGRU(units=int(hype_space['second_layer']['gru2_2']['gru3_2']['gru3_units_2'] * 100),
                              return_sequences=True))(x1)
             x2 = x1
-
-        x1 = x0
-        if hype_space['second_layer']['type'] == 'conv':
-            for i in range(hype_space['second_layer']['nb_conv_layers_2']):
-                i = i + 1
-                print(i)
-                x1 = keras.layers.convolutional.Conv1D(
-                    filters=int(hype_space['second_layer']['nb_filter_2']),
-                    kernel_size=int(hype_space['second_layer']['conv_filter_size_2']),
-                    padding='valid',
-                    kernel_regularizer=keras.regularizers.l2(
-                        STARTING_L2_REG * hype_space['l2_weight_reg_mult']))(x1)
-
-            x1 = Dropout(int(hype_space['dropout']))(x1)
-
-            x2 = x1
-
-
 
         COMBO_MOVE = concatenate([x0, x2])
 
