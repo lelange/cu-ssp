@@ -62,9 +62,9 @@ from pathlib import Path
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-WEIGHTS_DIR = "weights_super_v3/"
+WEIGHTS_DIR = "weights_super_v4/"
 DATA_ROOT = '/nosave/lange/cu-ssp/data/data_princeton/'
-MODEL_NAME = "mod_super_v3"
+MODEL_NAME = "mod_super_v4"
 
 MAXLEN_SEQ = 700
 

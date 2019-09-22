@@ -13,8 +13,8 @@ from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL, 
 
 from model_super import build_and_train, build_model, MODEL_NAME
 
-SAVE_RESULTS = "results_mod_super_v3.pkl" # save trials of optimization
-SAVE_BEST_PLOT = "model_super_best_v3" # save best NN graph
+SAVE_RESULTS = "results_mod_super_v4.pkl" # save trials of optimization
+SAVE_BEST_PLOT = "model_super_best_v4" # save best NN graph
 
 DROPOUT_CHOICES = np.arange(0.0, 0.9, 0.1)
 UNIT_CHOICES = [100, 200, 500, 800, 1000, 1200]
@@ -179,7 +179,7 @@ def run_a_trial():
     except:
         # empty results.pkl
         trials = Trials()
-        max_evals = 21 #test mode = 1
+        max_evals = 1 #test mode = 1
         print("Starting from scratch: new trials.")
 
     best = fmin(
