@@ -155,7 +155,7 @@ def optimize_model(hyperspace):
 def run_a_trial():
     """Run one TPE meta optimisation step and save its results."""
 
-    max_evals = nb_evals = 160
+    max_evals = nb_evals = 15
 
     print("Attempt to resume a past training if it exists:")
 
