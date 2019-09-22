@@ -69,7 +69,7 @@ space = {
         { # or use convolutional Layer
             'type': 'conv',
             'conv_filter_size': hp.quniform('conv_filter_size', 8, 128, 8),
-            'nb_filter': hp.quniform('nb_filter', 8, 128, 8),
+            'nb_filter': hp.quniform('nb_filter', 2, 32, 8),
             'nb_conv_layers': hp.choice('nb_conv_layers', [1, 2, 3]),
         },
     ]),
