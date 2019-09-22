@@ -9,7 +9,7 @@ import dill as pickle
 from hyperutils import *
 
 from keras.utils import plot_model
-from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL, rand
+from hyperopt import hp, tpe, fmin, Trials, STATUS_OK, space_eval, STATUS_FAIL, rand, partial
 
 from model_super import build_and_train, build_model, MODEL_NAME
 
@@ -175,7 +175,7 @@ def run_a_trial():
     best = fmin(
         optimize_model,
         space,
-        algo=tpe.suggest(n_startup_jobs=150), #
+        algo=partial(tpe.suggest, n_startup_jobs=150), #
         trials=trials,
         max_evals=max_evals
     )
