@@ -38,10 +38,13 @@ Vor- und Aufbereitung der Daten: /prepare_data
 
 Die Modelle sind größtenteils für den GPU Gebrauch optimiert.
 
-virtualenv -p python3 tf-gpu
 
 wichtige Vorausetzungen:
+
+python3
+
 tensorflow-gpu==1.12.0
+
 module load cudnn/7.3.0_cuda-9.0
 
 sonstige Paketeabhängigkeiten im Ordner: /package_dependencies
