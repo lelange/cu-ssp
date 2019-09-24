@@ -19,6 +19,11 @@ http://www.cbs.dtu.dk/services/NetSurfP/
 https://github.com/qzlshy/ss_pssm_hhm
 
 
+Gewichte für die Erstellung der ElMo Einbettung:
+
+https://github.com/mheinzinger/SeqVec
+
+
 ## Übersicht der Ordner:
 
 model_n: ursprüngliche Implementierungen der Modelle (evtl. Änderungen zur Fehlerbehebung)
