@@ -10,8 +10,6 @@ Q3 (links) and Q8 (rechts) Sekundärstrukturen des 1AKD Protein im  CB513 Datens
 
 <img src="https://github.com/idrori/cu-ssp/blob/master/paper/figures/1akd_q3.png" height=300><img src="https://github.com/idrori/cu-ssp/blob/master/paper/figures/1akd_q8.png" height=300>
 
-Eigene Beiträge im Ordner **model_neu**
-
 Trainings- und Testdaten
 
 https://www.princeton.edu/~jzthree/datasets/ICML2014/
@@ -22,6 +20,10 @@ https://github.com/qzlshy/ss_pssm_hhm
 
 
 ## Übersicht der Ordner:
+
+model_n: ursprüngliche Implementierungen der Modelle (evtl. Änderungen zur Fehlerbehebung)
+
+Eigene Beiträge im Ordner **model_neu**
 
 Reproduktion der Daten: /princetion
 
