@@ -10,9 +10,9 @@ Q3 (links) and Q8 (rechts) Sekundärstrukturen des 1AKD Protein im  CB513 Datens
 
 <img src="https://github.com/idrori/cu-ssp/blob/master/paper/figures/1akd_q3.png" height=300><img src="https://github.com/idrori/cu-ssp/blob/master/paper/figures/1akd_q8.png" height=300>
 
-Eigene Beiträge im Ordner model_neu 
+Eigene Beiträge im Ordner **model_neu**
 
-Implementierungen auf Daten
+Trainings- und Testdaten
 
 https://www.princeton.edu/~jzthree/datasets/ICML2014/
 
@@ -38,5 +38,8 @@ Die Modelle sind größtenteils für den GPU Gebrauch optimiert.
 
 virtualenv -p python3 tf-gpu
 
+wichtige Vorausetzungen:
 tensorflow-gpu==1.12.0
 module load cudnn/7.3.0_cuda-9.0
+
+sonstige Paketeabhängigkeiten im Ordner: /package_dependencies
